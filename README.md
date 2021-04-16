@@ -13,6 +13,18 @@ framework to create full-stack review apps on AWS
 - To run a command you're building, type `./bin/run COMMAND`.
 - This framework recommends using the library `inquirer` for prompting and collecting answers from the user.
 
+Structure of app:
+|-- src: 
+|   |---- aws
+|         |---- api: js functions to call andrew's scripts
+|         |---- scripts: andrew scripts to actually make api calls
+|   |---- commands: the main function that is invoked upon typing `fleet BLAH`
+|   |---- util
+|         |---- prompts: functions that display questions to user and collects answers
+
+---
+
+# Table of Contents 
 <!-- toc -->
 * [Usage](#usage)
 * [Commands](#commands)
@@ -44,6 +56,7 @@ Creates the last AWS infrastructure and resources such as:
 - VPC, subnet and internet gateway
 - Routes
 - EFS 
+
 After this command, your AWS account will be ready to house clusters of review apps.
 
 ```
