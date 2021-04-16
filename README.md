@@ -14,13 +14,15 @@ framework to create full-stack review apps on AWS
 - This framework recommends using the library `inquirer` for prompting and collecting answers from the user.
 
 Structure of app:
+```
 |-- src: 
 |   |---- aws
-|         |---- api: js functions to call andrew's scripts
+|         |---- api: js funcs to call andrew's scripts
 |         |---- scripts: andrew scripts to actually make api calls
-|   |---- commands: the main function that is invoked upon typing `fleet BLAH`
+|   |---- commands: the main func that is invoked upon typing `fleet BLAH`
 |   |---- util
-|         |---- prompts: functions that display questions to user and collects answers
+|         |---- prompts: funcs that display questions to user and collects answers
+```
 
 ---
 
