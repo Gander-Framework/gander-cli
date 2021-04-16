@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# set_env.sh
+unset IAM_GROUP_NAME
+unset IAM_USER_NAME
+unset AWS_KEY_NAME
+unset EC2_SEC_GROUP_NAME
+unset EC2_SEC_GROUP_DESC
+unset VPC_CIDR_BLOCK
+unset VPC_NAME
+unset SUBNET_NAME
+unset SUBNET_CIDR_BLOCK
+unset AVAIL_ZONE
+unset INTERNET_GATEWAY_NAME
+unset ROUTE_TABLE_NAME
+unset ROUTE_TABLE_ASSOCIATION
+unset CLUSTER_NAME
+
+# secSetup.sh
+unset SEC_GROUP_ID
+
+# vpcCreate.sh
+unset VPC_ID
+unset SUBNET_ID
+unset INTERNET_GATEWAY_ID
+unset ROUTE_TABLE_ID
+unset ASSOCIATION_ID
