@@ -1,10 +1,11 @@
 const {Command} = require('@oclif/command')
-const inquirer = require('inquirer')
 const iamSetupPrompt = require('../util/prompts/iamSetup.js')
 const iamSetupCall = require('../aws/api/iamSetup.js')
 const secGroupSetupPrompt = require('../util/prompts/secGroupSetup.js')
 const secGroupSetupCall = require('../aws/api/secGroupSetup.js')
 const sgSetupIngressCall = require('../aws/api/secGroupIngressSetup.js')
+
+const inquirer = require('inquirer')
 
 const path = require('path')
 const util = require('util')
@@ -16,6 +17,7 @@ class SetupCommand extends Command {
 
     const iamResponse = await iamSetupPrompt()
 
+    // TODO: no matter the response, we don't enter if block
     if (iamResponse.iam === 'yes') {
       const {awsIamResponse, iamError} = await iamSetupCall(iamResponse)
       console.log(awsIamResponse)

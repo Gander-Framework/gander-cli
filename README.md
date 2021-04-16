@@ -12,6 +12,7 @@ framework to create full-stack review apps on AWS
 
 - To run a command you're building, type `./bin/run COMMAND`.
 - This framework recommends using the library `inquirer` for prompting and collecting answers from the user.
+- Assumes user has AWS CLI and credentials set up
 
 Structure of app:
 ```
