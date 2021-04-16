@@ -1,0 +1,68 @@
+fleet-cli
+=========
+
+framework to create full-stack review apps on AWS
+
+[![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
+[![Version](https://img.shields.io/npm/v/fleet-cli.svg)](https://npmjs.org/package/fleet-cli)
+[![Downloads/week](https://img.shields.io/npm/dw/fleet-cli.svg)](https://npmjs.org/package/fleet-cli)
+[![License](https://img.shields.io/npm/l/fleet-cli.svg)](https://github.com/Mush-Framework/fleet-cli/blob/master/package.json)
+
+<!-- toc -->
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
+# Usage
+<!-- usage -->
+```sh-session
+$ npm install -g fleet-cli
+$ fleet COMMAND
+running command...
+$ fleet (-v|--version|version)
+fleet-cli/0.0.0 darwin-x64 node-v14.15.1
+$ fleet --help [COMMAND]
+USAGE
+  $ fleet COMMAND
+...
+```
+<!-- usagestop -->
+# Commands
+<!-- commands -->
+* [`fleet hello`](#fleet-hello)
+* [`fleet help [COMMAND]`](#fleet-help-command)
+
+## `fleet hello`
+
+Describe the command here
+
+```
+USAGE
+  $ fleet hello
+
+OPTIONS
+  -n, --name=name  name to print
+
+DESCRIPTION
+  ...
+  Extra documentation goes here
+```
+
+_See code: [src/commands/hello.js](https://github.com/Mush-Framework/fleet-cli/blob/v0.0.0/src/commands/hello.js)_
+
+## `fleet help [COMMAND]`
+
+display help for fleet
+
+```
+USAGE
+  $ fleet help [COMMAND]
+
+ARGUMENTS
+  COMMAND  command to show help for
+
+OPTIONS
+  --all  see all commands in CLI
+```
+
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
+<!-- commandsstop -->
