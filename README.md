@@ -8,6 +8,11 @@ framework to create full-stack review apps on AWS
 [![Downloads/week](https://img.shields.io/npm/dw/fleet-cli.svg)](https://npmjs.org/package/fleet-cli)
 [![License](https://img.shields.io/npm/l/fleet-cli.svg)](https://github.com/Mush-Framework/fleet-cli/blob/master/package.json)
 
+# Notes for Fleet creators
+
+- To run a command you're building, type `./bin/run COMMAND`.
+- This framework recommends using the library `inquirer` for prompting and collecting answers from the user.
+
 <!-- toc -->
 * [Usage](#usage)
 * [Commands](#commands)
@@ -28,16 +33,22 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`fleet hello`](#fleet-hello)
+* [`fleet setup`](#fleet-setup)
 * [`fleet help [COMMAND]`](#fleet-help-command)
 
-## `fleet hello`
+## `fleet setup`
 
-Describe the command here
+Creates the last AWS infrastructure and resources such as:
+- IAM credentials
+- Security groups
+- VPC, subnet and internet gateway
+- Routes
+- EFS 
+After this command, your AWS account will be ready to house clusters of review apps.
 
 ```
 USAGE
-  $ fleet hello
+  $ fleet setup
 
 OPTIONS
   -n, --name=name  name to print
