@@ -6,6 +6,8 @@ const secGroupSetupCall = require('../aws/api/secGroupSetup.js')
 const sgSetupIngressCall = require('../aws/api/secGroupIngressSetup.js')
 const vpcCreatePrompt = require('../util/prompts/vpcCreate.js')
 const vpcCreateCall = require('../aws/api/vpcCreate.js')
+const subnetCreatePrompt = require('../util/prompts/subnetCreate.js')
+const subnetCreateCall = require('../aws/api/subnetCreate.js')
 
 class SetupCommand extends Command {
   async run() {
@@ -36,9 +38,12 @@ class SetupCommand extends Command {
     console.log('vpcCreateError: ', vpcCreateError)
 
     const vpcId = JSON.parse(awsVpcCreateResponse).Vpc.VpcId
-    console.log(vpcId)
 
     // create subnet
+    const subnetCreateResponse = await subnetCreatePrompt()
+    const {awsSubnetCreateResponse, subnetCreateError} = await subnetCreateCall(vpcId, subnetCreateResponse)
+    console.log('awsSubnetCreateResponse: ', awsSubnetCreateResponse)
+    console.log('subnetCreateError: ', subnetCreateError)
     // create internet gateway
     // attach internet gateway
     // create route table
