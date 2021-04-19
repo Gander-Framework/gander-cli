@@ -30,6 +30,7 @@ function getJsonValue()
 aws ec2 create-security-group \
 --group-name $EC2_SEC_GROUP_NAME \
 --description "$EC2_SEC_GROUP_DESC" \
+--vpc-id $VPC_ID
 # > ../responses/$EC2_SEC_GROUP_NAME.json
 
 # getJsonValue ../responses/$EC2_SEC_GROUP_NAME.json .GroupId SEC_GROUP_ID
