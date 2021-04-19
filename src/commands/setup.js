@@ -17,6 +17,9 @@ const routeCreateCall = require('../aws/api/routeCreate.js')
 const routeTableAssociateCall = require('../aws/api/routeTableAssociate.js')
 const efsSgSetupIngressCall = require('../aws/api/efsSecGroupIngress.js')
 const efsSgSetupEgressCall = require('../aws/api/efsSecGroupEgress.js')
+const efsCreatePrompt = require('../util/prompts/efsCreate.js')
+const efsCreateCall = require('../aws/api/efsCreate.js')
+
 
 class SetupCommand extends Command {
   async run() {
@@ -111,6 +114,10 @@ class SetupCommand extends Command {
     console.log('efsSgEgressError :', efsSgEgressError)
 
     // create EFS
+    const efsName = await efsCreatePrompt()
+    const {awsEfsCreateResponse, efsCreateError} = await efsCreateCall(efsName)
+    console.log('awsEfsCreateResponse :', awsEfsCreateResponse)
+    console.log('efsCreateError :', efsCreateError)
 
     // create mount target in subnet -- make sure to add it to EFS security group
   }
