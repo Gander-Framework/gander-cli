@@ -8,8 +8,9 @@ const iamSetupPrompt = async () => {
     type: 'list',
     choices: [{name: 'yes'}, {name: 'no'}],
   }])
+  const setupIam = response.iam
 
-  if (response.iam === 'yes') {
+  if (setupIam === 'yes') {
     response = await inquirer.prompt([{
       name: 'iamGroupName',
       message: 'What would you like to call the IAM Group?',
@@ -20,6 +21,8 @@ const iamSetupPrompt = async () => {
       message: 'What would you like to call the IAM User?',
       type: 'input',
     }])
+
+    response.iam = setupIam
 
     return response
   }

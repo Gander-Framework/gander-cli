@@ -17,7 +17,6 @@ class SetupCommand extends Command {
 
     const iamResponse = await iamSetupPrompt()
 
-    // TODO: no matter the response, we don't enter if block
     if (iamResponse.iam === 'yes') {
       const {awsIamResponse, iamError} = await iamSetupCall(iamResponse)
       console.log(awsIamResponse)
