@@ -11,6 +11,10 @@ const subnetCreateCall = require('../aws/api/subnetCreate.js')
 const igCreatePrompt = require('../util/prompts/igCreate.js')
 const igCreateCall = require('../aws/api/igCreate.js')
 const igAttachCall = require('../aws/api/igAttach.js')
+const routeTableCreatePrompt = require('../util/prompts/routeTableCreate.js')
+const routeTableCreateCall = require('../aws/api/routeTableCreate.js')
+const routeCreateCall = require('../aws/api/routeCreate.js')
+const routeTableAssociateCall = require('../aws/api/routeTableAssociate.js')
 
 class SetupCommand extends Command {
   async run() {
@@ -64,8 +68,24 @@ class SetupCommand extends Command {
     console.log('igAttachError: ', igAttachError)
 
     // create route table
+    const routeTableCreateResponse = await routeTableCreatePrompt()
+    const {awsRouteTableCreateResponse, routeTableCreateError} = await routeTableCreateCall(vpcId, routeTableCreateResponse)
+    console.log('awsRouteTableCreateResponse: ', awsRouteTableCreateResponse)
+    console.log('routeTableCreateError: ', routeTableCreateError)
+
+    const routeTableId = JSON.parse(awsRouteTableCreateResponse).RouteTable.RouteTableId
+
     // create route
+    const {awsRouteCreateResponse, routeCreateError} = routeCreateCall(routeTableId, igId)
+    console.log('awsRouteCreateResponse: ', awsRouteCreateResponse)
+    console.log('routeCreateError: ', routeCreateError)
+
     // associate route table
+    const {awsRouteTableAssociateResponse, routeTableAssociateError} = routeTableAssociateCall(routeTableId, subnetId)
+    console.log('awsRouteTableAssociateResponse: ', awsRouteTableAssociateResponse)
+    console.log('routeTableAssociateError: ', routeTableAssociateError)
+
+    const routeTableAssociationId = JSON.parse(awsRouteTableAssociateResponse).AssociationId
   }
 }
 
