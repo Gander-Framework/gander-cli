@@ -10,6 +10,7 @@ const subnetCreatePrompt = require('../util/prompts/subnetCreate.js')
 const subnetCreateCall = require('../aws/api/subnetCreate.js')
 const igCreatePrompt = require('../util/prompts/igCreate.js')
 const igCreateCall = require('../aws/api/igCreate.js')
+const igAttachCall = require('../aws/api/igAttach.js')
 
 class SetupCommand extends Command {
   async run() {
@@ -32,7 +33,7 @@ class SetupCommand extends Command {
     const {awsSGIngressResponse, SGIngressError} = await sgSetupIngressCall(secGroupId)
     console.log('awsSGIngressResponse: ', awsSGIngressResponse)
     console.log('SGIngressError: ', SGIngressError)
-
+    */
     // create vpc
     const vpcCreateResponse = await vpcCreatePrompt()
     const {awsVpcCreateResponse, vpcCreateError} = await vpcCreateCall(vpcCreateResponse)
@@ -48,7 +49,7 @@ class SetupCommand extends Command {
     console.log('subnetCreateError: ', subnetCreateError)
 
     const subnetId = JSON.parse(awsSubnetCreateResponse).Subnet.SubnetId
-    */
+
     // create internet gateway
     const igCreateResponse = await igCreatePrompt()
     const {awsIgCreateResponse, igCreateError} = await igCreateCall(igCreateResponse)
@@ -58,6 +59,9 @@ class SetupCommand extends Command {
     const igId = JSON.parse(awsIgCreateResponse).InternetGateway.InternetGatewayId
 
     // attach internet gateway
+    const {awsIgAttachResponse, igAttachError} = igAttachCall(igId, vpcId)
+    console.log('awsIgAttachResponse: ', awsIgAttachResponse)
+    console.log('igAttachError: ', igAttachError)
 
     // create route table
     // create route
