@@ -19,7 +19,7 @@ const routeTableAssociateCall = require('../aws/api/routeTableAssociate.js')
 class SetupCommand extends Command {
   async run() {
     console.log('Welcome to Fleet-CLI! \n To help you get set up, please make sure you have your AWS credentials configured with the CLI. \n ')
-    /*
+
     const iamResponse = await iamSetupPrompt()
 
     if (iamResponse.iam === 'yes') {
@@ -28,16 +28,6 @@ class SetupCommand extends Command {
       console.log(iamError)
     }
 
-    const secGroupResponse = await secGroupSetupPrompt()
-    const {awsSecGroupResponse, secGroupError} = await secGroupSetupCall(secGroupResponse)
-    console.log('awsSecGroupResponse: ', awsSecGroupResponse)
-    console.log('secGroupError: ', secGroupError)
-
-    const secGroupId = JSON.parse(awsSecGroupResponse).GroupId
-    const {awsSGIngressResponse, SGIngressError} = await sgSetupIngressCall(secGroupId)
-    console.log('awsSGIngressResponse: ', awsSGIngressResponse)
-    console.log('SGIngressError: ', SGIngressError)
-    */
     // create vpc
     const vpcCreateResponse = await vpcCreatePrompt()
     const {awsVpcCreateResponse, vpcCreateError} = await vpcCreateCall(vpcCreateResponse)
@@ -45,6 +35,17 @@ class SetupCommand extends Command {
     console.log('vpcCreateError: ', vpcCreateError)
 
     const vpcId = JSON.parse(awsVpcCreateResponse).Vpc.VpcId
+
+    // create security groups and rules
+    const secGroupResponse = await secGroupSetupPrompt()
+    const {awsSecGroupResponse, secGroupError} = await secGroupSetupCall(vpcId, secGroupResponse)
+    console.log('awsSecGroupResponse: ', awsSecGroupResponse)
+    console.log('secGroupError: ', secGroupError)
+
+    const secGroupId = JSON.parse(awsSecGroupResponse).GroupId
+    const {awsSGIngressResponse, SGIngressError} = await sgSetupIngressCall(secGroupId)
+    console.log('awsSGIngressResponse: ', awsSGIngressResponse)
+    console.log('SGIngressError: ', SGIngressError)
 
     // create subnet
     const subnetCreateResponse = await subnetCreatePrompt()
