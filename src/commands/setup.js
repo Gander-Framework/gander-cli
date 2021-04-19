@@ -4,17 +4,13 @@ const iamSetupCall = require('../aws/api/iamSetup.js')
 const secGroupSetupPrompt = require('../util/prompts/secGroupSetup.js')
 const secGroupSetupCall = require('../aws/api/secGroupSetup.js')
 const sgSetupIngressCall = require('../aws/api/secGroupIngressSetup.js')
-
-const inquirer = require('inquirer')
-
-const path = require('path')
-const util = require('util')
-const exec = util.promisify(require('child_process').exec)
+const vpcCreatePrompt = require('../util/prompts/vpcCreate.js')
+const vpcCreateCall = require('../aws/api/vpcCreate.js')
 
 class SetupCommand extends Command {
   async run() {
     console.log('Welcome to Fleet-CLI! \n To help you get set up, please make sure you have your AWS credentials configured with the CLI. \n ')
-
+    /*
     const iamResponse = await iamSetupPrompt()
 
     if (iamResponse.iam === 'yes') {
@@ -32,6 +28,22 @@ class SetupCommand extends Command {
     const {awsSGIngressResponse, SGIngressError} = await sgSetupIngressCall(secGroupId)
     console.log('awsSGIngressResponse: ', awsSGIngressResponse)
     console.log('SGIngressError: ', SGIngressError)
+    */
+    // create vpc
+    const vpcCreateResponse = await vpcCreatePrompt()
+    const {awsVpcCreateResponse, vpcCreateError} = await vpcCreateCall(vpcCreateResponse)
+    console.log('awsVpcCreateResponse: ', awsVpcCreateResponse)
+    console.log('vpcCreateError: ', vpcCreateError)
+
+    const vpcId = JSON.parse(awsVpcCreateResponse).Vpc.VpcId
+    console.log(vpcId)
+
+    // create subnet
+    // create internet gateway
+    // attach internet gateway
+    // create route table
+    // create route
+    // associate route table
   }
 }
 
