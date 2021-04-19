@@ -4,7 +4,7 @@ const _awsInfo = {
     groupName: '',
     userName: '',
   },
-  securityGroup: {
+  vpcSecurityGroup: {
     name: '',
     description: '',
   },
@@ -27,6 +27,14 @@ const _awsInfo = {
     id: '',
     name: '',
     associationId: '',
+  },
+  efsSecurityGroup: {
+    id: '',
+    name: '',
+  },
+  efs: {
+    id: '',
+    name: '',
   },
 }
 

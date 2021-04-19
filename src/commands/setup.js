@@ -15,6 +15,7 @@ const routeTableCreatePrompt = require('../util/prompts/routeTableCreate.js')
 const routeTableCreateCall = require('../aws/api/routeTableCreate.js')
 const routeCreateCall = require('../aws/api/routeCreate.js')
 const routeTableAssociateCall = require('../aws/api/routeTableAssociate.js')
+const efsSgSetupIngressCall = require('../aws/api/efsSecGroupIngress.js')
 
 class SetupCommand extends Command {
   async run() {
@@ -87,6 +88,28 @@ class SetupCommand extends Command {
     console.log('routeTableAssociateError: ', routeTableAssociateError)
 
     const routeTableAssociationId = JSON.parse(awsRouteTableAssociateResponse).AssociationId
+
+    // ~~~ Security group stuff for EFS ~~~ //
+
+    // create security group
+    // Note: I'm adding this security group to the custom VPC we made
+    console.log('Now we will create a security group for your EFS')
+    const efsSecGroupResponse = secGroupSetupPrompt()
+    const efsAwsSecGroupResponse = secGroupSetupCall(vpcId, efsSecGroupResponse)
+    console.log('efsAwsSecGroupResponse: ', efsAwsSecGroupResponse)
+
+    const efsSgId = JSON.parse(efsAwsSecGroupResponse.awsSecGroupResponse).GroupId
+    console.log(efsSgId)
+
+    // authorize EFS security group to receive (ingress) traffic from VPC
+    const {awsEfsSgIngressResponse, efsSgIngressError} = efsSgSetupIngressCall(efsSgId, secGroupId)
+    console.log('awsEfsSgIngressResponse :', awsEfsSgIngressResponse)
+    console.log('efsSgIngressError :', efsSgIngressError)
+
+    // authorize VPC security group to send out (egress) traffic to EFS
+
+    // create EFS
+    // create mount target in subnet -- make sure to add it to EFS security group
   }
 }
 
