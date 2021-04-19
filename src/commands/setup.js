@@ -16,11 +16,12 @@ const routeTableCreateCall = require('../aws/api/routeTableCreate.js')
 const routeCreateCall = require('../aws/api/routeCreate.js')
 const routeTableAssociateCall = require('../aws/api/routeTableAssociate.js')
 const efsSgSetupIngressCall = require('../aws/api/efsSecGroupIngress.js')
+const efsSgSetupEgressCall = require('../aws/api/efsSecGroupEgress.js')
 
 class SetupCommand extends Command {
   async run() {
     console.log('Welcome to Fleet-CLI! \n To help you get set up, please make sure you have your AWS credentials configured with the CLI. \n ')
-
+    /*
     const iamResponse = await iamSetupPrompt()
 
     if (iamResponse.iam === 'yes') {
@@ -28,7 +29,7 @@ class SetupCommand extends Command {
       console.log(awsIamResponse)
       console.log(iamError)
     }
-
+    */
     // create vpc
     const vpcCreateResponse = await vpcCreatePrompt()
     const {awsVpcCreateResponse, vpcCreateError} = await vpcCreateCall(vpcCreateResponse)
@@ -65,10 +66,10 @@ class SetupCommand extends Command {
     const igId = JSON.parse(awsIgCreateResponse).InternetGateway.InternetGatewayId
 
     // attach internet gateway
-    const {awsIgAttachResponse, igAttachError} = igAttachCall(igId, vpcId)
+    const {awsIgAttachResponse, igAttachError} = await igAttachCall(igId, vpcId)
     console.log('awsIgAttachResponse: ', awsIgAttachResponse)
     console.log('igAttachError: ', igAttachError)
-
+    /*
     // create route table
     const routeTableCreateResponse = await routeTableCreatePrompt()
     const {awsRouteTableCreateResponse, routeTableCreateError} = await routeTableCreateCall(vpcId, routeTableCreateResponse)
@@ -86,29 +87,31 @@ class SetupCommand extends Command {
     const {awsRouteTableAssociateResponse, routeTableAssociateError} = routeTableAssociateCall(routeTableId, subnetId)
     console.log('awsRouteTableAssociateResponse: ', awsRouteTableAssociateResponse)
     console.log('routeTableAssociateError: ', routeTableAssociateError)
-
-    const routeTableAssociationId = JSON.parse(awsRouteTableAssociateResponse).AssociationId
-
+    */
     // ~~~ Security group stuff for EFS ~~~ //
 
     // create security group
     // Note: I'm adding this security group to the custom VPC we made
     console.log('Now we will create a security group for your EFS')
-    const efsSecGroupResponse = secGroupSetupPrompt()
-    const efsAwsSecGroupResponse = secGroupSetupCall(vpcId, efsSecGroupResponse)
+    const efsSecGroupResponse = await secGroupSetupPrompt()
+    const efsAwsSecGroupResponse = await secGroupSetupCall(vpcId, efsSecGroupResponse)
     console.log('efsAwsSecGroupResponse: ', efsAwsSecGroupResponse)
 
     const efsSgId = JSON.parse(efsAwsSecGroupResponse.awsSecGroupResponse).GroupId
     console.log(efsSgId)
 
     // authorize EFS security group to receive (ingress) traffic from VPC
-    const {awsEfsSgIngressResponse, efsSgIngressError} = efsSgSetupIngressCall(efsSgId, secGroupId)
+    const {awsEfsSgIngressResponse, efsSgIngressError} = await efsSgSetupIngressCall(efsSgId, secGroupId)
     console.log('awsEfsSgIngressResponse :', awsEfsSgIngressResponse)
     console.log('efsSgIngressError :', efsSgIngressError)
 
     // authorize VPC security group to send out (egress) traffic to EFS
+    const {awsEfsSgEgressResponse, efsSgEgressError} = await efsSgSetupEgressCall(efsSgId, secGroupId)
+    console.log('awsEfsSgEgressResponse :', awsEfsSgEgressResponse)
+    console.log('efsSgEgressError :', efsSgEgressError)
 
     // create EFS
+
     // create mount target in subnet -- make sure to add it to EFS security group
   }
 }
