@@ -1,27 +1,7 @@
 const {Command} = require('@oclif/command')
+const api = require('../aws/api')
 const prompts = require('../prompts')
 
-const iamSetupCall = require('../aws/api/iamSetup.js')
-
-const secGroupSetupCall = require('../aws/api/secGroupSetup.js')
-const sgSetupIngressCall = require('../aws/api/secGroupIngressSetup.js')
-
-const vpcCreateCall = require('../aws/api/vpcCreate.js')
-
-const subnetCreateCall = require('../aws/api/subnetCreate.js')
-
-const igCreateCall = require('../aws/api/igCreate.js')
-const igAttachCall = require('../aws/api/igAttach.js')
-
-const routeTableCreateCall = require('../aws/api/routeTableCreate.js')
-const routeCreateCall = require('../aws/api/routeCreate.js')
-const routeTableAssociateCall = require('../aws/api/routeTableAssociate.js')
-const efsSgSetupIngressCall = require('../aws/api/efsSecGroupIngress.js')
-const efsSgSetupEgressCall = require('../aws/api/efsSecGroupEgress.js')
-
-const efsCreateCall = require('../aws/api/efsCreate.js')
-const efsCreateMountTarget = require('../aws/api/efsCreateMountTarget.js')
-const describeFileSystem = require('../aws/api/efsDescribeFileSystem.js')
 const sleep = require('../util')
 
 class SetupCommand extends Command {
@@ -31,14 +11,14 @@ class SetupCommand extends Command {
     const iamResponse = await prompts.setupIam()
 
     if (iamResponse.iam === 'yes') {
-      const {awsIamResponse, iamError} = await iamSetupCall(iamResponse)
+      const {awsIamResponse, iamError} = await api.setupIam(iamResponse)
       console.log(awsIamResponse)
       console.log(iamError)
     }
 
     // create vpc
     const vpcCreateResponse = await prompts.createVpc()
-    const {awsVpcCreateResponse, vpcCreateError} = await vpcCreateCall(vpcCreateResponse)
+    const {awsVpcCreateResponse, vpcCreateError} = await api.createVpc(vpcCreateResponse)
     console.log('awsVpcCreateResponse: ', awsVpcCreateResponse)
     console.log('vpcCreateError: ', vpcCreateError)
 
@@ -46,18 +26,18 @@ class SetupCommand extends Command {
 
     // create security groups and rules
     const secGroupResponse = await prompts.createSecurityGroup()
-    const {awsSecGroupResponse, secGroupError} = await secGroupSetupCall(vpcId, secGroupResponse)
+    const {awsSecGroupResponse, secGroupError} = await api.createSecurityGroup(vpcId, secGroupResponse)
     console.log('awsSecGroupResponse: ', awsSecGroupResponse)
     console.log('secGroupError: ', secGroupError)
 
     const secGroupId = JSON.parse(awsSecGroupResponse).GroupId
-    const {awsSGIngressResponse, SGIngressError} = await sgSetupIngressCall(secGroupId)
+    const {awsSGIngressResponse, SGIngressError} = await api.setSgIngress(secGroupId)
     console.log('awsSGIngressResponse: ', awsSGIngressResponse)
     console.log('SGIngressError: ', SGIngressError)
 
     // create subnet
     const subnetCreateResponse = await prompts.createSubnet()
-    const {awsSubnetCreateResponse, subnetCreateError} = await subnetCreateCall(vpcId, subnetCreateResponse)
+    const {awsSubnetCreateResponse, subnetCreateError} = await api.createSubnet(vpcId, subnetCreateResponse)
     console.log('awsSubnetCreateResponse: ', awsSubnetCreateResponse)
     console.log('subnetCreateError: ', subnetCreateError)
 
@@ -65,32 +45,32 @@ class SetupCommand extends Command {
 
     // create internet gateway
     const igCreateResponse = await prompts.createInternetGateway()
-    const {awsIgCreateResponse, igCreateError} = await igCreateCall(igCreateResponse)
+    const {awsIgCreateResponse, igCreateError} = await api.createInternetGateway(igCreateResponse)
     console.log('awsIgCreateResponse: ', awsIgCreateResponse)
     console.log('igCreateError: ', igCreateError)
 
     const igId = JSON.parse(awsIgCreateResponse).InternetGateway.InternetGatewayId
 
     // attach internet gateway
-    const {awsIgAttachResponse, igAttachError} = await igAttachCall(igId, vpcId)
+    const {awsIgAttachResponse, igAttachError} = await api.attachInternetGateway(igId, vpcId)
     console.log('awsIgAttachResponse: ', awsIgAttachResponse)
     console.log('igAttachError: ', igAttachError)
 
     // create route table
     const routeTableCreateResponse = await prompts.createRouteTable()
-    const {awsRouteTableCreateResponse, routeTableCreateError} = await routeTableCreateCall(vpcId, routeTableCreateResponse)
+    const {awsRouteTableCreateResponse, routeTableCreateError} = await api.createRouteTable(vpcId, routeTableCreateResponse)
     console.log('awsRouteTableCreateResponse: ', awsRouteTableCreateResponse)
     console.log('routeTableCreateError: ', routeTableCreateError)
 
     const routeTableId = JSON.parse(awsRouteTableCreateResponse).RouteTable.RouteTableId
 
     // create route
-    const {awsRouteCreateResponse, routeCreateError} = routeCreateCall(routeTableId, igId)
+    const {awsRouteCreateResponse, routeCreateError} = api.createRoute(routeTableId, igId)
     console.log('awsRouteCreateResponse: ', awsRouteCreateResponse)
     console.log('routeCreateError: ', routeCreateError)
 
     // associate route table
-    const {awsRouteTableAssociateResponse, routeTableAssociateError} = routeTableAssociateCall(routeTableId, subnetId)
+    const {awsRouteTableAssociateResponse, routeTableAssociateError} = api.associateRouteTable(routeTableId, subnetId)
     console.log('awsRouteTableAssociateResponse: ', awsRouteTableAssociateResponse)
     console.log('routeTableAssociateError: ', routeTableAssociateError)
 
@@ -100,24 +80,24 @@ class SetupCommand extends Command {
     // Note: I'm adding this security group to the custom VPC we made
     console.log('Now we will create a security group for your EFS')
     const efsSecGroupResponse = await prompts.createSecurityGroup()
-    const efsAwsSecGroupResponse = await secGroupSetupCall(vpcId, efsSecGroupResponse)
+    const efsAwsSecGroupResponse = await api.createSecurityGroup(vpcId, efsSecGroupResponse)
     console.log('efsAwsSecGroupResponse: ', efsAwsSecGroupResponse)
 
     const efsSgId = JSON.parse(efsAwsSecGroupResponse.awsSecGroupResponse).GroupId
 
     // authorize EFS security group to receive (ingress) traffic from VPC
-    const {awsEfsSgIngressResponse, efsSgIngressError} = await efsSgSetupIngressCall(efsSgId, secGroupId)
+    const {awsEfsSgIngressResponse, efsSgIngressError} = await api.setEfsSgIngress(efsSgId, secGroupId)
     console.log('awsEfsSgIngressResponse :', awsEfsSgIngressResponse)
     console.log('efsSgIngressError :', efsSgIngressError)
 
     // authorize VPC security group to send out (egress) traffic to EFS
-    const {awsEfsSgEgressResponse, efsSgEgressError} = await efsSgSetupEgressCall(efsSgId, secGroupId)
+    const {awsEfsSgEgressResponse, efsSgEgressError} = await api.setEfsSgEgress(efsSgId, secGroupId)
     console.log('awsEfsSgEgressResponse :', awsEfsSgEgressResponse)
     console.log('efsSgEgressError :', efsSgEgressError)
 
     // create EFS
     const efsName = await prompts.createEfs()
-    const {awsEfsCreateResponse, efsCreateError} = await efsCreateCall(efsName)
+    const {awsEfsCreateResponse, efsCreateError} = await api.createEfs(efsName)
     console.log('awsEfsCreateResponse :', awsEfsCreateResponse)
     console.log('efsCreateError :', efsCreateError)
 
@@ -132,7 +112,7 @@ class SetupCommand extends Command {
       sleep(500)
 
       // eslint-disable-next-line no-await-in-loop
-      const response = await describeFileSystem(efsId)
+      const response = await api.describeFileSystem(efsId)
       awsEfsDescribeResponse = response.awsEfsDescribeResponse
       efsDescribeError = response.efsDescribeError
 
@@ -144,7 +124,7 @@ class SetupCommand extends Command {
 
     // create mount target in subnet -- make sure to add it to EFS security group
     // TODO: EFS DNS can't be resolved when we try to launch
-    const {awsMountTargetResponse, mountTargetError} = await efsCreateMountTarget(efsId, subnetId, efsSgId)
+    const {awsMountTargetResponse, mountTargetError} = await api.createMountTarget(efsId, subnetId, efsSgId)
     console.log('awsMountTargetResponse :', awsMountTargetResponse)
     console.log('mountTargetError :', mountTargetError)
 
