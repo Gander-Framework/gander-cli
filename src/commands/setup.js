@@ -1,23 +1,24 @@
 const {Command} = require('@oclif/command')
-const iamSetupPrompt = require('../util/prompts/iamSetup.js')
+const prompts = require('../prompts')
+
 const iamSetupCall = require('../aws/api/iamSetup.js')
-const secGroupSetupPrompt = require('../util/prompts/secGroupSetup.js')
+
 const secGroupSetupCall = require('../aws/api/secGroupSetup.js')
 const sgSetupIngressCall = require('../aws/api/secGroupIngressSetup.js')
-const vpcCreatePrompt = require('../util/prompts/vpcCreate.js')
+
 const vpcCreateCall = require('../aws/api/vpcCreate.js')
-const subnetCreatePrompt = require('../util/prompts/subnetCreate.js')
+
 const subnetCreateCall = require('../aws/api/subnetCreate.js')
-const igCreatePrompt = require('../util/prompts/igCreate.js')
+
 const igCreateCall = require('../aws/api/igCreate.js')
 const igAttachCall = require('../aws/api/igAttach.js')
-const routeTableCreatePrompt = require('../util/prompts/routeTableCreate.js')
+
 const routeTableCreateCall = require('../aws/api/routeTableCreate.js')
 const routeCreateCall = require('../aws/api/routeCreate.js')
 const routeTableAssociateCall = require('../aws/api/routeTableAssociate.js')
 const efsSgSetupIngressCall = require('../aws/api/efsSecGroupIngress.js')
 const efsSgSetupEgressCall = require('../aws/api/efsSecGroupEgress.js')
-const efsCreatePrompt = require('../util/prompts/efsCreate.js')
+
 const efsCreateCall = require('../aws/api/efsCreate.js')
 const efsCreateMountTarget = require('../aws/api/efsCreateMountTarget.js')
 const describeFileSystem = require('../aws/api/efsDescribeFileSystem.js')
@@ -27,7 +28,7 @@ class SetupCommand extends Command {
   async run() {
     console.log('Welcome to Fleet-CLI! \n To help you get set up, please make sure you have your AWS credentials configured with the CLI. \n ')
 
-    const iamResponse = await iamSetupPrompt()
+    const iamResponse = await prompts.setupIam()
 
     if (iamResponse.iam === 'yes') {
       const {awsIamResponse, iamError} = await iamSetupCall(iamResponse)
@@ -36,7 +37,7 @@ class SetupCommand extends Command {
     }
 
     // create vpc
-    const vpcCreateResponse = await vpcCreatePrompt()
+    const vpcCreateResponse = await prompts.createVpc()
     const {awsVpcCreateResponse, vpcCreateError} = await vpcCreateCall(vpcCreateResponse)
     console.log('awsVpcCreateResponse: ', awsVpcCreateResponse)
     console.log('vpcCreateError: ', vpcCreateError)
@@ -44,7 +45,7 @@ class SetupCommand extends Command {
     const vpcId = JSON.parse(awsVpcCreateResponse).Vpc.VpcId
 
     // create security groups and rules
-    const secGroupResponse = await secGroupSetupPrompt()
+    const secGroupResponse = await prompts.createSecurityGroup()
     const {awsSecGroupResponse, secGroupError} = await secGroupSetupCall(vpcId, secGroupResponse)
     console.log('awsSecGroupResponse: ', awsSecGroupResponse)
     console.log('secGroupError: ', secGroupError)
@@ -55,7 +56,7 @@ class SetupCommand extends Command {
     console.log('SGIngressError: ', SGIngressError)
 
     // create subnet
-    const subnetCreateResponse = await subnetCreatePrompt()
+    const subnetCreateResponse = await prompts.createSubnet()
     const {awsSubnetCreateResponse, subnetCreateError} = await subnetCreateCall(vpcId, subnetCreateResponse)
     console.log('awsSubnetCreateResponse: ', awsSubnetCreateResponse)
     console.log('subnetCreateError: ', subnetCreateError)
@@ -63,7 +64,7 @@ class SetupCommand extends Command {
     const subnetId = JSON.parse(awsSubnetCreateResponse).Subnet.SubnetId
 
     // create internet gateway
-    const igCreateResponse = await igCreatePrompt()
+    const igCreateResponse = await prompts.createInternetGateway()
     const {awsIgCreateResponse, igCreateError} = await igCreateCall(igCreateResponse)
     console.log('awsIgCreateResponse: ', awsIgCreateResponse)
     console.log('igCreateError: ', igCreateError)
@@ -76,7 +77,7 @@ class SetupCommand extends Command {
     console.log('igAttachError: ', igAttachError)
 
     // create route table
-    const routeTableCreateResponse = await routeTableCreatePrompt()
+    const routeTableCreateResponse = await prompts.createRouteTable()
     const {awsRouteTableCreateResponse, routeTableCreateError} = await routeTableCreateCall(vpcId, routeTableCreateResponse)
     console.log('awsRouteTableCreateResponse: ', awsRouteTableCreateResponse)
     console.log('routeTableCreateError: ', routeTableCreateError)
@@ -98,7 +99,7 @@ class SetupCommand extends Command {
     // create security group
     // Note: I'm adding this security group to the custom VPC we made
     console.log('Now we will create a security group for your EFS')
-    const efsSecGroupResponse = await secGroupSetupPrompt()
+    const efsSecGroupResponse = await prompts.createSecurityGroup()
     const efsAwsSecGroupResponse = await secGroupSetupCall(vpcId, efsSecGroupResponse)
     console.log('efsAwsSecGroupResponse: ', efsAwsSecGroupResponse)
 
@@ -115,7 +116,7 @@ class SetupCommand extends Command {
     console.log('efsSgEgressError :', efsSgEgressError)
 
     // create EFS
-    const efsName = await efsCreatePrompt()
+    const efsName = await prompts.createEfs()
     const {awsEfsCreateResponse, efsCreateError} = await efsCreateCall(efsName)
     console.log('awsEfsCreateResponse :', awsEfsCreateResponse)
     console.log('efsCreateError :', efsCreateError)
@@ -142,7 +143,7 @@ class SetupCommand extends Command {
     }
 
     // create mount target in subnet -- make sure to add it to EFS security group
-    // TODO: EFS DNS can't be resolved when we try to launch tasks
+    // TODO: EFS DNS can't be resolved when we try to launch
     const {awsMountTargetResponse, mountTargetError} = await efsCreateMountTarget(efsId, subnetId, efsSgId)
     console.log('awsMountTargetResponse :', awsMountTargetResponse)
     console.log('mountTargetError :', mountTargetError)
