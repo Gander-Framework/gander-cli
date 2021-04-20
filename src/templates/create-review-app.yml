@@ -1,0 +1,148 @@
+name: Publish Image to ECR
+on:
+  pull_request:
+    types: [opened]
+
+env:
+  ECR_REPO: Fleet-ECR
+  PROJECT: FLEET_REPO_NAME #request-bin
+  SERVER_PATH:  #server/
+  SQL_FILE:  # server/db/migration.sql
+  BUILDER: #gcr.io/buildpacks/builder:v1
+  DB_NAME: #request_bin
+  FS_TOKEN: FleetFS
+  REGION: #us-east-2
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+
+jobs:
+  # teardown:
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - name: stop everything
+  #       if: (it's synchronize or close)
+  #       runs: destroy everything
+
+  build:
+    runs-on: ubuntu-20.04
+    # needs: [teardown]
+    # steps:
+    #   - name: Check Event Type
+    #     if: (it's close)
+    #     run: exit 0
+      - name: Checkout Code
+        uses: actions/checkout@v1
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+
+        #Not passing a registry so it uses the default one.
+        # We might ahve to create a registry during the set up script.
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      # with:
+      # registries: [ecr-349823hf398]
+
+      - name: Install Pack CLI
+        id: install-pack
+        run: |
+          sudo add-apt-repository ppa:cncf-buildpacks/pack-cli && \
+          sudo apt-get update && \
+          sudo apt-get install pack-cli
+
+      - name: Install jq
+        id: install-jq
+        run: sudo apt-get install jq
+
+      #This step will do four things:
+      # 1. set the server image arn environment variable
+      # 2. set the seeder image arn environment variable
+      # 2. Get the Task Execution Role Arn and set it to an environment variable
+      # 3. Get the fs-id of our EFS and set it to an environment variable
+      - name: set required environment variables
+        id: set-env
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          (echo "image-arn=$ECR_REGISTRY/$ECR_REPO:$PROJECT-$PR_NUMBER" >> $GITHUB_ENV) & \
+          (echo "seed-arn=$ECR_REGISTRY/$ECR_REPO:$PROJECT-seed-$PR_NUMBER" >> $GITHUB_ENV) & \
+          (echo "task-execution-role-arn=` \
+            aws iam get-role --role-name ecsTaskExecutionRole \
+              | jq -r '.Role.Arn'`"  >> $GITHUB_ENV) & \
+          (echo "efs-id=` \ 
+            aws efs describe-file-systems --creation-token $FS_TOKEN \
+              | jq -r '.FileSystems[0].FileSystemId'`" >> $GITHUB_ENV) & 
+          wait %1
+
+        #TODO: New step: Pull the google builder & cache?
+      - name: build, tag, and push image using Google Builder
+        id: build-server
+        run: | # --cache-image $ECR_REGISTRY/$ECR_REPO:cache \
+          pack build ${{env.image-arn}} \
+          --builder $BUILDER \
+          --path $SERVER_PATH \
+          --publish
+
+      # What more do we need access to?
+      # Execution role arn -- done
+      # EFS ID -- done
+      # Mount Target?
+      # Logging?
+      # How do we put that migration file up there?
+      - name: Create image for SQL Seeder
+        id: make-sql-seeder
+        run: |
+          docker build -t ${{ env.seed-arn }} -f- .  <<EOF
+          FROM alpine:3.13
+          COPY $SQL_FILE init.sql
+          RUN echo -e '#!/bin/bash\nmv init.sql efs-file-transfer\nls efs-file-transfer' > ./entrypoint.sh
+          RUN ["chmod", "+x", "./entrypoint.sh"]
+          ENTRYPOINT ["./entrypoint.sh"]
+          EOF
+
+      - name: Push image for SQL Seeder to ECR
+        id: push-seed
+        run: |
+          docker push ${{ env.seed-arn }}
+
+      - name: write task definition for image
+        id: task-gen
+        uses: Mush-Framework/create-task-definition@v0.3.1
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        with:
+          server-arn: ${{ env.image-arn }}
+          seed-arn: ${{ env.seed-arn }}
+          db-name: ${{ env.DB_NAME }}
+          efs-id: ${{ env.efs-id }}
+          app-name: ${{ env.PROJECT }}
+          task-execution-role-arn: ${{ env.task-execution-role-arn }}
+          region: ${{ env.REGION }}
+          pr-number: ${{ env.PR_NUMBER}}
+
+      - name: write task definition to file.
+        run: |
+          echo '${{ steps.task-gen.outputs.seeder-task-definition }}' >> ./seed-task.json && \
+          echo '${{ steps.task-gen.outputs.service-task-definition }}' >> ./app-task.json
+
+      - name: register task definition of seeder.
+        run: |
+          echo "seed-def=`aws ecs register-task-definition \
+          --family $PROJECT-setup \
+          --cli-input-json file://seed-task.json \
+          | jq -r '.taskDefinition | "\(.family):\(.revision)'`" >> $GITHUB_ENV
+
+      - name: register task definition of review app.
+        run: |
+          echo "app-def=`aws ecs register-task-definition \
+          --family $PROJECT \
+          --cli-input-json file://app-task.json \
+          | jq -r '.taskDefinition | "\(.family):\(.revision)'`" >> $GITHUB_ENV
+      
+      - name: verify the names of the task definitions.
+        run: |
+          echo ${{ env.app-def }}, ${{ env.seed-def }}
