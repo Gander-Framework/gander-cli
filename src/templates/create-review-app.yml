@@ -4,7 +4,7 @@ on:
     types: [opened]
 
 env:
-  ECR_REPO: Fleet-ECR
+  ECR_REPO: fleet-ecr
   PROJECT: FLEET_REPO_NAME #request-bin
   SERVER_PATH:  #server/
   SQL_FILE:  # server/db/migration.sql
