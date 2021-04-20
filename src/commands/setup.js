@@ -19,12 +19,12 @@ const efsSgSetupIngressCall = require('../aws/api/efsSecGroupIngress.js')
 const efsSgSetupEgressCall = require('../aws/api/efsSecGroupEgress.js')
 const efsCreatePrompt = require('../util/prompts/efsCreate.js')
 const efsCreateCall = require('../aws/api/efsCreate.js')
-
+const efsCreateMountTarget = require('../aws/api/efsCreateMountTarget.js')
 
 class SetupCommand extends Command {
   async run() {
     console.log('Welcome to Fleet-CLI! \n To help you get set up, please make sure you have your AWS credentials configured with the CLI. \n ')
-    /*
+
     const iamResponse = await iamSetupPrompt()
 
     if (iamResponse.iam === 'yes') {
@@ -32,7 +32,7 @@ class SetupCommand extends Command {
       console.log(awsIamResponse)
       console.log(iamError)
     }
-    */
+
     // create vpc
     const vpcCreateResponse = await vpcCreatePrompt()
     const {awsVpcCreateResponse, vpcCreateError} = await vpcCreateCall(vpcCreateResponse)
@@ -72,7 +72,7 @@ class SetupCommand extends Command {
     const {awsIgAttachResponse, igAttachError} = await igAttachCall(igId, vpcId)
     console.log('awsIgAttachResponse: ', awsIgAttachResponse)
     console.log('igAttachError: ', igAttachError)
-    /*
+
     // create route table
     const routeTableCreateResponse = await routeTableCreatePrompt()
     const {awsRouteTableCreateResponse, routeTableCreateError} = await routeTableCreateCall(vpcId, routeTableCreateResponse)
@@ -90,7 +90,7 @@ class SetupCommand extends Command {
     const {awsRouteTableAssociateResponse, routeTableAssociateError} = routeTableAssociateCall(routeTableId, subnetId)
     console.log('awsRouteTableAssociateResponse: ', awsRouteTableAssociateResponse)
     console.log('routeTableAssociateError: ', routeTableAssociateError)
-    */
+
     // ~~~ Security group stuff for EFS ~~~ //
 
     // create security group
@@ -101,7 +101,6 @@ class SetupCommand extends Command {
     console.log('efsAwsSecGroupResponse: ', efsAwsSecGroupResponse)
 
     const efsSgId = JSON.parse(efsAwsSecGroupResponse.awsSecGroupResponse).GroupId
-    console.log(efsSgId)
 
     // authorize EFS security group to receive (ingress) traffic from VPC
     const {awsEfsSgIngressResponse, efsSgIngressError} = await efsSgSetupIngressCall(efsSgId, secGroupId)
@@ -119,7 +118,17 @@ class SetupCommand extends Command {
     console.log('awsEfsCreateResponse :', awsEfsCreateResponse)
     console.log('efsCreateError :', efsCreateError)
 
+    const efsId = JSON.parse(awsEfsCreateResponse).FileSystemId
+
     // create mount target in subnet -- make sure to add it to EFS security group
+    // TODO: must wait until life cycle state of EFS is "available"
+    // Idea: poll describe-file-systems until LifeCycleState === "available"
+
+    const {awsMountTargetResponse, mountTargetError} = await efsCreateMountTarget(efsId, subnetId, efsSgId)
+    console.log('awsMountTargetResponse :', awsMountTargetResponse)
+    console.log('mountTargetError :', mountTargetError)
+
+    const mountTargetId = JSON.parse(awsMountTargetResponse).MountTargetId
   }
 }
 
