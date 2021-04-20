@@ -111,7 +111,7 @@ jobs:
 
       - name: write task definition for image
         id: task-gen
-        uses: Mush-Framework/create-task-definition@v0.3.1
+        uses: Mush-Framework/create-task-definition@v0.3.2
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         with:
