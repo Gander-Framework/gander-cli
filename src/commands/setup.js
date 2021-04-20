@@ -25,7 +25,6 @@ const sleep = require('../util')
 
 class SetupCommand extends Command {
   async run() {
-    /*
     console.log('Welcome to Fleet-CLI! \n To help you get set up, please make sure you have your AWS credentials configured with the CLI. \n ')
 
     const iamResponse = await iamSetupPrompt()
@@ -122,8 +121,6 @@ class SetupCommand extends Command {
     console.log('efsCreateError :', efsCreateError)
 
     const efsId = JSON.parse(awsEfsCreateResponse).FileSystemId
-    */
-    const efsId = 'fs-03ba40b7'
 
     // Must wait until life cycle state of EFS is "available"
     let efsState = ''
@@ -144,14 +141,13 @@ class SetupCommand extends Command {
       efsState = JSON.parse(awsEfsDescribeResponse).FileSystems[0].LifeCycleState
     }
 
-    /*
     // create mount target in subnet -- make sure to add it to EFS security group
+    // TODO: EFS DNS can't be resolved when we try to launch tasks
     const {awsMountTargetResponse, mountTargetError} = await efsCreateMountTarget(efsId, subnetId, efsSgId)
     console.log('awsMountTargetResponse :', awsMountTargetResponse)
     console.log('mountTargetError :', mountTargetError)
 
     const mountTargetId = JSON.parse(awsMountTargetResponse).MountTargetId
-    */
   }
 }
 
