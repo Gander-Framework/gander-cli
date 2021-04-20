@@ -2,7 +2,7 @@
 
 aws ec2 create-subnet \
 --vpc-id $VPC_ID \
---tag-specifications 'ResourceType=subnet,Tags=[{Key=name,Value="'$SUBNET_NAME'"}]' \
+--tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value="'$SUBNET_NAME'"}]' \
 --availability-zone $AVAIL_ZONE \
 --cidr-block $SUBNET_CIDR_BLOCK
 

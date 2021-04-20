@@ -11,8 +11,7 @@ class SetupCommand extends Command {
 
     if (iamResponse.iam === 'yes') {
       const {awsIamResponse, iamError} = await api.setupIam(iamResponse)
-      console.log(awsIamResponse)
-      console.log(iamError)
+      utils.display(awsIamResponse, iamError)
     }
 
     // create vpc
