@@ -5,8 +5,8 @@ const exec = util.promisify(require('child_process').exec)
 
 const iamSetupCall = async response => {
   const script = path.resolve(__dirname, '../scripts/iamSetup.sh')
-  const arg1 = `IAM_GROUP_NAME=${response.iamGroupName}`
-  const arg2 = `IAM_USER_NAME=${response.iamUserName}`
+  const arg1 = `IAM_GROUP_NAME=${response.groupName}`
+  const arg2 = `IAM_USER_NAME=${response.userName}`
 
   try {
     const {stdout, stderr} = await exec(`${arg1} ${arg2} ${script}`)

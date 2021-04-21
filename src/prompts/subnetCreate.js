@@ -3,7 +3,7 @@ const inquirer = require('inquirer')
 
 const subnetCreatePrompt = async () => {
   let response = await inquirer.prompt([{
-    name: 'subnetName',
+    name: 'name',
     message: 'What would you like to call your subnet?',
     type: 'input',
   },
@@ -13,7 +13,7 @@ const subnetCreatePrompt = async () => {
     type: 'input',
   },
   {
-    name: 'subnetCidrBlock',
+    name: 'cidrBlock',
     message: 'Please specify a range of IPv4 addresses for your subnet in CIDR notation',
     type: 'input',
   }])

@@ -3,12 +3,12 @@ const inquirer = require('inquirer')
 
 const vpcCreatePrompt = async () => {
   let response = await inquirer.prompt([{
-    name: 'vpcName',
+    name: 'name',
     message: 'What would you like to call your VPC?',
     type: 'input',
   },
   {
-    name: 'vpcCidrBlock',
+    name: 'cidrBlock',
     message: 'Please specify a range of IPv4 addresses for your VPC in CIDR notation',
     type: 'input',
   }])

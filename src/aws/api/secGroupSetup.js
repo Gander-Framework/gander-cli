@@ -4,8 +4,8 @@ const util = require('util')
 const exec = util.promisify(require('child_process').exec)
 
 const secGroupSetupCall = async (vpcId, response) => {
-  const arg1 = `EC2_SEC_GROUP_NAME=${response.secGroupName}`
-  const arg2 = `EC2_SEC_GROUP_DESC="${response.secGroupDesc}"`
+  const arg1 = `EC2_SEC_GROUP_NAME=${response.name}`
+  const arg2 = `EC2_SEC_GROUP_DESC="${response.description}"`
   const arg3 = `VPC_ID="${vpcId}"`
   const script = path.resolve(__dirname, '../scripts/secGroupSetup.sh')
 

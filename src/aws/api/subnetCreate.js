@@ -6,9 +6,9 @@ const exec = util.promisify(require('child_process').exec)
 const subnetCreateCall = async (vpcId, response) => {
   const script = path.resolve(__dirname, '../scripts/subnetCreate.sh')
   const arg1 = `VPC_ID=${vpcId}`
-  const arg2 = `SUBNET_NAME=${response.subnetName}`
+  const arg2 = `SUBNET_NAME=${response.name}`
   const arg3 = `AVAIL_ZONE=${response.availabilityZone}`
-  const arg4 = `SUBNET_CIDR_BLOCK=${response.subnetCidrBlock}`
+  const arg4 = `SUBNET_CIDR_BLOCK=${response.cidrBlock}`
 
   try {
     const {stdout, stderr} = await exec(`${arg1} ${arg2} ${arg3} ${arg4} ${script}`)

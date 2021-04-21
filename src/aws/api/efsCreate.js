@@ -5,7 +5,7 @@ const exec = util.promisify(require('child_process').exec)
 
 const efsCreateCall = async response => {
   const script = path.resolve(__dirname, '../scripts/efsCreate.sh')
-  const arg1 = `EFS_NAME=${response.efsName}`
+  const arg1 = `EFS_NAME=${response.name}`
 
   try {
     const {stdout, stderr} = await exec(`${arg1} ${script}`)
