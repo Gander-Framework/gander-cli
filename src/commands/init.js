@@ -2,7 +2,7 @@ const { Command } =  require('@oclif/command')
 const prompts = require('../prompts')
 const utils = require('../util')
 const { fleetRootPath, fleetBuildWorkflowPath } = require('../util/paths');
-const path = require('path');
+const fs = require('fs');
 
 const getTestInput = async () => {
   const appInfo = await prompts.testInitPrompt()
@@ -10,9 +10,17 @@ const getTestInput = async () => {
   return appInfo
 } 
 
+const injectInfoIntoWorkflow = (appInfo) => {
+  let buildWorkflowFile = fs.readFileSync(fleetBuildWorkflowPath, "utf8")
+  buildWorkflowFile = buildWorkflowFile.replace("FOUR_EYES_SUPREMACY", appInfo.FOUR_EYES_SUPREMACY)
+  fs.writeFileSync(fleetBuildWorkflowPath, buildWorkflowFile)
+}
+
 class InitCommand extends Command {
   async run() {
-    console.log(await getTestInput());
+    //console.log(await getTestInput());
+    const appInfo = await getTestInput()
+    await injectInfoIntoWorkflow(appInfo);
   }
 }
 
