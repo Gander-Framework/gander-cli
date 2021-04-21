@@ -148,10 +148,11 @@ jobs:
 
       - name: register task definition of seeder.
         run: |
-          echo "seed-def=`aws ecs register-task-definition \
+          echo "seed-def=$(aws ecs register-task-definition \
           --family $PROJECT-setup \
           --cli-input-json file://seed-task.json \
-          | jq -r '.taskDefinition | "\(.family):\(.revision)"'`" >> $GITHUB_ENV
+          --query 'join(`:`,taskDefinition.[family,to_string(revision)])' \
+          --output text)" >> $GITHUB_ENV
 
       - name: register task definition of review app.
         run: |
