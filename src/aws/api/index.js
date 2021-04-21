@@ -5,6 +5,7 @@ const setEfsSgIngress = require('./efsSecGroupIngress.js')
 const setEfsSgEgress = require('./efsSecGroupEgress.js')
 const createVpc = require('./vpcCreate.js')
 const createSubnet = require('./subnetCreate.js')
+const modifySubnetAttribute = require('./subnetModifyAttribute.js')
 const createInternetGateway = require('./igCreate.js')
 const attachInternetGateway = require('./igAttach.js')
 const createRouteTable = require('./routeTableCreate.js')
@@ -22,6 +23,7 @@ const api = {
   setEfsSgEgress,
   createVpc,
   createSubnet,
+  modifySubnetAttribute,
   createInternetGateway,
   attachInternetGateway,
   createRouteTable,
