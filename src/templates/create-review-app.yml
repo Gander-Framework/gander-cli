@@ -166,12 +166,9 @@ jobs:
         run: |
           echo ${{ env.app-def }}, ${{ env.seed-def }}
 
-      # Info needed:
-      # Security Group
-      # Subnet
       - name: Launch the seeder task.
         run: |
-          echo "task-arn=`aws ecs run-task \
+          echo "task-arn=$(aws ecs run-task \
             --cluster $PROJECT \
             --task-definition ${{ env.seed-def }} \
             --count 1 \
@@ -180,7 +177,9 @@ jobs:
                 subnets=[${{ env.subnet-id }}], \
                 securityGroups=[${{ env.sg-id }}], \
                 assignPublicIp=ENABLED \
-              }" | jq -r '.tasks[0].taskArn'`" >> $GITHUB_ENV
+              }" \
+            --query 'tasks[0].taskArn' \
+            --output text)" >> $GITHUB_ENV
 
       - name: Wait until the seed task completes.
         run: |
