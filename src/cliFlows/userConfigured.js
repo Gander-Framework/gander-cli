@@ -77,8 +77,8 @@ const userConfigured = async (aws, generateIam) => {
   utils.display(awsEfsSgEgressResponse, efsSgEgressError)
 
   // create EFS
-  const efsName = await prompts.createEfs()
-  const {awsEfsCreateResponse, efsCreateError} = await api.createEfs(efsName)
+  const efsResponse = await prompts.createEfs()
+  const {awsEfsCreateResponse, efsCreateError} = await api.createEfs(aws.efs.region, efsResponse)
   utils.display(awsEfsCreateResponse, efsCreateError)
 
   aws.efs.id = JSON.parse(awsEfsCreateResponse).FileSystemId

@@ -6,6 +6,11 @@ const efsCreatePrompt = async () => {
     name: 'name',
     message: 'What would you like to call the Elastic File System?',
     type: 'input',
+  },
+  {
+    name: 'creationToken',
+    message: 'What would you like to call the Elastic File System?',
+    type: 'input',
   }])
 
   return response
