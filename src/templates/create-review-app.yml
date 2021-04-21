@@ -201,6 +201,12 @@ jobs:
             --query 'service.serviceArn' \
             --output text)" >> $GITHUB_ENV
 
+      - name: Wait until the app service is stable.
+        run: |
+          aws ecs wait services-stable \
+            --cluster $PROJECT \
+            --services $PROJECT-$PR_NUMBER-$GITHUB_SHA
+
       - name: Get public address of service.
         run: |
           echo "public-url=$(aws ec2 describe-network-interfaces \
