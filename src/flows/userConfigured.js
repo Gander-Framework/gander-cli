@@ -34,6 +34,9 @@ const userConfigured = async (aws, generateIam) => {
 
   aws.subnet.id = JSON.parse(awsSubnetCreateResponse).Subnet.SubnetId
 
+  const {awsSubnetModifyResponse, subnetModifyError} = api.modifySubnetAttribute(aws.subnet.id)
+  utils.display(awsSubnetModifyResponse, subnetModifyError)
+
   // create internet gateway
   const igCreateResponse = await prompts.createInternetGateway()
   const {awsIgCreateResponse, igCreateError} = await api.createInternetGateway(igCreateResponse)
