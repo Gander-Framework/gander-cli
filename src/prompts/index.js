@@ -6,6 +6,7 @@ const createSubnet = require('./subnetCreate.js')
 const createInternetGateway = require('./igCreate.js')
 const createRouteTable = require('./routeTableCreate.js')
 const createEfs = require('./efsCreate.js')
+const saveConfig = require('./saveConfig.js')
 
 const prompts = {
   welcome,
@@ -16,6 +17,7 @@ const prompts = {
   createInternetGateway,
   createRouteTable,
   createEfs,
+  saveConfig,
 }
 
 module.exports = prompts
