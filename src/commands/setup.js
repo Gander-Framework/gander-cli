@@ -1,6 +1,6 @@
 const {Command} = require('@oclif/command')
-const autoConfiguredCliFlow = require('../cliFlows/autoConfigured.js')
-const userConfiguredCliFlow = require('../cliFlows/userConfigured.js')
+const autoConfiguredCliFlow = require('../flows/autoConfigured.js')
+const userConfiguredCliFlow = require('../flows/userConfigured.js')
 const prompts = require('../prompts')
 const utils = require('../util')
 
