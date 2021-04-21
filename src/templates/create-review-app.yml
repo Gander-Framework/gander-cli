@@ -214,15 +214,15 @@ jobs:
             $( \
               aws ecs describe-tasks \
               --cluster $PROJECT \
-              -- tasks \
+              --tasks \
                 $( \
                   aws ecs list-tasks \
                   --cluster $PROJECT \
                   --service-name $PROJECT-$PR_NUMBER-$GITHUB_SHA \
                   --query 'taskArns | [0]' \
-                  --output text \
+                  --output text | grep -o "[^/]*$"\
                 ) \
-              --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value | [0]'
+              --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value | [0]' \
               --output text \
             ) \
           --query 'NetworkInterfaces[0].Association.PublicDnsName' \
