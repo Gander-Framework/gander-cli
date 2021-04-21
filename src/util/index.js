@@ -17,7 +17,7 @@ const utils = {
   },
 
   readConfig: () => {
-    const config = path.resolve(__dirname, '../fleet-infrastructure.yaml')
+    const config = path.resolve(__dirname, '../fleet-default-config.yaml')
     try {
       let fileContents = fs.readFileSync(config, 'utf8')
       let data = yaml.load(fileContents)
