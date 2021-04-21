@@ -7,6 +7,7 @@ const createInternetGateway = require('./igCreate.js')
 const createRouteTable = require('./routeTableCreate.js')
 const createEfs = require('./efsCreate.js')
 const saveConfig = require('./saveConfig.js')
+const testInitPrompt = require('./testInitPrompt');
 
 const prompts = {
   welcome,
@@ -18,6 +19,7 @@ const prompts = {
   createRouteTable,
   createEfs,
   saveConfig,
+  testInitPrompt
 }
 
 module.exports = prompts

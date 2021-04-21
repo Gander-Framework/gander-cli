@@ -28,7 +28,7 @@ const autoConfigured = async (aws, generateIam) => {
 
   const {awsSubnetModifyResponse, subnetModifyError} = api.modifySubnetAttribute(aws.subnet.id)
   utils.display(awsSubnetModifyResponse, subnetModifyError)
-  /*
+  
   // create internet gateway
   const {awsIgCreateResponse, igCreateError} = await api.createInternetGateway(aws.internetGateway)
 
@@ -85,7 +85,7 @@ const autoConfigured = async (aws, generateIam) => {
   const {awsMountTargetResponse, mountTargetError} = await api.createMountTarget(aws.efs.id, aws.subnet.id, aws.efsSecurityGroup.id)
 
   aws.mountTarget.id = JSON.parse(awsMountTargetResponse).MountTargetId
-  */
+  
   return aws
 }
 
