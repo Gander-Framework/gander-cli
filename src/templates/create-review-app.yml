@@ -183,7 +183,7 @@ jobs:
 
       - name: Wait until the seed task completes.
         run: |
-          aws ecs wait tasks-stopped --tasks ${{ env.task-arn }}
+          aws ecs wait tasks-stopped --cluster $PROJECT --tasks ${{ env.task-arn }}
 
       - name: Launch the app service.
         run: |
