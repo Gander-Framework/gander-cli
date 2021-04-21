@@ -38,7 +38,7 @@ efsSecurityGroup:
 efs: 
   id: ""
   name: *defaultName
-  creationToken: "fleet-apps"
+  creationToken: *defaultName
   region: ""
 
 mountTarget:

@@ -7,12 +7,13 @@ const autoConfigured = async (aws, generateIam) => {
     const {awsIamResponse, iamError} = await api.setupIam(aws.iam)
     utils.display(awsIamResponse, iamError)
   }
-  console.log('In autoconfigured')
 
   // create vpc
   const {awsVpcCreateResponse, vpcCreateError} = await api.createVpc(aws.vpc)
 
   aws.vpc.id = JSON.parse(awsVpcCreateResponse).Vpc.VpcId
+
+  await api.modifyVpcAttribute(aws.vpc.id)
 
   // create security groups and rules
   const {awsSecGroupResponse, secGroupError} = await api.createSecurityGroup(aws.vpc.id, aws.clusterSecurityGroup)
@@ -28,7 +29,7 @@ const autoConfigured = async (aws, generateIam) => {
 
   const {awsSubnetModifyResponse, subnetModifyError} = api.modifySubnetAttribute(aws.subnet.id)
   utils.display(awsSubnetModifyResponse, subnetModifyError)
-  /*
+
   // create internet gateway
   const {awsIgCreateResponse, igCreateError} = await api.createInternetGateway(aws.internetGateway)
 
@@ -85,7 +86,7 @@ const autoConfigured = async (aws, generateIam) => {
   const {awsMountTargetResponse, mountTargetError} = await api.createMountTarget(aws.efs.id, aws.subnet.id, aws.efsSecurityGroup.id)
 
   aws.mountTarget.id = JSON.parse(awsMountTargetResponse).MountTargetId
-  */
+
   return aws
 }
 
