@@ -61,10 +61,6 @@ jobs:
           sudo apt-get update && \
           sudo apt-get install pack-cli
 
-      - name: Install jq
-        id: install-jq
-        run: sudo apt-get install jq
-
       #This step will do six things:
       # 1. set the server image arn environment variable
       # 2. set the seeder image arn environment variable
