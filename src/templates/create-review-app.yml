@@ -180,8 +180,65 @@ jobs:
                 subnets=[${{ env.subnet-id }}], \
                 securityGroups=[${{ env.sg-id }}], \
                 assignPublicIp=ENABLED \
-              }"` | jq -r '.tasks[0].taskArn'`" >> $GITHUB_ENV
+              }" | jq -r '.tasks[0].taskArn'`" >> $GITHUB_ENV
 
       - name: Wait until the seed task completes.
         run: |
           aws ecs wait tasks-stopped --tasks ${{ env.task-arn }}
+
+      - name: Launch the app service.
+        run: |
+          echo "service-arn=`aws ecs create-service \
+            --cluster $PROJECT \
+            --service-name $PROJECT-$PR_NUMBER-$GITHUB_SHA \
+            --task-definition ${{ env.app.def }} \
+            -- desired-count 1 \
+            --launch-type FARGATE \
+            --network-configuration "awsvpcConfiguration={ \
+                subnets=[${{ env.subnet-id }}], \
+                securityGroups=[${{ env.sg-id }}], \
+                assignPublicIp=ENABLED \
+              }" | jq -r '.service.serviceArn'`" >> $GITHUB_ENV
+
+      - name: Get public address of service.
+        run: |
+          echo "public-url=$(aws ec2 describe-network-interfaces \
+          --network-interface-ids \
+            $( \
+              aws ecs describe-tasks \
+              --cluster $PROJECT \
+              -- tasks \
+                $( \
+                  aws ecs list-tasks \
+                  --cluster $PROJECT \
+                  --service-name $PROJECT-$PR_NUMBER-$GITHUB_SHA \
+                  --query 'taskArns | [0]' \
+                  --output text \
+                ) \
+              --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value | [0]'
+              --output text \
+            ) \
+          --query 'NetworkInterfaces[0].Association.PublicDnsName' \
+          --output text)" >> $GITHUB_ENV
+
+      - name: "Comment On PR"
+        uses: actions/github-script@v3
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const { 
+            issue: { 
+              number: issue_number 
+            },
+            repo: { 
+              owner, 
+              repo
+            }
+          } = context;
+          github.issues.createComment({
+            issue_number,
+            owner,
+            repo,
+            body: 'Check out the preview here http://${{ env.public-url }}' 
+          });
