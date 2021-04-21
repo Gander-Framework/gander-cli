@@ -8,7 +8,7 @@ env:
   PROJECT: request-bin
   SERVER_PATH: server/
   SQL_FILE: server/db/migration.sql
-  BUILDER: gcr.io/buildpacks/builder:v1
+  BUILDER: paketobuildpacks/builder:base
   DB_NAME: request_bin
   SUBNET_NAME: Fleet-Subnet
   SG_NAME: Fleet-Security-3
