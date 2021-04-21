@@ -17,6 +17,8 @@ const userConfigured = async (aws, generateIam) => {
 
   aws.vpc.id = JSON.parse(awsVpcCreateResponse).Vpc.VpcId
 
+  await api.modifyVpcAttribute(aws.vpc.id)
+
   // create security groups and rules
   const secGroupResponse = await prompts.createSecurityGroup()
   const {awsSecGroupResponse, secGroupError} = await api.createSecurityGroup(aws.vpc.id, secGroupResponse)
