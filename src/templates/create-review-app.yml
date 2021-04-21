@@ -117,9 +117,8 @@ jobs:
           docker build -t ${{ env.seed-arn }} -f- .  <<EOF
           FROM alpine:3.13
           COPY $SQL_FILE init.sql
-          RUN echo -e '#!/bin/bash\nmv init.sql efs-file-transfer\nls efs-file-transfer' > ./entrypoint.sh
-          RUN ["chmod", "+x", "./entrypoint.sh"]
-          ENTRYPOINT ["./entrypoint.sh"]
+          RUN mkdir efs-file-transfer
+          CMD ["mv", "init.sql", "efs-file-transfer"]
           EOF
 
       - name: Push image for SQL Seeder to ECR
