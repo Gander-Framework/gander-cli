@@ -5,8 +5,8 @@ const exec = util.promisify(require('child_process').exec)
 
 const vpcCreateCall = async response => {
   const script = path.resolve(__dirname, '../scripts/vpcCreate.sh')
-  const arg1 = `VPC_CIDR_BLOCK=${response.vpcCidrBlock}`
-  const arg2 = `VPC_NAME=${response.vpcName}`
+  const arg1 = `VPC_CIDR_BLOCK=${response.cidrBlock}`
+  const arg2 = `VPC_NAME=${response.name}`
 
   try {
     const {stdout, stderr} = await exec(`${arg1} ${arg2} ${script}`)

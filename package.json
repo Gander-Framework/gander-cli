@@ -11,7 +11,8 @@
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "@oclif/plugin-help": "^3.2.2",
-    "inquirer": "^8.0.0"
+    "inquirer": "^8.0.0",
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",

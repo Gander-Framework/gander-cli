@@ -1,0 +1,45 @@
+--- # Fleet Infrastructure on AWS
+globalName: &defaultName "fleet-apps"
+
+iam: 
+  groupName: *defaultName
+  userName: *defaultName
+
+clusterSecurityGroup:
+  id: ""
+  name: fleet-apps-cluster
+  description: "The security group for running fleet review apps as a Fargate service"
+
+vpc:
+  id: ""
+  name: *defaultName
+  cidrBlock: '10.0.0.0/16'
+
+subnet:
+  id: ""
+  name: *defaultName
+  cidrBlock: "10.0.0.0/24"
+  availabilityZone: ""
+
+internetGateway:
+  id: ""
+  name: *defaultName
+
+routeTable: 
+  id: ""
+  name: *defaultName
+  associationId: ""
+
+efsSecurityGroup: 
+  id: ""
+  name: "fleet-apps-efs"
+  description: "The security group for the file system in the fleet infrastructure for review apps"
+
+efs: 
+  id: ""
+  name: *defaultName
+  creationToken: "fleet-apps"
+  region: ""
+
+mountTarget:
+  id: ""

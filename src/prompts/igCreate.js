@@ -3,7 +3,7 @@ const inquirer = require('inquirer')
 
 const igCreatePrompt = async () => {
   let response = await inquirer.prompt([{
-    name: 'igName',
+    name: 'name',
     message: 'What would you like to call your internet gateway?',
     type: 'input',
   }])

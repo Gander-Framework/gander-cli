@@ -3,7 +3,7 @@ const inquirer = require('inquirer')
 
 const efsCreatePrompt = async () => {
   let response = await inquirer.prompt([{
-    name: 'efsName',
+    name: 'name',
     message: 'What would you like to call the Elastic File System?',
     type: 'input',
   }])

@@ -3,7 +3,7 @@ const inquirer = require('inquirer')
 
 const routeTableCreatePrompt = async () => {
   let response = await inquirer.prompt([{
-    name: 'routeTableName',
+    name: 'name',
     message: 'What would you like to call your routeTable?',
     type: 'input',
   }])

@@ -6,7 +6,7 @@ const exec = util.promisify(require('child_process').exec)
 const routeTableCreateCall = async (vpcId, response) => {
   const script = path.resolve(__dirname, '../scripts/routeTableCreate.sh')
   const arg1 = `VPC_ID=${vpcId}`
-  const arg2 = `ROUTE_TABLE_NAME=${response.routeTableName}`
+  const arg2 = `ROUTE_TABLE_NAME=${response.name}`
 
   try {
     const {stdout, stderr} = await exec(`${arg1} ${arg2} ${script}`)
