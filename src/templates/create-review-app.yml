@@ -156,10 +156,11 @@ jobs:
 
       - name: register task definition of review app.
         run: |
-          echo "app-def=`aws ecs register-task-definition \
+          echo "app-def=$(aws ecs register-task-definition \
           --family $PROJECT \
           --cli-input-json file://app-task.json \
-          | jq -r '.taskDefinition | "\(.family):\(.revision)"'`" >> $GITHUB_ENV
+          --query 'join(`:`,taskDefinition.[family,to_string(revision)])' \
+          --output text)" >> $GITHUB_ENV
 
       - name: verify the names of the task definitions.
         run: |
