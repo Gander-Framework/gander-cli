@@ -27,9 +27,9 @@ const utils = {
     }
   },
 
-  writeConfig: data => {
+  writeConfig: (data, path) => {
     let yamlStr = yaml.dump(data)
-    fs.writeFileSync('fleet-infrastructure.yaml', yamlStr, 'utf8')
+    fs.writeFileSync(`${path}/fleet-infrastructure.yaml`, yamlStr, 'utf8')
   },
 }
 

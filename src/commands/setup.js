@@ -11,14 +11,16 @@ class SetupCommand extends Command {
 
     aws.efs.region = initialConfig.awsRegion
     aws.subnet.availabilityZone = `${initialConfig.awsRegion}a`
-
+    /*
     if (initialConfig.autoConfigure === 'Configure myself') {
       aws = await userConfiguredCliFlow(aws, initialConfig.generateIam)
     } else {
       aws = await autoConfiguredCliFlow(aws, initialConfig.generateIam)
-    }
+    } */
 
-    utils.writeConfig(aws)
+    const {path} = await prompts.saveConfig()
+    utils.writeConfig(aws, path)
+    console.log('All done! :D')
   }
 }
 
