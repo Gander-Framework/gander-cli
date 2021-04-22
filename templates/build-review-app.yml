@@ -1,4 +1,7 @@
+
 name: Create Review App
+
+
 on:
   pull_request:
     types: [opened]
@@ -16,6 +19,7 @@ env:
   REGION: USER_AWS_REGION # us-east-2
   PR_NUMBER: ${{ github.event.pull_request.number }}
 
+
 #   teardown:
 #     runs-on: ubuntu-20.04
 #     steps:
@@ -30,6 +34,7 @@ env:
 # if: (synchronize, close)
 
 jobs:
+
   build:
     runs-on: ubuntu-20.04
     # needs: [teardown]
@@ -70,6 +75,7 @@ jobs:
       # 5. Get the Task Execution Role Arn and set it to an environment variable
       # 6. Get the fs-id of our EFS and set it to an environment variable
       - name: set required environment variables
+
         id: aws-ids
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -101,10 +107,12 @@ jobs:
       - name: build, tag, and push image using Google Builder
         id: build-server
         run: | # --cache-image $ECR_REGISTRY/$ECR_REPO:cache \
+
           pack build ${{ steps.aws-ids.outputs.image-arn }} \
           --builder $BUILDER \
           --path $SERVER_PATH \
           --publish
+
 
       # What more do we need access to?
       # Execution role arn -- done
@@ -233,6 +241,7 @@ jobs:
           --query 'NetworkInterfaces[0].Association.PublicDnsName' \
           --output text)"
 
+
       - name: "Comment On PR"
         uses: actions/github-script@v3
         if: github.event_name == 'pull_request'
@@ -252,5 +261,7 @@ jobs:
               issue_number,
               owner,
               repo,
+
               body: 'Check out the preview here http://${{ steps.get-public-url.outputs.public-url }}' 
             });
+
