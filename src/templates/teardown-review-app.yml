@@ -1,0 +1,87 @@
+
+name: "Delete image from ECR"
+on:
+  pull_request:
+    types: [closed]
+
+env:
+  ECR_REPO: fleet-ecr
+  PROJECT: APP_NAME # request-bin
+  SERVER_PATH: APP_SERVER_PATH # server/
+  SQL_FILE: DB_SETUP_PATH # server/db/migration.sql
+  BUILDER: CNBP_BUILDER # paketobuildpacks/builder:base
+  DB_NAME: DATABASE_NAME # request_bin
+  SUBNET_NAME: DEFAULT_SUBNET_NAME # Fleet-Subnet
+  SG_NAME: CLUSTER_SECURITY_GROUP # Fleet-Security-3
+  FS_TOKEN: EFS_CREATION_TOKEN # FleetFS
+  REGION: USER_AWS_REGION # us-east-2
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+
+jobs:
+  teardown:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Delete Image from ECR
+        id: delete-ecr-image
+        env:
+          ECR_IMAGE_TAG: ${{ env.PROJECT }}-${{ env.PR_NUMBER }}
+          ECR_SEED_IMAGE_TAG: ${{ env.PROJECT }}-seed-${{ env.PR_NUMBER }}
+        run: |
+          aws ecr batch-delete-image \
+          --repository-name $ECR_REPO \
+          --image-ids imageTag=$ECR_IMAGE_TAG imageTag=$ECR_SEED_IMAGE_TAG
+
+      - name: Deregister App Task Definition
+        id: deregister-app-task
+        env:
+          TASK_FAMILY: ${{ env.PROJECT }}-${{ env.PR_NUMBER }}
+        run: |
+          APP_TASK_ARN=$(aws ecs list-task-definitions \
+          --family-prefix $TASK_FAMILY \
+          --query 'taskDefinitionArns[0]' \
+          --output text)
+
+          aws ecs deregister-task-definition \
+          --task-definition $APP_TASK_ARN
+
+      - name: Deregister Setup Task Definition
+        id: deregister-setup-task
+        env:
+          SETUP_TASK_FAMILY: ${{ env.PROJECT }}-setup-${{ env.PR_NUMBER }}
+        run: |
+          SETUP_TASK_ARN=$(aws ecs list-task-definitions \
+          --family-prefix $SETUP_TASK_FAMILY \
+          --query 'taskDefinitionArns[0]' \
+          --output text)
+
+          aws ecs deregister-task-definition \
+          --task-definition $SETUP_TASK_ARN
+
+      - name: Stop ECS Service
+        id: stop-ecs-service
+        run: |
+          ECS_SERVICE_NAME=$(aws ecs list-services \
+          --cluster $PROJECT \
+          --query 'serviceArns[*]' \
+          | grep -o "$PROJECT-$PR_NUMBER[^\"]*")
+
+          aws ecs delete-service \
+          --cluster $PROJECT \
+          --service $ECS_SERVICE_NAME \
+          --force
+
+      # - name: Clear EFS
+      #   id: clear-efs
+      #   run: |
+          
