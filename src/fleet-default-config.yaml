@@ -1,6 +1,9 @@
 --- # Fleet Infrastructure on AWS
 globalName: &defaultName "fleet-apps"
 
+region:
+serviceRoleArn:
+
 iam: 
   groupName: *defaultName
   userName: *defaultName
@@ -28,7 +31,6 @@ internetGateway:
 routeTable: 
   id: ""
   name: *defaultName
-  associationId: ""
 
 efsSecurityGroup: 
   id: ""

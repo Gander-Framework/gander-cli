@@ -13,17 +13,10 @@ const welcome = async () => {
     choices: [{name: 'yes'}, {name: 'no'}],
   },
   {
-    name: 'autoConfigure',
-    message: 'Would you like to use Fleet\'s default configurations for your AWS resources or would you like to configure each piece yourself? ',
-    type: 'list',
-    choices: [{name: 'Use default configurations'}, {name: 'Configure myself'}],
-  },
-  {
     name: 'awsRegion',
     message: 'What AWS region would you want Fleet to operate in?',
     type: 'input',
   }])
-
   return response
 }
 
