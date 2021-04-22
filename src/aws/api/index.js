@@ -15,6 +15,8 @@ const associateRouteTable = require('./routeTableAssociate.js')
 const createEfs = require('./efsCreate.js')
 const createMountTarget = require('./efsCreateMountTarget.js')
 const describeFileSystem = require('./efsDescribeFileSystem.js')
+const createEcrRepository = require('./ecrCreateRepository.js')
+const createCluster = require('./ecsCreateCluster.js')
 
 const api = {
   setupIam,
@@ -34,6 +36,8 @@ const api = {
   createEfs,
   createMountTarget,
   describeFileSystem,
+  createEcrRepository,
+  createCluster,
 }
 
 module.exports = api
