@@ -6,10 +6,6 @@ on:
 env:
   ECR_REPO: fleet-ecr
   PROJECT: APP_NAME # request-bin
-  SERVER_PATH: APP_SERVER_PATH # server/
-  SQL_FILE: DB_SETUP_PATH # server/db/migration.sql
-  BUILDER: CNBP_BUILDER # paketobuildpacks/builder:base
-  DB_NAME: DATABASE_NAME # request_bin
   SUBNET_NAME: DEFAULT_SUBNET_NAME # Fleet-Subnet
   SG_NAME: CLUSTER_SECURITY_GROUP # Fleet-Security-3
   FS_TOKEN: EFS_CREATION_TOKEN # FleetFS
@@ -93,7 +89,7 @@ jobs:
           docker build -t $IMAGE -f- . <<EOF
           FROM alpine:3.13
           RUN mkdir /efs-file-transfer
-          RUN echo -e '#!/bin/sh\nrm -rf /efs-file-transfer/*' > /startup.sh
+          RUN echo -e '#!/bin/sh\nrm -rf /efs-file-transfer/*\nls ./efs-file-transfer/\necho This should be the only line!' > /startup.sh
           RUN chmod +x /startup.sh
           ENTRYPOINT ["/startup.sh"]
           EOF
