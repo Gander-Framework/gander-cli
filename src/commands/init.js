@@ -1,20 +1,19 @@
 const { Command } =  require('@oclif/command')
 const prompts = require('../prompts')
 const utils = require('../util')
-const { fleetRootPath, fleetBuildWorkflowPath } = require('../util/paths');
+const { fleetRootPath, fleetBuildWorkflowTemplatePath } = require('../util/paths');
 const { injectInfoIntoWorkflow } = require('../util/fs')
 
-const getTestInput = async () => {
-  const appInfo = await prompts.testInitPrompt()
-  appInfo.FOUR_EYES_SUPREMACY = appInfo.FOUR_EYES_SUPREMACY === 'yes' ? true : false
+
+const getAppInfo = async () => {
+  const appInfo = await prompts.appInfoPrompt()
   return appInfo
-} 
+}
 
 
 class InitCommand extends Command {
   async run() {
-    //console.log(await getTestInput());
-    const appInfo = await getTestInput()
+    const appInfo = await getAppInfo()
     await injectInfoIntoWorkflow(appInfo);
   }
 }
