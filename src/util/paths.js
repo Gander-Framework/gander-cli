@@ -6,7 +6,7 @@ const fleetBuildWorkflowTemplatePath = path.join(fleetRootPath, "/templates/buil
 const userBuildWorkflowPath = path.join(process.cwd(), "/.github/workflows/build-review-app.yml");
 
 const githubFolderPath = path.join(process.cwd(), '/.github')
-const workflowFolderPath = path.join(process.cwd(), './github/workflows')
+const workflowFolderPath = path.join(process.cwd(), '/.github/workflows')
 
 module.exports = {
   fleetRootPath,
