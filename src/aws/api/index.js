@@ -17,6 +17,9 @@ const createMountTarget = require('./efsCreateMountTarget.js')
 const describeFileSystem = require('./efsDescribeFileSystem.js')
 const createEcrRepository = require('./ecrCreateRepository.js')
 const createCluster = require('./ecsCreateCluster.js')
+const createPolicy = require('./iamCreatePolicy.js')
+const createRole = require('./iamCreateRole.js')
+const attachPolicyToRole = require('./iamAttachPolicyToRole.js')
 
 const api = {
   setupIam,
@@ -38,6 +41,9 @@ const api = {
   describeFileSystem,
   createEcrRepository,
   createCluster,
+  createPolicy,
+  createRole,
+  attachPolicyToRole,
 }
 
 module.exports = api

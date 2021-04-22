@@ -11,10 +11,12 @@ const executeProcess = async (startMsg, successMsg, callback) => {
     const {stdout, stderr} = await exec(callback())
     awsSuccess = stdout
     if (stderr) {
+      console.log(stderr)
       spinner.fail(stderr)
       process.exit(1)
     }
   } catch (error) {
+    console.log(error)
     spinner.fail(error)
     process.exit(1)
   }
