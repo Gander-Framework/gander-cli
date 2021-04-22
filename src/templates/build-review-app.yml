@@ -1,4 +1,4 @@
-name: Publish Image to ECR
+name: Create Review App
 on:
   pull_request:
     types: [opened]
@@ -21,13 +21,13 @@ env:
 #     steps:
 #       - name: Delete from ECR
 #         if: ${{ github.event.pull_request }}
-  # tag: project-pr#, project-seed-pr#
-  # - name: Deregister task definition
-  # if: (synchronize, close)
-  # - name: Stop ECS Service
-  # if: (synchronize, close)
-  # - name: Clear EFS
-  # if: (synchronize, close)
+# tag: project-pr#, project-seed-pr#
+# - name: Deregister task definition
+# if: (synchronize, close)
+# - name: Stop ECS Service
+# if: (synchronize, close)
+# - name: Clear EFS
+# if: (synchronize, close)
 
 jobs:
   build:
@@ -74,28 +74,28 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          (echo "::set-output name=image-arn::$ECR_REGISTRY/$ECR_REPO:$PROJECT-$PR_NUMBER") && \
-          (echo "::set-output name=seed-arn::$ECR_REGISTRY/$ECR_REPO:$PROJECT-seed-$PR_NUMBER") && \
-          (echo "::set-output name=subnet-id::$( \
+          echo "::set-output name=image-arn::$ECR_REGISTRY/$ECR_REPO:$PROJECT-$PR_NUMBER"
+          echo "::set-output name=seed-arn::$ECR_REGISTRY/$ECR_REPO:$PROJECT-seed-$PR_NUMBER"
+          echo "::set-output name=subnet-id::$( \
             aws ec2 describe-subnets \
               --filters Name=tag:Name,Values=$SUBNET_NAME \
               --query 'Subnets[0].SubnetId' \
-              --output text)") && \
-          (echo "::set-output name=sg-id::$( \
+              --output text)"
+          echo "::set-output name=sg-id::$( \
             aws ec2 describe-security-groups \
               --filters Name=group-name,Values=$SG_NAME \
               --query 'SecurityGroups[0].GroupId' \
-              --output text)") && \
-          (echo "::set-output name=task-execution-role-arn::$( \
+              --output text)"
+          echo "::set-output name=task-execution-role-arn::$( \
             aws iam get-role \
               --role-name ecsTaskExecutionRole \
               --query 'Role.Arn' \
-              --output text)") && \
-          (echo "::set-output name=efs-id::$( \
+              --output text)"
+          echo "::set-output name=efs-id::$( \
             aws efs describe-file-systems \
               --creation-token $FS_TOKEN \
               --query 'FileSystems[0].FileSystemId' \
-              --output text)")
+              --output text)"
 
         #TODO: New step: Pull the google builder & cache?
       - name: build, tag, and push image using Google Builder
@@ -153,7 +153,7 @@ jobs:
         id: seed-task-def
         run: |
           echo "::set-output name=seed-def::$(aws ecs register-task-definition \
-          --family $PROJECT-setup \
+          --family $PROJECT-setup-$PR_NUMBER \
           --cli-input-json file://seed-task.json \
           --query 'join(`:`,taskDefinition.[family,to_string(revision)])' \
           --output text)"
@@ -162,7 +162,7 @@ jobs:
         id: app-task-def
         run: |
           echo "::set-output name=app-def::$(aws ecs register-task-definition \
-           --family $PROJECT \
+           --family $PROJECT-$PR_NUMBER \
            --cli-input-json file://app-task.json \
            --query 'join(`:`,taskDefinition.[family,to_string(revision)])' \
            --output text)"
@@ -216,20 +216,20 @@ jobs:
       - name: Get public address of service.
         id: get-public-url
         run: |
+          TASK_ID=$(aws ecs list-tasks \
+            --cluster $PROJECT \
+            --service-name $PROJECT-$PR_NUMBER-$GITHUB_SHA \
+            --query 'taskArns | [0]' \
+            --output text | grep -o "[^/]*$")
+
+          INTERFACE_ID=$(aws ecs describe-tasks \
+            --cluster $PROJECT \
+            --tasks $TASK_ID \
+            --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value | [0]' \
+            --output text)
+
           echo "::set-output name=public-url::$(aws ec2 describe-network-interfaces \
-          --network-interface-ids $( \
-              aws ecs describe-tasks \
-                --cluster $PROJECT \
-                --tasks $( \
-                    aws ecs list-tasks \
-                      --cluster $PROJECT \
-                      --service-name $PROJECT-$PR_NUMBER-$GITHUB_SHA \
-                      --query 'taskArns | [0]' \
-                      --output text | grep -o "[^/]*$" \
-                  ) \
-                --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value | [0]' \
-                --output text \
-            ) \
+          --network-interface-ids INTERFACE_ID \
           --query 'NetworkInterfaces[0].Association.PublicDnsName' \
           --output text)"
 
