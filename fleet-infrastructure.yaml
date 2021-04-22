@@ -1,0 +1,37 @@
+globalName: fleet-apps
+iam:
+  groupName: fleet-apps
+  userName: fleet-apps
+clusterSecurityGroup:
+  id: sg-0f38a3764882a1698
+  name: fleet-apps-cluster
+  description: The security group for running fleet review apps as a Fargate service
+vpc:
+  id: vpc-0d4d4366ae9b7a168
+  name: fleet-apps
+  cidrBlock: 10.0.0.0/16
+subnet:
+  id: subnet-0bf8900c362c505ba
+  name: fleet-apps
+  cidrBlock: 10.0.0.0/24
+  availabilityZone: us-east-1a
+internetGateway:
+  id: igw-047b700e43659963e
+  name: fleet-apps
+routeTable:
+  id: rtb-0bca2e46900676f34
+  name: fleet-apps
+  associationId: ''
+efsSecurityGroup:
+  id: sg-0280ddef5baefd48a
+  name: fleet-apps-efs
+  description: >-
+    The security group for the file system in the fleet infrastructure for
+    review apps
+efs:
+  id: fs-2adf199e
+  name: fleet-apps
+  creationToken: fleet-apps
+  region: us-east-1
+mountTarget:
+  id: fsmt-4ed801fb

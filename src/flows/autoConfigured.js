@@ -1,6 +1,8 @@
 // eslint-disable-next-line unicorn/filename-case
 const api = require('../aws/api')
 const utils = require('../util')
+const Conf = require('conf')
+const config = new Conf()
 
 const autoConfigured = async (aws, generateIam) => {
   if (generateIam === 'yes') {
@@ -13,11 +15,13 @@ const autoConfigured = async (aws, generateIam) => {
   const {awsVpcCreateResponse, vpcCreateError} = await api.createVpc(aws.vpc)
 
   aws.vpc.id = JSON.parse(awsVpcCreateResponse).Vpc.VpcId
+  config.set('VPC_ID', aws.vpc.id)
 
   // create security groups and rules
   const {awsSecGroupResponse, secGroupError} = await api.createSecurityGroup(aws.vpc.id, aws.clusterSecurityGroup)
 
   aws.clusterSecurityGroup.id = JSON.parse(awsSecGroupResponse).GroupId
+  config.set('CLUSTER_SECURITY_GROUP_ID', aws.clusterSecurityGroup.id)
 
   const {awsSGIngressResponse, SGIngressError} = await api.setSgIngress(aws.clusterSecurityGroup.id)
 
@@ -25,6 +29,7 @@ const autoConfigured = async (aws, generateIam) => {
   const {awsSubnetCreateResponse, subnetCreateError} = await api.createSubnet(aws.vpc.id, aws.subnet)
 
   aws.subnet.id = JSON.parse(awsSubnetCreateResponse).Subnet.SubnetId
+  config.set('CLUSTER_SUBNET_ID', aws.subnet.id)
 
   const {awsSubnetModifyResponse, subnetModifyError} = api.modifySubnetAttribute(aws.subnet.id)
   utils.display(awsSubnetModifyResponse, subnetModifyError)
@@ -33,7 +38,7 @@ const autoConfigured = async (aws, generateIam) => {
   const {awsIgCreateResponse, igCreateError} = await api.createInternetGateway(aws.internetGateway)
 
   aws.internetGateway.id = JSON.parse(awsIgCreateResponse).InternetGateway.InternetGatewayId
-
+  config.set('IGW_ID', aws.internetGateway.id)
   // attach internet gateway
   const {awsIgAttachResponse, igAttachError} = await api.attachInternetGateway(aws.internetGateway.id, aws.vpc.id)
 
@@ -41,6 +46,7 @@ const autoConfigured = async (aws, generateIam) => {
   const {awsRouteTableCreateResponse, routeTableCreateError} = await api.createRouteTable(aws.vpc.id, aws.routeTable)
 
   aws.routeTable.id = JSON.parse(awsRouteTableCreateResponse).RouteTable.RouteTableId
+  config.set('ROUTE_TABLE_ID', aws.routeTable.id)
 
   // create route
   const {awsRouteCreateResponse, routeCreateError} = api.createRoute(aws.routeTable.id, aws.internetGateway.id)
@@ -53,6 +59,7 @@ const autoConfigured = async (aws, generateIam) => {
   const efsAwsSecGroupResponse = await api.createSecurityGroup(aws.vpc.id, aws.efsSecurityGroup)
 
   aws.efsSecurityGroup.id = JSON.parse(efsAwsSecGroupResponse.awsSecGroupResponse).GroupId
+  config.set('EFS_SECURITY_GROUP_ID', aws.efsSecurityGroup.id)
 
   // authorize EFS security group to receive (ingress) traffic from VPC
   const {awsEfsSgIngressResponse, efsSgIngressError} = await api.setEfsSgIngress(aws.efsSecurityGroup.id, aws.clusterSecurityGroup.id)
@@ -64,6 +71,7 @@ const autoConfigured = async (aws, generateIam) => {
   const {awsEfsCreateResponse, efsCreateError} = await api.createEfs(aws.efs.region, aws.efs)
 
   aws.efs.id = JSON.parse(awsEfsCreateResponse).FileSystemId
+  config.set('EFS_ID', aws.efs.id)
 
   // Must wait until life cycle state of EFS is "available" before creating mount target
   let efsState = ''
@@ -85,7 +93,8 @@ const autoConfigured = async (aws, generateIam) => {
   const {awsMountTargetResponse, mountTargetError} = await api.createMountTarget(aws.efs.id, aws.subnet.id, aws.efsSecurityGroup.id)
 
   aws.mountTarget.id = JSON.parse(awsMountTargetResponse).MountTargetId
-  
+  config.set('MOUNT_TARGET_ID', aws.mountTarget.id)
+  console.log({configPath: config.path})
   return aws
 }
 
