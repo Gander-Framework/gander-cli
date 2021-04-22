@@ -2,6 +2,7 @@ const {Command} = require('@oclif/command')
 const api = require('../aws/api')
 const prompts = require('../prompts')
 const utils = require('../util')
+const log = require('../util/log.js')
 
 class SetupCommand extends Command {
   async run() {
@@ -15,13 +16,11 @@ class SetupCommand extends Command {
     console.log('\n Generating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n')
 
     if (initialConfig.generateIam === 'yes') {
-      const {awsIamResponse, iamError} = await api.setupIam(aws.iam)
-      utils.display(awsIamResponse, iamError)
+      await api.setupIam(aws.iam)
     } else {
       aws.iam = null
     }
 
-    // create vpc
     const {awsVpcCreateResponse, vpcCreateError} = await api.createVpc(aws.vpc)
     utils.display(awsVpcCreateResponse, vpcCreateError)
 
