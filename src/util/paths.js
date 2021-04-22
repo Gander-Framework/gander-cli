@@ -8,10 +8,13 @@ const userBuildWorkflowPath = path.join(process.cwd(), '/.github/workflows/build
 const githubFolderPath = path.join(process.cwd(), '/.github')
 const workflowFolderPath = path.join(process.cwd(), '/.github/workflows')
 
+const taskExecutionPolicyPath = path.resolve()
+
 module.exports = {
   fleetRootPath,
   fleetBuildWorkflowTemplatePath,
   userBuildWorkflowPath,
   githubFolderPath,
   workflowFolderPath,
+  taskExecutionPolicyPath,
 }
