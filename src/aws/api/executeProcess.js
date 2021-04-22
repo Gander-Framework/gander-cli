@@ -6,8 +6,10 @@ const log = require('../../util/log.js')
 const executeProcess = async (startMsg, successMsg, callback) => {
   const spinner = log.spin(startMsg)
 
+  let awsSuccess
   try {
     const {stdout, stderr} = await exec(callback())
+    awsSuccess = stdout
     if (stderr) {
       spinner.fail(stderr)
       process.exit(1)
@@ -18,6 +20,7 @@ const executeProcess = async (startMsg, successMsg, callback) => {
   }
 
   spinner.succeed(successMsg)
+  return awsSuccess
 }
 
 module.exports = executeProcess

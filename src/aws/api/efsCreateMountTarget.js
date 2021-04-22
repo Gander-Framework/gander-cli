@@ -1,20 +1,20 @@
 // eslint-disable-next-line unicorn/filename-case
 const path = require('path')
-const util = require('util')
-const exec = util.promisify(require('child_process').exec)
+const executeProcess = require('./executeProcess.js')
 
-const efsCreateMountTargetCall = async (efsId, subnetId, efsSgId) => {
-  const script = path.resolve(__dirname, '../scripts/mountTargetCreate.sh')
-  const arg1 = `EFS_ID=${efsId}`
-  const arg2 = `SUBNET_ID=${subnetId}`
-  const arg3 = `EFS_SG_ID=${efsSgId}`
+const createMountTarget = async (efsId, subnetId, efsSgId) => {
+  return executeProcess(
+    'Creating file system mount target',
+    'Mount target created',
+    () => {
+      const script = path.resolve(__dirname, '../scripts/mountTargetCreate.sh')
+      const arg1 = `EFS_ID=${efsId}`
+      const arg2 = `SUBNET_ID=${subnetId}`
+      const arg3 = `EFS_SG_ID=${efsSgId}`
 
-  try {
-    const {stdout, stderr} = await exec(`${arg1} ${arg2} ${arg3} ${script}`)
-    return {awsMountTargetResponse: stdout, mountTargetError: {awsError: stderr}}
-  } catch (error) {
-    return {awsMountTargetResponse: {}, mountTargetError: error}
-  }
+      return `${arg1} ${arg2} ${arg3} ${script}`
+    }
+  )
 }
 
-module.exports = efsCreateMountTargetCall
+module.exports = createMountTarget

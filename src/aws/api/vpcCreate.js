@@ -1,19 +1,19 @@
 // eslint-disable-next-line unicorn/filename-case
 const path = require('path')
-const util = require('util')
-const exec = util.promisify(require('child_process').exec)
+const executeProcess = require('./executeProcess.js')
 
-const vpcCreateCall = async response => {
-  const script = path.resolve(__dirname, '../scripts/vpcCreate.sh')
-  const arg1 = `VPC_CIDR_BLOCK=${response.cidrBlock}`
-  const arg2 = `VPC_NAME=${response.name}`
+const createVpc = async response => {
+  return executeProcess(
+    'Creating VPC',
+    'VPC successfully created',
+    () => {
+      const script = path.resolve(__dirname, '../scripts/vpcCreate.sh')
+      const arg1 = `VPC_CIDR_BLOCK=${response.cidrBlock}`
+      const arg2 = `VPC_NAME=${response.name}`
 
-  try {
-    const {stdout, stderr} = await exec(`${arg1} ${arg2} ${script}`)
-    return {awsVpcCreateResponse: stdout, vpcCreateError: {awsError: stderr}}
-  } catch (error) {
-    return {awsVpcCreateResponse: {}, vpcCreateError: error}
-  }
+      return `${arg1} ${arg2} ${script}`
+    }
+  )
 }
 
-module.exports = vpcCreateCall
+module.exports = createVpc

@@ -1,21 +1,21 @@
 // eslint-disable-next-line unicorn/filename-case
 const path = require('path')
-const util = require('util')
-const exec = util.promisify(require('child_process').exec)
+const executeProcess = require('./executeProcess.js')
 
-const subnetCreateCall = async (vpcId, response) => {
-  const script = path.resolve(__dirname, '../scripts/subnetCreate.sh')
-  const arg1 = `VPC_ID=${vpcId}`
-  const arg2 = `SUBNET_NAME=${response.name}`
-  const arg3 = `AVAIL_ZONE=${response.availabilityZone}`
-  const arg4 = `SUBNET_CIDR_BLOCK=${response.cidrBlock}`
+const createSubnet = async (vpcId, subnet) => {
+  return executeProcess(
+    'Creating subnet',
+    'Subnet successfully created',
+    () => {
+      const script = path.resolve(__dirname, '../scripts/subnetCreate.sh')
+      const arg1 = `VPC_ID=${vpcId}`
+      const arg2 = `SUBNET_NAME=${subnet.name}`
+      const arg3 = `AVAIL_ZONE=${subnet.availabilityZone}`
+      const arg4 = `SUBNET_CIDR_BLOCK=${subnet.cidrBlock}`
 
-  try {
-    const {stdout, stderr} = await exec(`${arg1} ${arg2} ${arg3} ${arg4} ${script}`)
-    return {awsSubnetCreateResponse: stdout, subnetCreateError: {awsError: stderr}}
-  } catch (error) {
-    return {awsSubnetCreateResponse: {}, subnetCreateError: error}
-  }
+      return `${arg1} ${arg2} ${arg3} ${arg4} ${script}`
+    }
+  )
 }
 
-module.exports = subnetCreateCall
+module.exports = createSubnet

@@ -1,18 +1,18 @@
 // eslint-disable-next-line unicorn/filename-case
 const path = require('path')
-const util = require('util')
-const exec = util.promisify(require('child_process').exec)
+const executeProcess = require('./executeProcess.js')
 
-const igCreateCall = async response => {
-  const script = path.resolve(__dirname, '../scripts/igCreate.sh')
-  const arg1 = `INTERNET_GATEWAY_NAME=${response.name}`
+const createInternetGateway = async internetGateway => {
+  return executeProcess(
+    'Creating internet gateway',
+    'Internet gateway succesfully created',
+    () => {
+      const script = path.resolve(__dirname, '../scripts/igCreate.sh')
+      const arg1 = `INTERNET_GATEWAY_NAME=${internetGateway.name}`
 
-  try {
-    const {stdout, stderr} = await exec(`${arg1} ${script}`)
-    return {awsIgCreateResponse: stdout, igCreateError: {awsError: stderr}}
-  } catch (error) {
-    return {awsIgCreateResponse: {}, igCreateError: error}
-  }
+      return `${arg1} ${script}`
+    }
+  )
 }
 
-module.exports = igCreateCall
+module.exports = createInternetGateway
