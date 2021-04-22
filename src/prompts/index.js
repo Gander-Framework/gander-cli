@@ -8,6 +8,8 @@ const createRouteTable = require('./routeTableCreate.js')
 const createEfs = require('./efsCreate.js')
 const saveConfig = require('./saveConfig.js')
 const testInitPrompt = require('./testInitPrompt');
+const appInfoPrompt = require('./appInfoPrompt');
+
 
 const prompts = {
   welcome,
@@ -19,7 +21,8 @@ const prompts = {
   createRouteTable,
   createEfs,
   saveConfig,
-  testInitPrompt
+  testInitPrompt,
+  appInfoPrompt
 }
 
 module.exports = prompts

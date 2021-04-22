@@ -2,10 +2,11 @@ const path = require("path")
 
 const fleetRootPath = path.join(__dirname, "/../..") // ends up at root level of fleet-cli
 
-//const workflowFolderPath = path.join(process.cwd(), "/.github/workflows")
-const fleetBuildWorkflowPath = path.join(fleetRootPath, "/templates/review-app.yml");
+const fleetBuildWorkflowTemplatePath = path.join(fleetRootPath, "/templates/build-review-app.yml");
+const userBuildWorkflowPath = path.join(process.cwd(), "/.github/workflows/build-review-app.yml");
 
 module.exports = {
   fleetRootPath,
-  fleetBuildWorkflowPath,
+  fleetBuildWorkflowTemplatePath,
+  userBuildWorkflowPath
 }
