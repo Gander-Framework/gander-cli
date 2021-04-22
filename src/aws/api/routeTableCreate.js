@@ -1,19 +1,19 @@
 // eslint-disable-next-line unicorn/filename-case
 const path = require('path')
-const util = require('util')
-const exec = util.promisify(require('child_process').exec)
+const executeProcess = require('./executeProcess.js')
 
-const routeTableCreateCall = async (vpcId, response) => {
-  const script = path.resolve(__dirname, '../scripts/routeTableCreate.sh')
-  const arg1 = `VPC_ID=${vpcId}`
-  const arg2 = `ROUTE_TABLE_NAME=${response.name}`
+const createRouteTable = async (vpcId, routeTable) => {
+  return executeProcess(
+    'Creating route table',
+    'Route table successfully created',
+    () => {
+      const script = path.resolve(__dirname, '../scripts/routeTableCreate.sh')
+      const arg1 = `VPC_ID=${vpcId}`
+      const arg2 = `ROUTE_TABLE_NAME=${routeTable.name}`
 
-  try {
-    const {stdout, stderr} = await exec(`${arg1} ${arg2} ${script}`)
-    return {awsRouteTableCreateResponse: stdout, routeTableCreateError: {awsError: stderr}}
-  } catch (error) {
-    return {awsRouteTableCreateResponse: {}, routeTableCreateError: error}
-  }
+      return `${arg1} ${arg2} ${script}`
+    }
+  )
 }
 
-module.exports = routeTableCreateCall
+module.exports = createRouteTable

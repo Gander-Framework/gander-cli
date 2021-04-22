@@ -1,18 +1,18 @@
 // eslint-disable-next-line unicorn/filename-case
 const path = require('path')
-const util = require('util')
-const exec = util.promisify(require('child_process').exec)
+const executeProcess = require('./executeProcess.js')
 
-const efsDescribeFileSystem = async efsId => {
-  const script = path.resolve(__dirname, '../scripts/efsDescribeFileSystem.sh')
-  const arg1 = `EFS_ID=${efsId}`
+const describeFileSystem = async efsId => {
+  return executeProcess(
+    'Initializing file system',
+    'File system initialized',
+    () => {
+      const script = path.resolve(__dirname, '../scripts/efsDescribeFileSystem.sh')
+      const arg1 = `EFS_ID=${efsId}`
 
-  try {
-    const {stdout, stderr} = await exec(`${arg1} ${script}`)
-    return {awsEfsDescribeResponse: stdout, efsDesribeError: {awsError: stderr}}
-  } catch (error) {
-    return {awsEfsDescribeResponse: {}, efsDescribeError: error}
-  }
+      return `${arg1} ${script}`
+    }
+  )
 }
 
-module.exports = efsDescribeFileSystem
+module.exports = describeFileSystem

@@ -1,18 +1,18 @@
 // eslint-disable-next-line unicorn/filename-case
 const path = require('path')
-const util = require('util')
-const exec = util.promisify(require('child_process').exec)
+const executeProcess = require('./executeProcess.js')
 
-const subnetModifyAttribute = async subnetId => {
-  const script = path.resolve(__dirname, '../scripts/subnetModifyAttribute.sh')
-  const arg1 = `SUBNET_ID=${subnetId}`
+const modifySubnetAttribute = async subnetId => {
+  return executeProcess(
+    'Configuring subnet',
+    'Subnet configured',
+    () => {
+      const script = path.resolve(__dirname, '../scripts/subnetModifyAttribute.sh')
+      const arg1 = `SUBNET_ID=${subnetId}`
 
-  try {
-    const {stdout, stderr} = await exec(`${arg1} ${script}`)
-    return {awsSubnetModifyResponse: stdout, subnetModifyError: {awsError: stderr}}
-  } catch (error) {
-    return {awsSubnetModifyResponse: {}, subnetModifyError: error}
-  }
+      return `${arg1} ${script}`
+    }
+  )
 }
 
-module.exports = subnetModifyAttribute
+module.exports = modifySubnetAttribute
