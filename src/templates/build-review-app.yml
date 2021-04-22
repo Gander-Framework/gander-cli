@@ -16,12 +16,12 @@ env:
   REGION: USER_AWS_REGION # us-east-2
   PR_NUMBER: ${{ github.event.pull_request.number }}
 
-jobs:
-  # teardown:
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - name: Delete from ECR
-  #       if: (it's close)
+#   teardown:
+#     runs-on: ubuntu-20.04
+#     steps:
+#       - name: Delete from ECR
+#         if: ${{ github.event.pull_request }}
+  # tag: project-pr#, project-seed-pr#
   # - name: Deregister task definition
   # if: (synchronize, close)
   # - name: Stop ECS Service
@@ -29,6 +29,7 @@ jobs:
   # - name: Clear EFS
   # if: (synchronize, close)
 
+jobs:
   build:
     runs-on: ubuntu-20.04
     # needs: [teardown]
