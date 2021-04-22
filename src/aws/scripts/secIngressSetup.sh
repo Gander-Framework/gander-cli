@@ -28,6 +28,12 @@ aws ec2 authorize-security-group-ingress \
 
 aws ec2 authorize-security-group-ingress \
 --group-id $SEC_GROUP_ID \
+--protocol tcp \
+--port 8080 \
+--cidr 0.0.0.0/0
+
+aws ec2 authorize-security-group-ingress \
+--group-id $SEC_GROUP_ID \
 --ip-permissions IpProtocol=tcp,FromPort=2049,ToPort=2049,IpRanges='[{CidrIp=0.0.0.0/0,Description="NFS"}]'
 
 # aws ec2 authorize-security-group-ingress \
