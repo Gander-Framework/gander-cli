@@ -94,7 +94,7 @@ class SetupCommand extends Command {
     console.log('It may take around 10 minutes for AWS to fully spin up all infrastructure pieces. But for now, we\'re all done! :D')
 
     config.set('DEFAULT_SUBNET_NAME', DEFAULT_NAME)
-    config.set('CLUSTER_SECURITY_GROUP', DEFAULT_NAME)
+    config.set('CLUSTER_SECURITY_GROUP', `${DEFAULT_NAME}-cluster`)
     config.set('EFS_CREATION_TOKEN', DEFAULT_NAME)
 
     console.log('All done! :D')
