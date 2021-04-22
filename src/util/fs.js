@@ -1,11 +1,28 @@
 const fs = require('fs')
 const Conf = require('conf');
 const config = new Conf();
-const { fleetBuildWorkflowTemplatePath } = require('./paths');
+const { 
+  fleetBuildWorkflowTemplatePath,
+  githubFolderPath,
+  workflowFolderPath,
+  userBuildWorkflowPath,
+ } = require('./paths');
 
+const createFolder = (path) => {
+  if(!fs.existsSync(path)) {
+    fs.mkdirSync(path);
+    console.log(`Fleet created folder at ${path}`)
+  }
+}
 
-const injectInfoIntoWorkflow = (appInfo) => {
-  let buildWorkflowFile = fs.readFileSync(fleetBuildWorkflowTemplatePath, "utf8")
+//create necessary directory structure in project repo to copy workflow files into
+const createWorkflowDir = () => {
+  createFolder(githubFolderPath)
+  createFolder(workflowFolderPath)
+}
+
+const populateWorkflow = (appInfo) => {
+  let buildWorkflowFile = fs.readFileSync(userBuildWorkflowPath, "utf8")
   buildWorkflowFile = buildWorkflowFile.replace("FOUR_EYES_SUPREMACY", appInfo.FOUR_EYES_SUPREMACY)
   buildWorkflowFile = buildWorkflowFile.replace("APP_NAME", appInfo.APP_NAME)
   buildWorkflowFile = buildWorkflowFile.replace("APP_SERVER_PATH", appInfo.APP_SERVER_PATH)
@@ -16,13 +33,16 @@ const injectInfoIntoWorkflow = (appInfo) => {
   buildWorkflowFile = buildWorkflowFile.replace("CLUSTER_SECURITY_GROUP", config.get('CLUSTER_SECURITY_GROUP'))
   buildWorkflowFile = buildWorkflowFile.replace("EFS_CREATION_TOKEN", config.get('EFS_CREATION_TOKEN'))
   buildWorkflowFile = buildWorkflowFile.replace("USER_AWS_REGION", config.get('AWS_REGION'))
-  fs.writeFileSync(fleetBuildWorkflowTemplatePath, buildWorkflowFile)
+  fs.writeFileSync(userBuildWorkflowPath, buildWorkflowFile)
 }
 
-const copyWorkflowFiles = () => {
-
+const copyWorkflowFilesToRepo = () => {
+  // copy the template file into the project workflows directory
+  fs.copyFileSync(fleetBuildWorkflowTemplatePath ,userBuildWorkflowPath);
 }
 
 module.exports = {
-  injectInfoIntoWorkflow,
+  populateWorkflow,
+  createWorkflowDir,
+  copyWorkflowFilesToRepo,
 }

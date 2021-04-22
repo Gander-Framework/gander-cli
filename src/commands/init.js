@@ -2,7 +2,11 @@ const { Command } =  require('@oclif/command')
 const prompts = require('../prompts')
 const utils = require('../util')
 const { fleetRootPath, fleetBuildWorkflowTemplatePath } = require('../util/paths');
-const { injectInfoIntoWorkflow } = require('../util/fs')
+const { 
+  populateWorkflow,
+  createWorkflowDir,
+  copyWorkflowFilesToRepo,
+} = require('../util/fs')
 
 
 const getAppInfo = async () => {
@@ -13,8 +17,10 @@ const getAppInfo = async () => {
 
 class InitCommand extends Command {
   async run() {
+    createWorkflowDir();
+    copyWorkflowFilesToRepo();
     const appInfo = await getAppInfo()
-    await injectInfoIntoWorkflow(appInfo);
+    await populateWorkflow(appInfo);
   }
 }
 
