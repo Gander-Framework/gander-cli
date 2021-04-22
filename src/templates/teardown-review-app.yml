@@ -1,5 +1,4 @@
-
-name: "Delete image from ECR"
+name: "Teardown Review App"
 on:
   pull_request:
     types: [closed]
@@ -34,19 +33,20 @@ jobs:
 
       - name: Delete Image from ECR
         id: delete-ecr-image
-        env:
-          ECR_IMAGE_TAG: ${{ env.PROJECT }}-${{ env.PR_NUMBER }}
-          ECR_SEED_IMAGE_TAG: ${{ env.PROJECT }}-seed-${{ env.PR_NUMBER }}
         run: |
+          ECR_IMAGE_TAG=${{ env.PROJECT }}-${{ env.PR_NUMBER }}
+
+          ECR_SEED_IMAGE_TAG=${{ env.PROJECT }}-seed-${{ env.PR_NUMBER }}
+
           aws ecr batch-delete-image \
           --repository-name $ECR_REPO \
           --image-ids imageTag=$ECR_IMAGE_TAG imageTag=$ECR_SEED_IMAGE_TAG
 
       - name: Deregister App Task Definition
         id: deregister-app-task
-        env:
-          TASK_FAMILY: ${{ env.PROJECT }}-${{ env.PR_NUMBER }}
         run: |
+          TASK_FAMILY=${{ env.PROJECT }}-${{ env.PR_NUMBER }}
+
           APP_TASK_ARN=$(aws ecs list-task-definitions \
           --family-prefix $TASK_FAMILY \
           --query 'taskDefinitionArns[0]' \
@@ -57,9 +57,9 @@ jobs:
 
       - name: Deregister Setup Task Definition
         id: deregister-setup-task
-        env:
-          SETUP_TASK_FAMILY: ${{ env.PROJECT }}-setup-${{ env.PR_NUMBER }}
         run: |
+          SETUP_TASK_FAMILY=${{ env.PROJECT }}-setup-${{ env.PR_NUMBER }}
+
           SETUP_TASK_ARN=$(aws ecs list-task-definitions \
           --family-prefix $SETUP_TASK_FAMILY \
           --query 'taskDefinitionArns[0]' \
@@ -84,4 +84,137 @@ jobs:
       # - name: Clear EFS
       #   id: clear-efs
       #   run: |
-          
+      - name: Create Deleter Image
+        id: create-deleter
+        run: |
+          IMAGE=${{ steps.login-ecr.outputs.registry }}/$ECR_REPO:$PROJECT-deleter-$PR_NUMBER
+
+          echo "::set-output name=deleter-image-arn::$IMAGE"
+          docker build -t $IMAGE -f- . <<EOF
+          FROM alpine:3.13
+          RUN mkdir /efs-file-transfer
+          RUN echo -e '#!/bin/sh\nrm -rf /efs-file-transfer/*' > /startup.sh
+          RUN chmod +x /startup.sh
+          ENTRYPOINT ["/startup.sh"]
+          EOF
+
+      - name: Push Deleter to ECR
+        id: push-deleter
+        run: |
+          docker push ${{ steps.create-deleter.outputs.deleter-image-arn }}
+
+      - name: set required environment variables
+        id: aws-ids
+        run: |
+          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+
+          echo "::set-output name=subnet-id::$( \
+            aws ec2 describe-subnets \
+              --filters Name=tag:Name,Values=$SUBNET_NAME \
+              --query 'Subnets[0].SubnetId' \
+              --output text)"
+          echo "::set-output name=sg-id::$( \
+            aws ec2 describe-security-groups \
+              --filters Name=group-name,Values=$SG_NAME \
+              --query 'SecurityGroups[0].GroupId' \
+              --output text)"
+          echo "::set-output name=task-execution-role-arn::$( \
+            aws iam get-role \
+              --role-name ecsTaskExecutionRole \
+              --query 'Role.Arn' \
+              --output text)"
+          echo "::set-output name=efs-id::$( \
+            aws efs describe-file-systems \
+              --creation-token $FS_TOKEN \
+              --query 'FileSystems[0].FileSystemId' \
+              --output text)"
+
+      - name: write task definition for deleter
+        id: write-task-def
+        run: |
+          cat << EOF > ./delete-task.json
+          {
+            "family": "$PROJECT-$PR_NUMBER-delete",
+            "networkMode": "awsvpc",
+            "executionRoleArn": "${{ steps.aws-ids.outputs.task-execution-role-arn }}",
+            "containerDefinitions": [
+              {
+                "name": "db-setup",
+                "image": "${{ steps.create-deleter.outputs.deleter-image-arn }}",
+                "mountPoints": [
+                  {
+                    "sourceVolume": "sql-delete",
+                    "containerPath": "/efs-file-transfer"
+                  }
+                ],
+                "logConfiguration": {
+                  "logDriver": "awslogs",
+                  "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-region": "$REGION",
+                    "awslogs-group": "fleet-logs-$PROJECT-$PR_NUMBER-delete",
+                    "awslogs-stream-prefix": "$PROJECT-$PR_NUMBER"
+                  }
+                },
+                "memory": 500,
+                "cpu": 10
+              }
+            ],
+            "volumes": [
+              {
+                "name": "sql-delete",
+                "efsVolumeConfiguration": {
+                  "fileSystemId": "${{ steps.aws-ids.outputs.efs-id }}",
+                  "rootDirectory": "/"
+                }
+              }
+            ],
+            "requiresCompatibilities": ["FARGATE"],
+            "cpu": "256",
+            "memory": "512"
+          }
+          EOF
+
+      - name: Register Deleter Task Definition
+        id: register-delete-task
+        run: |
+          echo "::set-output name=delete-task-def::$(aws ecs register-task-definition \
+          --family $PROJECT-delete-$PR_NUMBER \
+          --cli-input-json file://delete-task.json \
+          --query 'join(`:`,taskDefinition.[family,to_string(revision)])' \
+          --output text)"
+
+      - name: Launch Deleter Task
+        id: launch-delete-task
+        run: |
+          echo "::set-output name=delete-task-arn::$(aws ecs run-task \
+            --cluster $PROJECT \
+            --task-definition ${{ steps.register-delete-task.outputs.delete-task-def }} \
+            --count 1 \
+            --launch-type "FARGATE" \
+            --network-configuration "awsvpcConfiguration={ \
+                subnets=[${{ steps.aws-ids.outputs.subnet-id }}], \
+                securityGroups=[${{ steps.aws-ids.outputs.sg-id }}], \
+                assignPublicIp=ENABLED \
+              }" \
+            --query 'tasks[0].taskArn' \
+            --output text)"
+
+      - name: Wait for Deleter Task to Finish
+        run: |
+          aws ecs wait tasks-stopped --cluster $PROJECT \
+          --tasks ${{ steps.launch-delete-task.outputs.delete-task-arn }}
+
+      - name: deregister Deleter Task Definition
+        run: |
+          aws ecs deregister-task-definition \
+            --task-definition ${{ steps.register-delete-task.outputs.delete-task-def }}
+
+      - name: Delete Deleter Image from ECR
+        id: delete-deleter-ecr-image
+        run: |
+          ECR_DELETE_IMAGE_TAG=${{ env.PROJECT }}-deleter-${{ env.PR_NUMBER }}
+
+          aws ecr batch-delete-image \
+          --repository-name $ECR_REPO \
+          --image-ids imageTag=$ECR_DELETE_IMAGE_TAG
