@@ -1,27 +1,25 @@
-const { Command } =  require('@oclif/command')
+const {Command} =  require('@oclif/command')
 const prompts = require('../prompts')
-const ecsCreateCluster = require('../aws/api/ecsCreateCluster')
-const { fleetRootPath, fleetBuildWorkflowTemplatePath } = require('../util/paths');
-const { 
+const api = require('../aws/api')
+const {fleetRootPath, fleetBuildWorkflowTemplatePath} = require('../util/paths')
+const {
   populateWorkflow,
   createWorkflowDir,
   copyWorkflowFilesToRepo,
 } = require('../util/fs')
-
 
 const getAppInfo = async () => {
   const appInfo = await prompts.appInfoPrompt()
   return appInfo
 }
 
-
 class InitCommand extends Command {
   async run() {
-    await ecsCreateCluster();
-    createWorkflowDir();
-    copyWorkflowFilesToRepo();
+    await api.createCluster()
+    createWorkflowDir()
+    copyWorkflowFilesToRepo()
     const appInfo = await getAppInfo()
-    await populateWorkflow(appInfo);
+    await populateWorkflow(appInfo)
   }
 }
 
