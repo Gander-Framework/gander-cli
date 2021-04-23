@@ -3,7 +3,7 @@ const prompts = require('../prompts')
 const api = require('../aws/api')
 const {fleetRootPath, fleetBuildWorkflowTemplatePath} = require('../util/paths')
 const {
-  populateWorkflow,
+  populateWorkflows,
   createWorkflowDir,
   copyWorkflowFilesToRepo,
 } = require('../util/fs')
@@ -15,11 +15,11 @@ const getAppInfo = async () => {
 
 class InitCommand extends Command {
   async run() {
-    await api.createCluster()
     createWorkflowDir()
     copyWorkflowFilesToRepo()
     const appInfo = await getAppInfo()
-    await populateWorkflow(appInfo)
+    await api.createCluster()
+    await populateWorkflows(appInfo)
   }
 }
 
