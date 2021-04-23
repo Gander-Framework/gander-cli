@@ -32,11 +32,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-20.04
-    # needs: [teardown]
     steps:
-      #   - name: Check Event Type
-      #     if: (it's close)
-      #     run: happy exit
       - name: Checkout Code
         uses: actions/checkout@v1
 
@@ -47,13 +43,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.REGION }}
 
-        #Not passing a registry so it uses the default one.
-        # We might ahve to create a registry during the set up script.
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-      # with:
-      # registries: [ecr-349823hf398]
 
       - name: Install Pack CLI
         id: install-pack
@@ -229,7 +221,7 @@ jobs:
             --output text)
 
           echo "::set-output name=public-url::$(aws ec2 describe-network-interfaces \
-          --network-interface-ids INTERFACE_ID \
+          --network-interface-ids $INTERFACE_ID \
           --query 'NetworkInterfaces[0].Association.PublicDnsName' \
           --output text)"
 
