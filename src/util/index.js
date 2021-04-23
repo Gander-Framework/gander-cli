@@ -31,17 +31,6 @@ const utils = {
     let yamlStr = yaml.dump(data)
     fs.writeFileSync(`${path}/fleet-infrastructure.yaml`, yamlStr, 'utf8')
   },
-
-  stringifyErrorMsg: error => {
-    switch (typeof error) {
-    case 'string':
-      return error
-    case 'object':
-      return error.stderr
-    default:
-      return error
-    }
-  },
 }
 
 module.exports = utils
