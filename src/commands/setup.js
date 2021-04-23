@@ -18,7 +18,7 @@ class SetupCommand extends Command {
 
     aws.subnet.availabilityZone = `${initialConfig.awsRegion}a`
 
-    console.log('\n Generating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n')
+    console.log('\nGenerating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n')
 
     if (initialConfig.generateIam === 'yes') {
       await api.setupIam(aws.iam)
@@ -96,9 +96,11 @@ class SetupCommand extends Command {
     aws.mountTarget.id = JSON.parse(createMountTargetResponse).MountTargetId
     config.set('MOUNT_TARGET_ID', aws.mountTarget.id)
 
+
     // Create ECR repository
     await api.createEcrRepository()
     */
+
     console.log('It may take around 10 minutes for AWS to fully spin up all infrastructure pieces. But for now, we\'re all done! :D')
 
     config.set('DEFAULT_SUBNET_NAME', DEFAULT_NAME)
