@@ -37,11 +37,7 @@ jobs:
 
   build:
     runs-on: ubuntu-20.04
-    # needs: [teardown]
     steps:
-      #   - name: Check Event Type
-      #     if: (it's close)
-      #     run: happy exit
       - name: Checkout Code
         uses: actions/checkout@v1
 
@@ -52,13 +48,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.REGION }}
 
-        #Not passing a registry so it uses the default one.
-        # We might ahve to create a registry during the set up script.
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-      # with:
-      # registries: [ecr-349823hf398]
 
       - name: Install Pack CLI
         id: install-pack
@@ -104,7 +96,7 @@ jobs:
               --output text)"
 
         #TODO: New step: Pull the google builder & cache?
-      - name: build, tag, and push image using Google Builder
+      - name: build, tag, and push image using Cloud Native Builder
         id: build-server
         run: | # --cache-image $ECR_REGISTRY/$ECR_REPO:cache \
 
@@ -114,19 +106,19 @@ jobs:
           --publish
 
 
-      # What more do we need access to?
-      # Execution role arn -- done
-      # EFS ID -- done
-      # Mount Target?
-      # Logging?
-      # How do we put that migration file up there?
       - name: Create image for SQL Seeder
         id: make-sql-seeder
         run: |
+          cat << SCRIPT > ./seeder-script.sh
+          #!/bin/sh
+          mv ./init.sql ./efs-file-transfer/
+          ls ./efs-file-transfer/
+          SCRIPT
+
           docker build -t ${{ steps.aws-ids.outputs.seed-arn }} -f- .  <<EOF
           FROM alpine:3.13
           COPY $SQL_FILE init.sql
-          RUN echo -e '#!/bin/sh\nmv ./init.sql ./efs-file-transfer/\nls ./efs-file-transfer/' >> ./startup.sh
+          COPY ./seeder-script /startup.sh
           RUN chmod +x /startup.sh
           RUN mkdir efs-file-transfer
           ENTRYPOINT ["/startup.sh"]
@@ -137,9 +129,30 @@ jobs:
         run: |
           docker push ${{ steps.aws-ids.outputs.seed-arn }}
 
-      - name: write task definition for image
+      - name: Create Access Points for seed and data
+        id: create-access-points
+        run: |
+          echo "::set-output name=seed-ap-id::$( \
+            aws efs create-access-point \
+              --client-token $PROJECT-$PR_NUMBER-seed \
+              --file-system-id ${{ steps.aws-ids.outputs.efs-id }} \
+              --root-directory "Path=/$PROJECT-$PR_NUMBER/seed,CreationInfo={OwnerUid=0,OwnerGid=0,Permissions=777}" \
+              --query 'AccessPointId' \
+              --output text \
+          )"
+
+          echo "::set-output name=data-ap-id::$( \
+            aws efs create-access-point \
+              --client-token $PROJECT-$PR_NUMBER-data \
+              --file-system-id ${{ steps.aws-ids.outputs.efs-id }} \
+              --root-directory "Path=/$PROJECT-$PR_NUMBER/data,CreationInfo={OwnerUid=0,OwnerGid=0,Permissions=777}" \
+              --query 'AccessPointId' \
+              --output text \
+          )"
+
+      - name: write task definitions for seeder task and app service
         id: task-gen
-        uses: Mush-Framework/create-task-definition@v0.3.3
+        uses: Mush-Framework/create-task-definition@v0.4.0
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         with:
@@ -151,10 +164,12 @@ jobs:
           task-execution-role-arn: ${{ steps.aws-ids.outputs.task-execution-role-arn }}
           region: ${{ env.REGION }}
           pr-number: ${{ env.PR_NUMBER}}
+          seed-access-point: ${{ steps.create-access-points.outputs.seed-ap-id }}
+          data-access-point: ${{ steps.create-access-points.outputs.data-ap-id }}
 
       - name: write task definition to file.
         run: |
-          echo '${{ steps.task-gen.outputs.seeder-task-definition }}' > ./seed-task.json && \
+          echo '${{ steps.task-gen.outputs.seeder-task-definition }}' > ./seed-task.json
           echo '${{ steps.task-gen.outputs.service-task-definition }}' > ./app-task.json
 
       - name: register task definition of seeder.
@@ -237,7 +252,7 @@ jobs:
             --output text)
 
           echo "::set-output name=public-url::$(aws ec2 describe-network-interfaces \
-          --network-interface-ids INTERFACE_ID \
+          --network-interface-ids $INTERFACE_ID \
           --query 'NetworkInterfaces[0].Association.PublicDnsName' \
           --output text)"
 
