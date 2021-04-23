@@ -50,7 +50,6 @@ jobs:
           --output text)
 
           aws ecs deregister-task-definition \
-
           --task-definition $APP_TASK_ARN \
           --query 'taskDefinition.taskDefinitionArn'
 
@@ -65,7 +64,6 @@ jobs:
           --output text)
 
           aws ecs deregister-task-definition \
-
           --task-definition $SETUP_TASK_ARN \
           --query 'taskDefinition.taskDefinitionArn'
 
@@ -80,7 +78,6 @@ jobs:
           aws ecs delete-service \
           --cluster $PROJECT \
           --service $ECS_SERVICE_NAME \
-
           --force \
           --query 'service.serviceName'
 
@@ -255,5 +252,4 @@ jobs:
 
           aws ecr batch-delete-image \
           --repository-name $ECR_REPO \
-
           --image-ids imageTag=$ECR_DELETE_IMAGE_TAG
