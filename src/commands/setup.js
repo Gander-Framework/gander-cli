@@ -31,6 +31,7 @@ class SetupCommand extends Command {
     const policyArn = JSON.parse(createPolicyResponse).Policy.Arn
     await api.createRole()
     await api.attachPolicyToRole(policyArn)
+    config.set('POLICY_ARN', policyArn)
 
     // Create and configure VPC
     const createVpcResponse = await api.createVpc(aws.vpc)
