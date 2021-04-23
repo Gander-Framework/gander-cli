@@ -1,6 +1,4 @@
-
 name: Create Review App
-
 
 on:
   pull_request:
@@ -19,7 +17,6 @@ env:
   REGION: USER_AWS_REGION # us-east-2
   PR_NUMBER: ${{ github.event.pull_request.number }}
 
-
 #   teardown:
 #     runs-on: ubuntu-20.04
 #     steps:
@@ -34,7 +31,6 @@ env:
 # if: (synchronize, close)
 
 jobs:
-
   build:
     runs-on: ubuntu-20.04
     steps:
@@ -100,11 +96,11 @@ jobs:
         id: build-server
         run: | # --cache-image $ECR_REGISTRY/$ECR_REPO:cache \
 
+
           pack build ${{ steps.aws-ids.outputs.image-arn }} \
           --builder $BUILDER \
           --path $SERVER_PATH \
           --publish
-
 
       - name: Create image for SQL Seeder
         id: make-sql-seeder
@@ -118,7 +114,7 @@ jobs:
           docker build -t ${{ steps.aws-ids.outputs.seed-arn }} -f- .  <<EOF
           FROM alpine:3.13
           COPY $SQL_FILE init.sql
-          COPY ./seeder-script /startup.sh
+          COPY ./seeder-script.sh /startup.sh
           RUN chmod +x /startup.sh
           RUN mkdir efs-file-transfer
           ENTRYPOINT ["/startup.sh"]
@@ -256,7 +252,6 @@ jobs:
           --query 'NetworkInterfaces[0].Association.PublicDnsName' \
           --output text)"
 
-
       - name: "Comment On PR"
         uses: actions/github-script@v3
         if: github.event_name == 'pull_request'
@@ -279,4 +274,3 @@ jobs:
 
               body: 'Check out the preview here http://${{ steps.get-public-url.outputs.public-url }}' 
             });
-
