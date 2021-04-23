@@ -121,6 +121,27 @@ jobs:
         run: |
           docker push ${{ steps.aws-ids.outputs.seed-arn }}
 
+      - name: Create Access Points for seed and data
+        id: create-access-points
+        run: |
+          echo "::set-output name=seed-ap-id::$( \
+            aws efs create-access-point \
+              --client-token $PROJECT-$PR_NUMBER-seed \
+              --file-system-id ${{ steps.aws-ids.outputs.efs-id }} \
+              --root-directory "Path=/$PROJECT-$PR_NUMBER/seed,CreationInfo={OwnerUid=0,OwnerGid=0,Permissions=777}" \
+              --query 'AccessPointId' \
+              --output text \
+          )"
+
+          echo "::set-output name=data-ap-id::$( \
+            aws efs create-access-point \
+              --client-token $PROJECT-$PR_NUMBER-data \
+              --file-system-id ${{ steps.aws-ids.outputs.efs-id }} \
+              --root-directory "Path=/$PROJECT-$PR_NUMBER/data,CreationInfo={OwnerUid=0,OwnerGid=0,Permissions=777}" \
+              --query 'AccessPointId' \
+              --output text \
+          )"
+
       - name: write task definition for image
         id: task-gen
         uses: Mush-Framework/create-task-definition@v0.3.3
