@@ -4,15 +4,16 @@ const Conf = require('conf')
 const config = new Conf()
 
 const iamDeletePolicy = async () => {
-  const script = path.resolve(__dirname, '../scripts/iamDeletePolicy.sh')
-  const arg1 = `POLICY_ARN=${config.get('POLICY_ARN')}`
+  return executeProcess(
+    'Deleting fleetTaskExecution Policy',
+    'fleetTaskExecution Policy successfully deleted',
+    () => {
+      const arg1 = `POLICY_ARN=${config.get('POLICY_ARN')}`
+      const script = path.resolve(__dirname, '../scripts/iamDeletePolicy.sh')
 
-  try {
-    const { stdout, stderr } = await exec(`${arg1} ${script}`)
-    return { iamDeletePolicy: stdout, iamDeletePolicy: { awsError: stderr } }
-  } catch (error) {
-    return { iamDeletePolicyResponse: {}, iamDeletePolicyError: error}
-  }
+      return `${arg1} ${script}`
+    }
+  )
 }
 
 module.exports = iamDeletePolicy
