@@ -36,8 +36,10 @@ jobs:
 
           aws ecr batch-delete-image \
           --repository-name $ECR_REPO \
+
           --image-ids imageTag=$ECR_IMAGE_TAG imageTag=$ECR_SEED_IMAGE_TAG \
           --query 'imageIds[*].imageTag'
+
 
       - name: Deregister App Task Definition
         id: deregister-app-task
@@ -50,8 +52,10 @@ jobs:
           --output text)
 
           aws ecs deregister-task-definition \
+
           --task-definition $APP_TASK_ARN \
           --query 'taskDefinition.taskDefinitionArn'
+
 
       - name: Deregister Setup Task Definition
         id: deregister-setup-task
@@ -64,8 +68,10 @@ jobs:
           --output text)
 
           aws ecs deregister-task-definition \
+
           --task-definition $SETUP_TASK_ARN \
           --query 'taskDefinition.taskDefinitionArn'
+
 
       - name: Stop ECS Service
         id: stop-ecs-service
@@ -78,6 +84,7 @@ jobs:
           aws ecs delete-service \
           --cluster $PROJECT \
           --service $ECS_SERVICE_NAME \
+
           --force \
           --query 'service.serviceName'
 
@@ -94,10 +101,12 @@ jobs:
           --output text)
           aws efs delete-access-point --access-point-id $SEED_ACCESS_POINT
 
+
       - name: Create Deleter Image
         id: create-deleter
         run: |
           IMAGE=${{ steps.login-ecr.outputs.registry }}/$ECR_REPO:$PROJECT-deleter-$PR_NUMBER
+
 
           cat << SCRIPT > ./deleter-script.sh
           #!/bin/sh
@@ -131,6 +140,7 @@ jobs:
           RUN chmod +x /startup.sh
           ENTRYPOINT ["/startup.sh"]
           DOCKERFILE
+
 
       - name: Push Deleter to ECR
         id: push-deleter
@@ -251,4 +261,6 @@ jobs:
 
           aws ecr batch-delete-image \
           --repository-name $ECR_REPO \
+
           --image-ids imageTag=$ECR_DELETE_IMAGE_TAG
+
