@@ -81,9 +81,19 @@ jobs:
           --force \
           --query 'service.serviceName'
 
-      # - name: Clear EFS
-      #   id: clear-efs
-      #   run: |
+      - name: delete access points
+        id: delete-access-points
+        run: |
+          DATA_ACCESS_POINT=$(aws efs describe-access-points \
+          --query "AccessPoints[?ClientToken=='$PROJECT-$PR_NUMBER-data'] | [0].AccessPointId" \
+          --output text)
+          aws efs delete-access-point --access-point-id $DATA_ACCESS_POINT
+
+          SEED_ACCESS_POINT=$(aws efs describe-access-points \
+          --query "AccessPoints[?ClientToken=='$PROJECT-$PR_NUMBER-seed'] | [0].AccessPointId" \
+          --output text)
+          aws efs delete-access-point --access-point-id $SEED_ACCESS_POINT
+
       - name: Create Deleter Image
         id: create-deleter
         run: |
