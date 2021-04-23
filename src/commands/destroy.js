@@ -5,8 +5,9 @@ const api = require('../aws/api')
 class destroyCommand extends Command {
   async run() {
     // TODO: delete fleetTaskExecutionRole
-    
+    await api.iamDeleteRole()
     // TODO: delete fleetTaskExecutionPolicy
+    await api.iamDeletePolicy()
     // TODO: delete mount target
     // TODO: delete EFS
     // TODO: delete VPC
