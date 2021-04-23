@@ -3,6 +3,8 @@ const Conf = require('conf');
 const config = new Conf();
 const { 
   fleetBuildWorkflowTemplatePath,
+  fleetTeardownWorkflowPath,
+  userTeardownWorkflowPath,
   githubFolderPath,
   workflowFolderPath,
   userBuildWorkflowPath,
@@ -21,7 +23,7 @@ const createWorkflowDir = () => {
   createFolder(workflowFolderPath)
 }
 
-const populateWorkflow = (appInfo) => {
+const populateBuildWorkflow = (appInfo) => {
   let buildWorkflowFile = fs.readFileSync(userBuildWorkflowPath, "utf8")
   buildWorkflowFile = buildWorkflowFile.replace("FOUR_EYES_SUPREMACY", appInfo.FOUR_EYES_SUPREMACY)
   buildWorkflowFile = buildWorkflowFile.replace("APP_NAME", appInfo.APP_NAME)
@@ -36,13 +38,29 @@ const populateWorkflow = (appInfo) => {
   fs.writeFileSync(userBuildWorkflowPath, buildWorkflowFile)
 }
 
+const populateWorkflows = (appInfo) => {
+  populateBuildWorkflow(appInfo)
+  populateTeardownWorkflow(appInfo)
+}
+
+const populateTeardownWorkflow = (appInfo) => {
+  let teardownWorkflowFile = fs.readFileSync(userTeardownWorkflowPath, "utf8")
+  teardownWorkflowFile = teardownWorkflowFile.replace("APP_NAME", appInfo.APP_NAME)
+  teardownWorkflowFile = teardownWorkflowFile.replace("DEFAULT_SUBNET_NAME", config.get('DEFAULT_SUBNET_NAME'))
+  teardownWorkflowFile = teardownWorkflowFile.replace("CLUSTER_SECURITY_GROUP", config.get('CLUSTER_SECURITY_GROUP'))
+  teardownWorkflowFile = teardownWorkflowFile.replace("EFS_CREATION_TOKEN", config.get('EFS_CREATION_TOKEN'))
+  teardownWorkflowFile = teardownWorkflowFile.replace("USER_AWS_REGION", config.get('AWS_REGION'))
+  fs.writeFileSync(userTeardownWorkflowPath, teardownWorkflowFile)
+}
+
 const copyWorkflowFilesToRepo = () => {
   // copy the template file into the project workflows directory
   fs.copyFileSync(fleetBuildWorkflowTemplatePath ,userBuildWorkflowPath);
+  fs.copyFileSync(fleetTeardownWorkflowPath ,userTeardownWorkflowPath);
 }
 
 module.exports = {
-  populateWorkflow,
+  populateWorkflows: populateWorkflows,
   createWorkflowDir,
   copyWorkflowFilesToRepo,
 }

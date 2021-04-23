@@ -31,7 +31,7 @@ class SetupCommand extends Command {
     const policyArn = JSON.parse(createPolicyResponse).Policy.Arn
     await api.createRole()
     await api.attachPolicyToRole(policyArn)
-    /*
+
     // Create and configure VPC
     const createVpcResponse = await api.createVpc(aws.vpc)
     aws.vpc.id = JSON.parse(createVpcResponse).Vpc.VpcId
@@ -96,10 +96,8 @@ class SetupCommand extends Command {
     aws.mountTarget.id = JSON.parse(createMountTargetResponse).MountTargetId
     config.set('MOUNT_TARGET_ID', aws.mountTarget.id)
 
-
     // Create ECR repository
     await api.createEcrRepository()
-    */
 
     console.log('It may take around 10 minutes for AWS to fully spin up all infrastructure pieces. But for now, we\'re all done! :D')
 
