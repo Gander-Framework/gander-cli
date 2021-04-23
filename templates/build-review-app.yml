@@ -1,4 +1,7 @@
-name: Publish Image to ECR
+
+name: Create Review App
+
+
 on:
   pull_request:
     types: [opened]
@@ -16,26 +19,25 @@ env:
   REGION: USER_AWS_REGION # us-east-2
   PR_NUMBER: ${{ github.event.pull_request.number }}
 
+
+#   teardown:
+#     runs-on: ubuntu-20.04
+#     steps:
+#       - name: Delete from ECR
+#         if: ${{ github.event.pull_request }}
+# tag: project-pr#, project-seed-pr#
+# - name: Deregister task definition
+# if: (synchronize, close)
+# - name: Stop ECS Service
+# if: (synchronize, close)
+# - name: Clear EFS
+# if: (synchronize, close)
+
 jobs:
-  # teardown:
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - name: Delete from ECR
-  #       if: (it's close)
-  # - name: Deregister task definition
-  # if: (synchronize, close)
-  # - name: Stop ECS Service
-  # if: (synchronize, close)
-  # - name: Clear EFS
-  # if: (synchronize, close)
 
   build:
     runs-on: ubuntu-20.04
-    # needs: [teardown]
     steps:
-      #   - name: Check Event Type
-      #     if: (it's close)
-      #     run: happy exit
       - name: Checkout Code
         uses: actions/checkout@v1
 
@@ -46,13 +48,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.REGION }}
 
-        #Not passing a registry so it uses the default one.
-        # We might ahve to create a registry during the set up script.
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-      # with:
-      # registries: [ecr-349823hf398]
 
       - name: Install Pack CLI
         id: install-pack
@@ -60,6 +58,7 @@ jobs:
           sudo add-apt-repository ppa:cncf-buildpacks/pack-cli && \
           sudo apt-get update && \
           sudo apt-get install pack-cli
+
       #This step will do six things:
       # 1. set the server image arn environment variable
       # 2. set the seeder image arn environment variable
@@ -68,155 +67,196 @@ jobs:
       # 5. Get the Task Execution Role Arn and set it to an environment variable
       # 6. Get the fs-id of our EFS and set it to an environment variable
       - name: set required environment variables
-        id: set-env
+
+        id: aws-ids
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          (echo "image-arn=$ECR_REGISTRY/$ECR_REPO:$PROJECT-$PR_NUMBER" >> $GITHUB_ENV) && \
-          (echo "seed-arn=$ECR_REGISTRY/$ECR_REPO:$PROJECT-seed-$PR_NUMBER" >> $GITHUB_ENV) && \
-          (echo "subnet-id=$( \
+          echo "::set-output name=image-arn::$ECR_REGISTRY/$ECR_REPO:$PROJECT-$PR_NUMBER"
+          echo "::set-output name=seed-arn::$ECR_REGISTRY/$ECR_REPO:$PROJECT-seed-$PR_NUMBER"
+          echo "::set-output name=subnet-id::$( \
             aws ec2 describe-subnets \
               --filters Name=tag:Name,Values=$SUBNET_NAME \
               --query 'Subnets[0].SubnetId' \
-              --output text)" >> $GITHUB_ENV) && \
-          (echo "sg-id=$( \
+              --output text)"
+          echo "::set-output name=sg-id::$( \
             aws ec2 describe-security-groups \
               --filters Name=group-name,Values=$SG_NAME \
               --query 'SecurityGroups[0].GroupId' \
-              --output text)" >> $GITHUB_ENV) && \
-          (echo "task-execution-role-arn=$( \
+              --output text)"
+          echo "::set-output name=task-execution-role-arn::$( \
             aws iam get-role \
-              --role-name ecsTaskExecutionRole \
+              --role-name fleetTaskExecutionRole \
               --query 'Role.Arn' \
-              --output text)"  >> $GITHUB_ENV) && \
-          (echo "efs-id=$( \
+              --output text)"
+          echo "::set-output name=efs-id::$( \
             aws efs describe-file-systems \
               --creation-token $FS_TOKEN \
               --query 'FileSystems[0].FileSystemId' \
-              --output text)"  >> $GITHUB_ENV)
+              --output text)"
+
         #TODO: New step: Pull the google builder & cache?
-      - name: build, tag, and push image using Google Builder
+      - name: build, tag, and push image using Cloud Native Builder
         id: build-server
         run: | # --cache-image $ECR_REGISTRY/$ECR_REPO:cache \
-          pack build ${{env.image-arn}} \
+
+          pack build ${{ steps.aws-ids.outputs.image-arn }} \
           --builder $BUILDER \
           --path $SERVER_PATH \
           --publish
-      # What more do we need access to?
-      # Execution role arn -- done
-      # EFS ID -- done
-      # Mount Target?
-      # Logging?
-      # How do we put that migration file up there?
+
+
       - name: Create image for SQL Seeder
         id: make-sql-seeder
         run: |
-          docker build -t ${{ env.seed-arn }} -f- .  <<EOF
+          cat << SCRIPT > ./seeder-script.sh
+          #!/bin/sh
+          mv ./init.sql ./efs-file-transfer/
+          ls ./efs-file-transfer/
+          SCRIPT
+
+          docker build -t ${{ steps.aws-ids.outputs.seed-arn }} -f- .  <<EOF
           FROM alpine:3.13
           COPY $SQL_FILE init.sql
+          COPY ./seeder-script /startup.sh
+          RUN chmod +x /startup.sh
           RUN mkdir efs-file-transfer
-          CMD ["mv", "init.sql", "efs-file-transfer"]
+          ENTRYPOINT ["/startup.sh"]
           EOF
+
       - name: Push image for SQL Seeder to ECR
         id: push-seed
         run: |
-          docker push ${{ env.seed-arn }}
-      - name: write task definition for image
+          docker push ${{ steps.aws-ids.outputs.seed-arn }}
+
+      - name: Create Access Points for seed and data
+        id: create-access-points
+        run: |
+          echo "::set-output name=seed-ap-id::$( \
+            aws efs create-access-point \
+              --client-token $PROJECT-$PR_NUMBER-seed \
+              --file-system-id ${{ steps.aws-ids.outputs.efs-id }} \
+              --root-directory "Path=/$PROJECT-$PR_NUMBER/seed,CreationInfo={OwnerUid=0,OwnerGid=0,Permissions=777}" \
+              --query 'AccessPointId' \
+              --output text \
+          )"
+
+          echo "::set-output name=data-ap-id::$( \
+            aws efs create-access-point \
+              --client-token $PROJECT-$PR_NUMBER-data \
+              --file-system-id ${{ steps.aws-ids.outputs.efs-id }} \
+              --root-directory "Path=/$PROJECT-$PR_NUMBER/data,CreationInfo={OwnerUid=0,OwnerGid=0,Permissions=777}" \
+              --query 'AccessPointId' \
+              --output text \
+          )"
+
+      - name: write task definitions for seeder task and app service
         id: task-gen
-        uses: Mush-Framework/create-task-definition@v0.3.3
+        uses: Mush-Framework/create-task-definition@v0.4.0
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         with:
-          server-arn: ${{ env.image-arn }}
-          seed-arn: ${{ env.seed-arn }}
+          server-arn: ${{ steps.aws-ids.outputs.image-arn }}
+          seed-arn: ${{ steps.aws-ids.outputs.seed-arn }}
           db-name: ${{ env.DB_NAME }}
-          efs-id: ${{ env.efs-id }}
+          efs-id: ${{ steps.aws-ids.outputs.efs-id }}
           app-name: ${{ env.PROJECT }}
-          task-execution-role-arn: ${{ env.task-execution-role-arn }}
+          task-execution-role-arn: ${{ steps.aws-ids.outputs.task-execution-role-arn }}
           region: ${{ env.REGION }}
           pr-number: ${{ env.PR_NUMBER}}
+          seed-access-point: ${{ steps.create-access-points.outputs.seed-ap-id }}
+          data-access-point: ${{ steps.create-access-points.outputs.data-ap-id }}
 
       - name: write task definition to file.
         run: |
-          echo '${{ steps.task-gen.outputs.seeder-task-definition }}' >> ./seed-task.json && \
-          echo '${{ steps.task-gen.outputs.service-task-definition }}' >> ./app-task.json
+          echo '${{ steps.task-gen.outputs.seeder-task-definition }}' > ./seed-task.json
+          echo '${{ steps.task-gen.outputs.service-task-definition }}' > ./app-task.json
+
       - name: register task definition of seeder.
+        id: seed-task-def
         run: |
-          echo "seed-def=$(aws ecs register-task-definition \
-          --family $PROJECT-setup \
+          echo "::set-output name=seed-def::$(aws ecs register-task-definition \
+          --family $PROJECT-setup-$PR_NUMBER \
           --cli-input-json file://seed-task.json \
           --query 'join(`:`,taskDefinition.[family,to_string(revision)])' \
-          --output text)" >> $GITHUB_ENV
+          --output text)"
+
       - name: register task definition of review app.
+        id: app-task-def
         run: |
-          echo "app-def=$(aws ecs register-task-definition \
-          --family $PROJECT \
-          --cli-input-json file://app-task.json \
-          --query 'join(`:`,taskDefinition.[family,to_string(revision)])' \
-          --output text)" >> $GITHUB_ENV
+          echo "::set-output name=app-def::$(aws ecs register-task-definition \
+           --family $PROJECT-$PR_NUMBER \
+           --cli-input-json file://app-task.json \
+           --query 'join(`:`,taskDefinition.[family,to_string(revision)])' \
+           --output text)"
+
       - name: verify the names of the task definitions.
         run: |
-          echo ${{ env.app-def }}, ${{ env.seed-def }}
-      # Info needed:
-      # Security Group
-      # Subnet
+          echo ${{ steps.app-task-def.outputs.app-def }}, ${{  steps.seed-task-def.outputs.seed-def }}
+
       - name: Launch the seeder task.
+        id: launch-seed-task
         run: |
-          echo "task-arn=$(aws ecs run-task \
+          echo "::set-output name=task-arn::$(aws ecs run-task \
             --cluster $PROJECT \
-            --task-definition ${{ env.seed-def }} \
+            --task-definition ${{ steps.seed-task-def.outputs.seed-def }} \
             --count 1 \
             --launch-type "FARGATE" \
             --network-configuration "awsvpcConfiguration={ \
-                subnets=[${{ env.subnet-id }}], \
-                securityGroups=[${{ env.sg-id }}], \
+                subnets=[${{ steps.aws-ids.outputs.subnet-id }}], \
+                securityGroups=[${{ steps.aws-ids.outputs.sg-id }}], \
                 assignPublicIp=ENABLED \
               }" \
             --query 'tasks[0].taskArn' \
-            --output text)" >> $GITHUB_ENV
+            --output text)"
+
       - name: Wait until the seed task completes.
         run: |
-          aws ecs wait tasks-stopped --cluster $PROJECT --tasks ${{ env.task-arn }}
+          aws ecs wait tasks-stopped --cluster $PROJECT --tasks ${{ steps.launch-seed-task.outputs.task-arn }}
+
       - name: Launch the app service.
         run: |
-          echo "service-arn=$(aws ecs create-service \
+          echo "::set-output name=service-arn::$(aws ecs create-service \
             --cluster $PROJECT \
             --service-name $PROJECT-$PR_NUMBER-$GITHUB_SHA \
-            --task-definition ${{ env.app-def }} \
+            --task-definition ${{ steps.app-task-def.outputs.app-def }} \
             --desired-count 1 \
             --launch-type FARGATE \
             --network-configuration "awsvpcConfiguration={ \
-                subnets=[${{ env.subnet-id }}], \
-                securityGroups=[${{ env.sg-id }}], \
+                subnets=[${{ steps.aws-ids.outputs.subnet-id }}], \
+                securityGroups=[${{ steps.aws-ids.outputs.sg-id }}], \
                 assignPublicIp=ENABLED \
               }" \
             --query 'service.serviceArn' \
-            --output text)" >> $GITHUB_ENV
+            --output text)"
+
       - name: Wait until the app service is stable.
         run: |
           aws ecs wait services-stable \
             --cluster $PROJECT \
             --services $PROJECT-$PR_NUMBER-$GITHUB_SHA
+
       - name: Get public address of service.
+        id: get-public-url
         run: |
-          echo "public-url=$(aws ec2 describe-network-interfaces \
-          --network-interface-ids \
-            $( \
-              aws ecs describe-tasks \
-              --cluster $PROJECT \
-              --tasks \
-                $( \
-                  aws ecs list-tasks \
-                  --cluster $PROJECT \
-                  --service-name $PROJECT-$PR_NUMBER-$GITHUB_SHA \
-                  --query 'taskArns | [0]' \
-                  --output text | grep -o "[^/]*$"\
-                ) \
-              --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value | [0]' \
-              --output text \
-            ) \
+          TASK_ID=$(aws ecs list-tasks \
+            --cluster $PROJECT \
+            --service-name $PROJECT-$PR_NUMBER-$GITHUB_SHA \
+            --query 'taskArns | [0]' \
+            --output text | grep -o "[^/]*$")
+
+          INTERFACE_ID=$(aws ecs describe-tasks \
+            --cluster $PROJECT \
+            --tasks $TASK_ID \
+            --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value | [0]' \
+            --output text)
+
+          echo "::set-output name=public-url::$(aws ec2 describe-network-interfaces \
+          --network-interface-ids $INTERFACE_ID \
           --query 'NetworkInterfaces[0].Association.PublicDnsName' \
-          --output text)" >> $GITHUB_ENV
+          --output text)"
+
+
       - name: "Comment On PR"
         uses: actions/github-script@v3
         if: github.event_name == 'pull_request'
@@ -236,5 +276,7 @@ jobs:
               issue_number,
               owner,
               repo,
-              body: 'Check out the preview here http://${{ env.public-url }}' 
+
+              body: 'Check out the preview here http://${{ steps.get-public-url.outputs.public-url }}' 
             });
+
