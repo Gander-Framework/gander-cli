@@ -36,7 +36,10 @@ jobs:
 
           aws ecr batch-delete-image \
           --repository-name $ECR_REPO \
-          --image-ids imageTag=$ECR_IMAGE_TAG imageTag=$ECR_SEED_IMAGE_TAG
+
+          --image-ids imageTag=$ECR_IMAGE_TAG imageTag=$ECR_SEED_IMAGE_TAG \
+          --query 'imageIds[*].imageTag'
+
 
       - name: Deregister App Task Definition
         id: deregister-app-task
@@ -49,7 +52,10 @@ jobs:
           --output text)
 
           aws ecs deregister-task-definition \
-          --task-definition $APP_TASK_ARN
+
+          --task-definition $APP_TASK_ARN \
+          --query 'taskDefinition.taskDefinitionArn'
+
 
       - name: Deregister Setup Task Definition
         id: deregister-setup-task
@@ -62,7 +68,10 @@ jobs:
           --output text)
 
           aws ecs deregister-task-definition \
-          --task-definition $SETUP_TASK_ARN
+
+          --task-definition $SETUP_TASK_ARN \
+          --query 'taskDefinition.taskDefinitionArn'
+
 
       - name: Stop ECS Service
         id: stop-ecs-service
@@ -75,24 +84,63 @@ jobs:
           aws ecs delete-service \
           --cluster $PROJECT \
           --service $ECS_SERVICE_NAME \
-          --force
 
-      # - name: Clear EFS
-      #   id: clear-efs
-      #   run: |
+          --force \
+          --query 'service.serviceName'
+
+      - name: delete access points
+        id: delete-access-points
+        run: |
+          DATA_ACCESS_POINT=$(aws efs describe-access-points \
+          --query "AccessPoints[?ClientToken=='$PROJECT-$PR_NUMBER-data'] | [0].AccessPointId" \
+          --output text)
+          aws efs delete-access-point --access-point-id $DATA_ACCESS_POINT
+
+          SEED_ACCESS_POINT=$(aws efs describe-access-points \
+          --query "AccessPoints[?ClientToken=='$PROJECT-$PR_NUMBER-seed'] | [0].AccessPointId" \
+          --output text)
+          aws efs delete-access-point --access-point-id $SEED_ACCESS_POINT
+
+
       - name: Create Deleter Image
         id: create-deleter
         run: |
           IMAGE=${{ steps.login-ecr.outputs.registry }}/$ECR_REPO:$PROJECT-deleter-$PR_NUMBER
 
+
+          cat << SCRIPT > ./deleter-script.sh
+          #!/bin/sh
+          echo 'before delete, heres the root:'
+          ls /efs-file-transfer/
+          sleep 1
+          echo 'contents of the current pr folder:'
+          ls ./efs-file-transfer/$PROJECT-$PR_NUMBER
+          sleep 1
+          echo 'contents of the data folder:'
+          ls ./efs-file-transfer/$PROJECT-$PR_NUMBER/data
+          sleep 1
+          echo 'contents of the seed folder:'
+          ls ./efs-file-transfer/$PROJECT-$PR_NUMBER/seed
+          sleep 1
+          rm -rf /efs-file-transfer/$PROJECT-$PR_NUMBER
+          echo 'after delete, heres the root:'
+          ls /efs-file-transfer/
+          sleep 1
+          echo 'try to list files in /$PROJECT-$PR_NUMBER:'
+          ls ./efs-file-transfer/$PROJECT-$PR_NUMBER
+          sleep 1
+          echo There should be an error above, No such file or directory
+          SCRIPT
+
           echo "::set-output name=deleter-image-arn::$IMAGE"
-          docker build -t $IMAGE -f- . <<EOF
+          docker build -t $IMAGE -f- . <<DOCKERFILE
           FROM alpine:3.13
           RUN mkdir /efs-file-transfer
-          RUN echo -e '#!/bin/sh\nrm -rf /efs-file-transfer/*\nls ./efs-file-transfer/\necho This should be the only line!' > /startup.sh
+          COPY ./deleter-script.sh /startup.sh
           RUN chmod +x /startup.sh
           ENTRYPOINT ["/startup.sh"]
-          EOF
+          DOCKERFILE
+
 
       - name: Push Deleter to ECR
         id: push-deleter
@@ -213,4 +261,6 @@ jobs:
 
           aws ecr batch-delete-image \
           --repository-name $ECR_REPO \
+
           --image-ids imageTag=$ECR_DELETE_IMAGE_TAG
+
