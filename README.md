@@ -29,6 +29,8 @@ Structure of app:
 
 # Table of Contents 
 <!-- toc -->
+* [Notes for Fleet creators](#notes-for-fleet-creators)
+* [Table of Contents](#table-of-contents)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
@@ -39,7 +41,7 @@ $ npm install -g fleet-cli
 $ fleet COMMAND
 running command...
 $ fleet (-v|--version|version)
-fleet-cli/0.0.0 darwin-x64 node-v14.15.1
+fleet-cli/0.0.1 darwin-x64 node-v14.15.1
 $ fleet --help [COMMAND]
 USAGE
   $ fleet COMMAND
@@ -48,33 +50,9 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`fleet setup`](#fleet-setup)
 * [`fleet help [COMMAND]`](#fleet-help-command)
-
-## `fleet setup`
-
-Creates the last AWS infrastructure and resources such as:
-- IAM credentials
-- Security groups
-- VPC, subnet and internet gateway
-- Routes
-- EFS 
-
-After this command, your AWS account will be ready to house clusters of review apps.
-
-```
-USAGE
-  $ fleet setup
-
-OPTIONS
-  -n, --name=name  name to print
-
-DESCRIPTION
-  ...
-  Extra documentation goes here
-```
-
-_See code: [src/commands/hello.js](https://github.com/Mush-Framework/fleet-cli/blob/v0.0.0/src/commands/hello.js)_
+* [`fleet init`](#fleet-init)
+* [`fleet setup`](#fleet-setup)
 
 ## `fleet help [COMMAND]`
 
@@ -92,4 +70,26 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
+
+## `fleet init`
+
+Initialize a Fleet App in your project repository
+
+```
+USAGE
+  $ fleet init
+```
+
+_See code: [src/commands/init.js](https://github.com/Mush-Framework/fleet-cli/blob/v0.0.1/src/commands/init.js)_
+
+## `fleet setup`
+
+Create an AWS VPC for your review apps to live
+
+```
+USAGE
+  $ fleet setup
+```
+
+_See code: [src/commands/setup.js](https://github.com/Mush-Framework/fleet-cli/blob/v0.0.1/src/commands/setup.js)_
 <!-- commandsstop -->

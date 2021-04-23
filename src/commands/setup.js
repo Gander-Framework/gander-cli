@@ -18,7 +18,7 @@ class SetupCommand extends Command {
 
     aws.subnet.availabilityZone = `${initialConfig.awsRegion}a`
 
-    console.log('\n Generating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n')
+    console.log('\nGenerating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n')
 
     if (initialConfig.generateIam === 'yes') {
       await api.setupIam(aws.iam)
@@ -31,7 +31,7 @@ class SetupCommand extends Command {
     const policyArn = JSON.parse(createPolicyResponse).Policy.Arn
     await api.createRole()
     await api.attachPolicyToRole(policyArn)
-    /*
+
     // Create and configure VPC
     const createVpcResponse = await api.createVpc(aws.vpc)
     aws.vpc.id = JSON.parse(createVpcResponse).Vpc.VpcId
@@ -98,7 +98,7 @@ class SetupCommand extends Command {
 
     // Create ECR repository
     await api.createEcrRepository()
-    */
+
     console.log('It may take around 10 minutes for AWS to fully spin up all infrastructure pieces. But for now, we\'re all done! :D')
 
     config.set('DEFAULT_SUBNET_NAME', DEFAULT_NAME)
