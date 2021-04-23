@@ -90,7 +90,7 @@ jobs:
               --output text)"
 
         #TODO: New step: Pull the google builder & cache?
-      - name: build, tag, and push image using Google Builder
+      - name: build, tag, and push image using Cloud Native Builder
         id: build-server
         run: | # --cache-image $ECR_REGISTRY/$ECR_REPO:cache \
           pack build ${{ steps.aws-ids.outputs.image-arn }} \
