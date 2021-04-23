@@ -101,10 +101,16 @@ jobs:
       - name: Create image for SQL Seeder
         id: make-sql-seeder
         run: |
+          cat << SCRIPT > ./seeder-script.sh
+          #!/bin/sh
+          mv ./init.sql ./efs-file-transfer/
+          ls ./efs-file-transfer/
+          SCRIPT
+
           docker build -t ${{ steps.aws-ids.outputs.seed-arn }} -f- .  <<EOF
           FROM alpine:3.13
           COPY $SQL_FILE init.sql
-          RUN echo -e '#!/bin/sh\nmv ./init.sql ./efs-file-transfer/\nls ./efs-file-transfer/' >> ./startup.sh
+          COPY ./seeder-script /startup.sh
           RUN chmod +x /startup.sh
           RUN mkdir efs-file-transfer
           ENTRYPOINT ["/startup.sh"]
