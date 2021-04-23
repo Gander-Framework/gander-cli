@@ -36,7 +36,8 @@ jobs:
 
           aws ecr batch-delete-image \
           --repository-name $ECR_REPO \
-          --image-ids imageTag=$ECR_IMAGE_TAG imageTag=$ECR_SEED_IMAGE_TAG
+          --image-ids imageTag=$ECR_IMAGE_TAG imageTag=$ECR_SEED_IMAGE_TAG \
+          --query 'imageIds[*].imageTag'
 
       - name: Deregister App Task Definition
         id: deregister-app-task
