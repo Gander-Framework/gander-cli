@@ -20,6 +20,8 @@ const createCluster = require('./ecsCreateCluster.js')
 const createPolicy = require('./iamCreatePolicy.js')
 const createRole = require('./iamCreateRole.js')
 const attachPolicyToRole = require('./iamAttachPolicyToRole.js')
+const iamDeletePolicy = require('./iamDeletePolicy.js')
+const iamDeleteRole = require('./iamDeleteRole')
 
 const api = {
   setupIam,
@@ -44,6 +46,8 @@ const api = {
   createPolicy,
   createRole,
   attachPolicyToRole,
+  iamDeletePolicy,
+  iamDeleteRole,
 }
 
 module.exports = api
