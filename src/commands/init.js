@@ -3,7 +3,7 @@ const prompts = require('../prompts')
 const api = require('../aws/api')
 const {fleetRootPath, fleetBuildWorkflowTemplatePath} = require('../util/paths')
 const {
-  populateWorkflow,
+  populateWorkflows,
   createWorkflowDir,
   copyWorkflowFilesToRepo,
 } = require('../util/fs')
@@ -19,7 +19,7 @@ class InitCommand extends Command {
     copyWorkflowFilesToRepo()
     const appInfo = await getAppInfo()
     await api.createCluster()
-    await populateWorkflow(appInfo)
+    await populateWorkflows(appInfo)
   }
 }
 

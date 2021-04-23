@@ -86,7 +86,7 @@ jobs:
               --output text)" >> $GITHUB_ENV) && \
           (echo "task-execution-role-arn=$( \
             aws iam get-role \
-              --role-name ecsTaskExecutionRole \
+              --role-name fleetTaskExecutionRole \
               --query 'Role.Arn' \
               --output text)"  >> $GITHUB_ENV) && \
           (echo "efs-id=$( \

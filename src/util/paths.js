@@ -5,6 +5,9 @@ const fleetRootPath = path.join(__dirname, '/../..') // ends up at root level of
 const fleetBuildWorkflowTemplatePath = path.join(fleetRootPath, '/templates/build-review-app.yml')
 const userBuildWorkflowPath = path.join(process.cwd(), '/.github/workflows/build-review-app.yml')
 
+const fleetTeardownWorkflowPath = path.join(fleetRootPath, '/templates/teardown-review-app.yml')
+const userTeardownWorkflowPath = path.join(process.cwd(), '/.github/workflows/teardown-review-app.yml')
+
 const githubFolderPath = path.join(process.cwd(), '/.github')
 const workflowFolderPath = path.join(process.cwd(), '/.github/workflows')
 
@@ -14,6 +17,8 @@ module.exports = {
   fleetRootPath,
   fleetBuildWorkflowTemplatePath,
   userBuildWorkflowPath,
+  fleetTeardownWorkflowPath,
+  userTeardownWorkflowPath,
   githubFolderPath,
   workflowFolderPath,
   taskExecutionPolicyPath,
