@@ -1,4 +1,5 @@
-const path = require('path');
+// eslint-disable-next-line unicorn/filename-case
+const path = require('path')
 const util = require('util')
 const exec = util.promisify(require('child_process').exec)
 const Conf = require('conf')
@@ -9,10 +10,10 @@ const ecsCreateCluster = async () => {
   const arg1 = `CLUSTER_NAME=${config.get('APP_NAME')}`
 
   try {
-    const { stdout, stderr } = await exec(`${arg1} ${script}`)
-    return {ecsCreateClusterResponse: stdout, ecsCreateClusterError: { awsError: stderr }}
+    const {stdout, stderr} = await exec(`${arg1} ${script}`)
+    return {ecsCreateClusterResponse: stdout, ecsCreateClusterError: {awsError: stderr}}
   } catch (error) {
-    return { ecsCreateClusterResponse: {}, ecsCreateCluster: error }
+    return {ecsCreateClusterResponse: {}, ecsCreateCluster: error}
   }
 }
 

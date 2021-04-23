@@ -12,6 +12,7 @@ const executeProcess = async (startMsg, successMsg, callback) => {
     awsSuccess = stdout
 
     if (stderr) {
+      console.log(stderr)
       spinner.fail(stderr)
       process.exit(1)
     }
