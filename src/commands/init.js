@@ -15,10 +15,10 @@ const getAppInfo = async () => {
 
 class InitCommand extends Command {
   async run() {
-    await api.createCluster()
     createWorkflowDir()
     copyWorkflowFilesToRepo()
     const appInfo = await getAppInfo()
+    await api.createCluster()
     await populateWorkflow(appInfo)
   }
 }
