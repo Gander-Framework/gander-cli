@@ -50,7 +50,8 @@ jobs:
           --output text)
 
           aws ecs deregister-task-definition \
-          --task-definition $APP_TASK_ARN
+          --task-definition $APP_TASK_ARN \
+          --query 'taskDefinition.taskDefinitionArn'
 
       - name: Deregister Setup Task Definition
         id: deregister-setup-task
@@ -63,7 +64,8 @@ jobs:
           --output text)
 
           aws ecs deregister-task-definition \
-          --task-definition $SETUP_TASK_ARN
+          --task-definition $SETUP_TASK_ARN \
+          --query 'taskDefinition.taskDefinitionArn'
 
       - name: Stop ECS Service
         id: stop-ecs-service
