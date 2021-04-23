@@ -22,6 +22,7 @@ const createRole = require('./iamCreateRole.js')
 const attachPolicyToRole = require('./iamAttachPolicyToRole.js')
 const iamDeletePolicy = require('./iamDeletePolicy.js')
 const iamDeleteRole = require('./iamDeleteRole')
+const deleteMountTarget = require('./efsDeleteMountTarget')
 
 const api = {
   setupIam,
@@ -48,6 +49,7 @@ const api = {
   attachPolicyToRole,
   iamDeletePolicy,
   iamDeleteRole,
+  deleteMountTarget,
 }
 
 module.exports = api

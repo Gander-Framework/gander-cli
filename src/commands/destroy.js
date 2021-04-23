@@ -9,6 +9,7 @@ class destroyCommand extends Command {
     // TODO: delete fleetTaskExecutionPolicy
     await api.iamDeletePolicy()
     // TODO: delete mount target
+    await api.deleteMountTarget()
     // TODO: delete EFS
     // TODO: delete VPC
     // TODO: delete cluster
