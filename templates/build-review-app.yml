@@ -161,7 +161,7 @@ jobs:
 
       - name: write task definition to file.
         run: |
-          echo '${{ steps.task-gen.outputs.seeder-task-definition }}' > ./seed-task.json && \
+          echo '${{ steps.task-gen.outputs.seeder-task-definition }}' > ./seed-task.json
           echo '${{ steps.task-gen.outputs.service-task-definition }}' > ./app-task.json
 
       - name: register task definition of seeder.
