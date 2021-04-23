@@ -98,12 +98,6 @@ jobs:
           --path $SERVER_PATH \
           --publish
 
-      # What more do we need access to?
-      # Execution role arn -- done
-      # EFS ID -- done
-      # Mount Target?
-      # Logging?
-      # How do we put that migration file up there?
       - name: Create image for SQL Seeder
         id: make-sql-seeder
         run: |
