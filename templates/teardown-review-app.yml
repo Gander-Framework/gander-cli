@@ -78,7 +78,8 @@ jobs:
           aws ecs delete-service \
           --cluster $PROJECT \
           --service $ECS_SERVICE_NAME \
-          --force
+          --force \
+          --query 'service.serviceName'
 
       # - name: Clear EFS
       #   id: clear-efs
