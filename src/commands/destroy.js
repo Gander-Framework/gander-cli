@@ -2,6 +2,7 @@ const {Command} =  require('@oclif/command')
 const prompts = require('../prompts')
 const api = require('../aws/api')
 
+
 class destroyCommand extends Command {
   async run() {
     // TODO: delete fleetTaskExecutionRole
@@ -10,6 +11,7 @@ class destroyCommand extends Command {
     await api.iamDeletePolicy()
     // TODO: delete mount target
     await api.deleteMountTarget()
+
     // TODO: delete EFS
     // TODO: delete VPC
     // TODO: delete cluster
