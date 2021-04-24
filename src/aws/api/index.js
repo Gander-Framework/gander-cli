@@ -1,4 +1,3 @@
-const setupIam = require('./iamSetup.js');
 const iam = require('./iam');
 const createSecurityGroup = require('./secGroupSetup.js');
 const setSgIngress = require('./secGroupIngressSetup.js');
@@ -23,7 +22,6 @@ const createRole = require('./iamCreateRole.js');
 const attachPolicyToRole = require('./iamAttachPolicyToRole.js');
 
 const api = {
-  setupIam,
   iam,
   createSecurityGroup,
   setSgIngress,

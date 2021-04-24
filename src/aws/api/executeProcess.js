@@ -8,7 +8,7 @@ const executeProcess = async (startMsg, successMsg, callback) => {
   let awsSuccess;
 
   try {
-    const {stdout, stderr} = await exec(callback());
+    const { stdout, stderr } = await exec(callback());
     awsSuccess = stdout;
 
     if (stderr) {
