@@ -9,6 +9,8 @@ const {
   workflowFolderPath,
   userBuildWorkflowPath,
   actionFolderPaths,
+  fleetActionTemplatePaths,
+  userActionPaths
  } = require('./paths');
 
 const createFolder = (path) => {
@@ -59,6 +61,10 @@ const copyWorkflowFilesToRepo = () => {
   // copy the template file into the project workflows directory
   fs.copyFileSync(fleetBuildWorkflowTemplatePath ,userBuildWorkflowPath);
   fs.copyFileSync(fleetTeardownWorkflowPath ,userTeardownWorkflowPath);
+  fleetActionTemplatePaths.forEach((fleetFile, index) => {
+    const userFile = userActionPaths[index]
+    fs.copyFileSync(fleetFile, userFile)
+  })
 }
 
 module.exports = {
