@@ -22,7 +22,7 @@ const actionFolderPaths = [
 
 const fleetActionTemplatePaths = [
   path.join(fleetRootPath, '/templates/github/actions/build-server/action.yml'),
-  path.join(fleetRootPath, '/templates/github/actions/cleanup-efs/action.yml'),
+  path.join(fleetRootPath, '/templates/github/actions/cleanup-ecs/action.yml'),
   path.join(fleetRootPath, '/templates/github/actions/clear-efs/action.yml'),
   path.join(fleetRootPath, '/templates/github/actions/launch-review-app/action.yml'),
   path.join(fleetRootPath, '/templates/github/actions/seed-db/action.yml'),
