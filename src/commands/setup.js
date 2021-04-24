@@ -2,7 +2,7 @@ const { Command } = require('@oclif/command');
 const api = require('../aws/api');
 const prompts = require('../prompts');
 const utils = require('../util');
-const log = require('../util/log.js');
+
 const Conf = require('conf');
 const config = new Conf();
 
@@ -11,28 +11,31 @@ const DEFAULT_NAME = 'fleet-apps';
 class SetupCommand extends Command {
   async run() {
     let aws = utils.readConfig();
+
     const initialConfig = await prompts.welcome();
 
     aws.efs.region = initialConfig.awsRegion;
     config.set('AWS_REGION', initialConfig.awsRegion);
-
     aws.subnet.availabilityZone = `${initialConfig.awsRegion}a`;
 
     console.log('\nGenerating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n');
 
     if (initialConfig.generateIam === 'yes') {
-      await api.iam.createGroup({ GroupName: aws.iam.groupName });
-      await api.iam.createUser({ UserName: aws.iam.userName });
+      await api.iam.createGroup(aws.iam.groupName);
+      await api.iam.createUser(aws.iam.userName);
     } else {
-      aws.iam = null;
+      aws.iam.groupName = null;
+      aws.iam.userName = null;
     }
 
     // Create task execution role
-    const createPolicyResponse = await api.createPolicy();
-    const policyArn = JSON.parse(createPolicyResponse).Policy.Arn;
-    await api.createRole();
-    await api.attachPolicyToRole(policyArn);
+    const createPolicyResponse = await api.iam.createPolicy(aws.iam.policy.name, aws.iam.policy.path);
+    aws.iam.policy.arn = createPolicyResponse.Policy.Arn;
 
+    await api.iam.createRole(aws.iam.role.name, aws.iam.role.path);
+    await api.iam.attachRolePolicy(aws.iam.role.name, aws.iam.policy.arn);
+
+    console.log('DONE TESTING IAM WITH SDK');
     // Create and configure VPC
     const createVpcResponse = await api.createVpc(aws.vpc);
     aws.vpc.id = JSON.parse(createVpcResponse).Vpc.VpcId;
