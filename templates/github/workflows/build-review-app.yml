@@ -95,9 +95,6 @@ jobs:
       - name: build, tag, and push image using Cloud Native Builder
         id: build-server
         run: | # --cache-image $ECR_REGISTRY/$ECR_REPO:cache \
-
-
-
           pack build ${{ steps.aws-ids.outputs.image-arn }} \
           --builder $BUILDER \
           --path $SERVER_PATH \
