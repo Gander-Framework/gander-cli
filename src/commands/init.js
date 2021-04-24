@@ -18,6 +18,7 @@ class InitCommand extends Command {
     createWorkflowDir()
     copyWorkflowFilesToRepo()
     const appInfo = await getAppInfo()
+    config.set('APP_NAME', appInfo.APP_NAME)
     await api.createCluster()
     await populateWorkflows(appInfo)
   }
