@@ -139,7 +139,7 @@ runs:
       shell: bash
     - run: |
         aws ecs deregister-task-definition \
-          --task-definition ${{ env.DELETE_TASK }}
+          --task-definition $DELETE_TASK_DEF
       shell: bash
     - run: |
         ECR_DELETE_IMAGE_TAG=$PROJECT-deleter-$PR_NUMBER
