@@ -1,0 +1,197 @@
+name: Launch Review App
+description: Launches your Review App
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        echo "Creating Data Access Point"
+
+        echo "DATA_AP_ID=$( \
+          aws efs create-access-point \
+            --client-token $PROJECT-$PR_NUMBER-data \
+            --file-system-id $FS_ID \
+            --root-directory "Path=/$PROJECT-$PR_NUMBER/data,CreationInfo={OwnerUid=0,OwnerGid=0,Permissions=777}" \
+            --query 'AccessPointId' \
+            --output text \
+        )" >> $GITHUB_ENV
+
+      shell: bash
+
+    - run: |
+        cat << TASK_DEF > ./app-task.json
+        {
+          "family": "$PROJECT-$PR_NUMBER",
+          "networkMode": "awsvpc",
+          "executionRoleArn": "$TASK_EXECUTION_ROLE_ARN",
+          "containerDefinitions": [
+            {
+              "name": "api",
+              "image": "$IMAGE_ARN",
+              "portMappings": [
+                {
+                  "containerPort": 8080,
+                  "hostPort": 8080,
+                  "protocol": "tcp"
+                }
+              ],
+              "environment": [
+                {
+                  "name": "PG_USER",
+                  "value": "chris"
+                },
+                {
+                  "name": "PG_PW",
+                  "value": "password2"
+                },
+                {
+                  "name": "PORT",
+                  "value": "8080"
+                }
+              ],
+              "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                  "awslogs-create-group": "true",
+                  "awslogs-region": "$REGION",
+                  "awslogs-group": "fleet-logs-$PROJECT-api",
+                  "awslogs-stream-prefix": "$PROJECT"
+                }
+              },
+              "dependsOn": [
+                {
+                  "containerName": "db",
+                  "condition": "START"
+                }
+              ],
+              "memory": 500,
+              "cpu": 10,
+              "essential": true
+            },
+            {
+              "name": "db",
+              "image": "postgres",
+              "portMappings": [
+                {
+                  "containerPort": 5432,
+                  "hostPort": 5432
+                }
+              ],
+              "environment": [
+                {
+                  "name": "POSTGRES_USER",
+                  "value": "chris"
+                },
+                {
+                  "name": "POSTGRES_PASSWORD",
+                  "value": "password2"
+                },
+                {
+                  "name": "POSTGRES_DB",
+                  "value": "$DB_NAME"
+                }
+              ],
+              "mountPoints": [
+                {
+                  "sourceVolume": "sql-seed",
+                  "containerPath": "/docker-entrypoint-initdb.d"
+                },
+                {
+                  "sourceVolume": "sql-data",
+                  "containerPath": "/var/lib/postgresql/data"
+                }
+              ],
+              "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                  "awslogs-create-group": "true",
+                  "awslogs-region": "$REGION",
+                  "awslogs-group": "fleet-logs-$PROJECT-db",
+                  "awslogs-stream-prefix": "$PROJECT"
+                }
+              },
+              "cpu": 10,
+              "memory": 500,
+              "essential": true
+            }
+          ],
+          "volumes": [
+            {
+              "name": "sql-seed",
+              "efsVolumeConfiguration": {
+                "fileSystemId": "$FS_ID",
+                "transitEncryption": "ENABLED",
+                "authorizationConfig": {
+                  "accessPointId": "$SEED_AP_ID"
+                }
+              }
+            },
+            {
+              "name": "sql-data",
+              "efsVolumeConfiguration": {
+                "fileSystemId": "$FS_ID",
+                "transitEncryption": "ENABLED",
+                "authorizationConfig": {
+                  "accessPointId": "$DATA_AP_ID"
+                }
+              }
+            }
+          ],
+          "requiresCompatibilities": ["FARGATE"],
+          "cpu": "256",
+          "memory": "512"
+        }
+        TASKDEF
+      shell: bash
+
+    - run: |
+        echo "Registering Task Definition"
+
+        echo "APP_TASK_DEF=$(aws ecs register-task-definition \
+        --family $PROJECT-$PR_NUMBER \
+        --cli-input-json file://app-task.json \
+        --query 'join(`:`,taskDefinition.[family,to_string(revision)])' \
+        --output text)" >> $GITHUB_ENV
+      shell: bash
+
+    - run: |
+        echo "Launching App Service"
+        echo "APP_SERVICE=$(aws ecs create-service \
+          --cluster $PROJECT \
+          --service-name $PROJECT-$PR_NUMBER-$GITHUB_SHA \
+          --task-definition $APP_TASK_DEF \
+          --desired-count 1 \
+          --launch-type FARGATE \
+          --network-configuration "awsvpcConfiguration={ \
+              subnets=[$SUBNET_ID], \
+              securityGroups=[$SG_ID], \
+              assignPublicIp=ENABLED \
+            }" \
+          --query 'service.serviceArn' \
+          --output text)" >> $GITHUB_ENV
+      shell: bash
+    - run: |
+        echo "Waiting for app service to be stable"
+        aws ecs wait services-stable \
+          --cluster $PROJECT \
+          --services $PROJECT-$PR_NUMBER-$GITHUB_SHA
+      shell: bash
+    - run: |
+        echo "Getting the public URL of the service"
+        TASK_ID=$(aws ecs list-tasks \
+          --cluster $PROJECT \
+          --service-name $PROJECT-$PR_NUMBER-$GITHUB_SHA \
+          --query 'taskArns | [0]' \
+          --output text | grep -o "[^/]*$")
+
+        INTERFACE_ID=$(aws ecs describe-tasks \
+          --cluster $PROJECT \
+          --tasks $TASK_ID \
+          --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value | [0]' \
+          --output text)
+
+        echo "PUBLIC_URL=$(aws ec2 describe-network-interfaces \
+        --network-interface-ids $INTERFACE_ID \
+        --query 'NetworkInterfaces[0].Association.PublicDnsName' \
+        --output text)" >> $GITHUB_ENV
+      shell: bash
