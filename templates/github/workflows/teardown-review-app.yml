@@ -16,6 +16,9 @@ jobs:
   teardown:
     runs-on: ubuntu-20.04
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v1
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
