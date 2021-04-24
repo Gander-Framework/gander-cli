@@ -10,7 +10,7 @@ runs:
         sudo apt-get install pack-cli
       shell: bash
     - run: | # --cache-image $ECR_REGISTRY/$ECR_REPO:cache \
-        pack build ${{ steps.aws-ids.outputs.image-arn }} \
+        pack build $IMAGE_ARN \
         --builder $BUILDER \
         --path $SERVER_PATH \
         --publish
