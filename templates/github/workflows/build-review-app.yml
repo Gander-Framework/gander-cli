@@ -48,13 +48,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Install Pack CLI
-        id: install-pack
-        run: |
-          sudo add-apt-repository ppa:cncf-buildpacks/pack-cli && \
-          sudo apt-get update && \
-          sudo apt-get install pack-cli
-
       #This step will do six things:
       # 1. set the server image arn environment variable
       # 2. set the seeder image arn environment variable
@@ -91,10 +84,18 @@ jobs:
               --query 'FileSystems[0].FileSystemId' \
               --output text)"
 
+      - name: Install Pack CLI
+        id: install-pack
+        run: |
+          sudo add-apt-repository ppa:cncf-buildpacks/pack-cli && \
+          sudo apt-get update && \
+          sudo apt-get install pack-cli
+
         #TODO: New step: Pull the google builder & cache?
       - name: build, tag, and push image using Cloud Native Builder
         id: build-server
         run: | # --cache-image $ECR_REGISTRY/$ECR_REPO:cache \
+
 
 
           pack build ${{ steps.aws-ids.outputs.image-arn }} \
