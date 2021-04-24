@@ -45,7 +45,7 @@ runs:
         echo There should be an error above, No such file or directory
         SCRIPT
 
-        docker build -t $DELETER_IMAGE -f- . <<DOCKERFILE
+        docker build -t ${{ env.DELETER_IMAGE }} -f- . <<DOCKERFILE
         FROM alpine:3.13
         RUN mkdir /efs-file-transfer
         COPY ./deleter-script.sh /startup.sh
@@ -53,7 +53,7 @@ runs:
         ENTRYPOINT ["/startup.sh"]
         DOCKERFILE
 
-        docker push $DELETER_IMAGE
+        docker push ${{ env.DELETER_IMAGE }}
       shell: bash
 
     - run: |
