@@ -1,0 +1,52 @@
+name: Clean up ECS
+description: This deletes ECR images, task definitions, and the ECS service.
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        ECR_IMAGE_TAG=${{ env.PROJECT }}-${{ env.PR_NUMBER }}
+
+        ECR_SEED_IMAGE_TAG=${{ env.PROJECT }}-seed-${{ env.PR_NUMBER }}
+
+        aws ecr batch-delete-image \
+        --repository-name $ECR_REPO \
+        --image-ids imageTag=$ECR_IMAGE_TAG imageTag=$ECR_SEED_IMAGE_TAG \
+        --query 'imageIds[*].imageTag'
+      shell: bash
+    - run: |
+        TASK_FAMILY=$PROJECT-$PR_NUMBER
+
+        APP_TASK_ARN=$(aws ecs list-task-definitions \
+        --family-prefix $TASK_FAMILY \
+        --query 'taskDefinitionArns[0]' \
+        --output text)
+
+        aws ecs deregister-task-definition \
+        --task-definition $APP_TASK_ARN \
+        --query 'taskDefinition.taskDefinitionArn'
+      shell: bash
+    - run: |
+        SETUP_TASK_FAMILY=$PROJECT-setup-$PR_NUMBER
+
+        SETUP_TASK_ARN=$(aws ecs list-task-definitions \
+        --family-prefix $SETUP_TASK_FAMILY \
+        --query 'taskDefinitionArns[0]' \
+        --output text)
+
+        aws ecs deregister-task-definition \
+        --task-definition $SETUP_TASK_ARN \
+        --query 'taskDefinition.taskDefinitionArn'
+      shell: bash
+    - run: |
+        ECS_SERVICE_NAME=$(aws ecs list-services \
+        --cluster $PROJECT \
+        --query 'serviceArns[*]' \
+        | grep -o "$PROJECT-$PR_NUMBER[^\"]*")
+
+        aws ecs delete-service \
+        --cluster $PROJECT \
+        --service $ECS_SERVICE_NAME \
+        --force \
+        --query 'service.serviceName'
+      shell: bash
