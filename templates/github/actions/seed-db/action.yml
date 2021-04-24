@@ -118,3 +118,4 @@ runs:
         echo "Awaiting task to finish..."
         aws ecs wait tasks-stopped --cluster $PROJECT --tasks $SEED_TASK
         echo "Task is finished!"
+      shell: bash
