@@ -141,7 +141,7 @@ runs:
           "cpu": "256",
           "memory": "512"
         }
-        TASKDEF
+        TASK_DEF
       shell: bash
 
     - run: |
