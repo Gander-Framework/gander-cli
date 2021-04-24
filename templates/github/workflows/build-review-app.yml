@@ -11,10 +11,9 @@ env:
   SQL_FILE: DB_SETUP_PATH # server/db/migration.sql
   BUILDER: CNBP_BUILDER # paketobuildpacks/builder:base
   DB_NAME: DATABASE_NAME # request_bin
-  SUBNET_ID: DEFAULT_SUBNET_NAME # Fleet-Subnet
-  SG_ID: CLUSTER_SECURITY_GROUP # Fleet-Security-3
-  TASK_EXECUTION_ROLE_ARN: TASK_EXEC_ROLE_ARN
-  FS_ID: EFS_CREATION_TOKEN # FleetFS
+  SUBNET_NAME: DEFAULT_SUBNET_NAME # Fleet-Subnet
+  SG_NAME: CLUSTER_SECURITY_GROUP # Fleet-Security-3
+  FS_TOKEN: EFS_CREATION_TOKEN # FleetFS
   REGION: USER_AWS_REGION # us-east-2
   PR_NUMBER: ${{ github.event.pull_request.number }}
 
@@ -64,6 +63,26 @@ jobs:
         run: |
           echo "IMAGE_ARN=$ECR_REGISTRY/$ECR_REPO:$PROJECT-$PR_NUMBER" >> $GITHUB_ENV
           echo "SEED_IMAGE_ARN=$ECR_REGISTRY/$ECR_REPO:$PROJECT-seed-$PR_NUMBER" >> $GITHUB_ENV
+          echo "SUBNET_ID=$( \
+            aws ec2 describe-subnets \
+              --filters Name=tag:Name,Values=$SUBNET_NAME \
+              --query 'Subnets[0].SubnetId' \
+              --output text)" >> $GITHUB_ENV
+          echo "SG_ID=$( \
+            aws ec2 describe-security-groups \
+              --filters Name=group-name,Values=$SG_NAME \
+              --query 'SecurityGroups[0].GroupId' \
+              --output text)" >> $GITHUB_ENV
+          echo "TASK_EXECUTION_ROLE_ARN=$( \
+            aws iam get-role \
+              --role-name fleetTaskExecutionRole \
+              --query 'Role.Arn' \
+              --output text)" >> $GITHUB_ENV
+          echo "FS_ID=$( \
+            aws efs describe-file-systems \
+              --creation-token $FS_TOKEN \
+              --query 'FileSystems[0].FileSystemId' \
+              --output text)" >> $GITHUB_ENV
 
       - name: Build the Application Server
         id: build-server
