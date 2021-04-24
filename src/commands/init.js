@@ -8,6 +8,9 @@ const {
   copyWorkflowFilesToRepo,
 } = require('../util/fs')
 
+const Conf = require('conf');
+const config = new Conf();
+
 const getAppInfo = async () => {
   const appInfo = await prompts.appInfoPrompt()
   return appInfo
