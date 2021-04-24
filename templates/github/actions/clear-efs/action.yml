@@ -139,12 +139,14 @@ runs:
       shell: bash
     - run: |
         aws ecs deregister-task-definition \
-          --task-definition $DELETE_TASK_DEF
+          --task-definition $DELETE_TASK_DEF \
+          --query 'taskDefinition.taskDefinitionArn'
       shell: bash
     - run: |
         ECR_DELETE_IMAGE_TAG=$PROJECT-deleter-$PR_NUMBER
 
         aws ecr batch-delete-image \
         --repository-name $ECR_REPO \
-        --image-ids imageTag=$ECR_DELETE_IMAGE_TAG
+        --image-ids imageTag=$ECR_DELETE_IMAGE_TAG \
+        --query 'imageIds[*].imageTag'
       shell: bash
