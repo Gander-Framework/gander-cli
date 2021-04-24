@@ -8,6 +8,7 @@ const {
   githubFolderPath,
   workflowFolderPath,
   userBuildWorkflowPath,
+  actionFolderPaths,
  } = require('./paths');
 
 const createFolder = (path) => {
@@ -21,6 +22,7 @@ const createFolder = (path) => {
 const createWorkflowDir = () => {
   createFolder(githubFolderPath)
   createFolder(workflowFolderPath)
+  actionFolderPaths.forEach(createFolder)
 }
 
 const populateBuildWorkflow = (appInfo) => {
