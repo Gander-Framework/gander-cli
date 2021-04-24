@@ -1,3 +1,15 @@
 {
-  "extends": "oclif"
+  "extends": "oclif",
+  "rules": {
+    "unicorn/filename-case": [
+      "error",
+      {
+        "case": "camelCase"
+      }
+    ],
+    "semi": [
+      "error",
+      "always"
+    ]
+  }
 }
