@@ -19,7 +19,8 @@ runs:
 
     - run: |
         echo "Building the deleter image..."
-        echo "DELETER_IMAGE=$ECR_REGISTRY/$ECR_REPO:$PROJECT-deleter-$PR_NUMBER" >> $GITHUB_ENV
+        DELETER_IMAGE=$ECR_REGISTRY/$ECR_REPO:$PROJECT-deleter-$PR_NUMBER
+        echo $DELETER_IMAGE
 
         cat << SCRIPT > ./deleter-script.sh
         #!/bin/sh
@@ -45,7 +46,7 @@ runs:
         echo There should be an error above, No such file or directory
         SCRIPT
 
-        docker build -t ${{ env.DELETER_IMAGE }} -f- . <<DOCKERFILE
+        docker build -t $DELETER_IMAGE -f- . <<DOCKERFILE
         FROM alpine:3.13
         RUN mkdir /efs-file-transfer
         COPY ./deleter-script.sh /startup.sh
@@ -53,7 +54,8 @@ runs:
         ENTRYPOINT ["/startup.sh"]
         DOCKERFILE
 
-        docker push ${{ env.DELETER_IMAGE }}
+        docker push $DELETER_IMAGE
+        echo "DELETER_IMAGE=$DELETER_IMAGE" >> $GITHUB_ENV
       shell: bash
 
     - run: |
@@ -137,7 +139,7 @@ runs:
       shell: bash
     - run: |
         aws ecs deregister-task-definition \
-          --task-definition $DELETE_TASK
+          --task-definition ${{ env.DELETE_TASK }}
       shell: bash
     - run: |
         ECR_DELETE_IMAGE_TAG=$PROJECT-deleter-$PR_NUMBER
