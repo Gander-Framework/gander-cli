@@ -71,20 +71,6 @@ class SetupCommand extends Command {
     config.set('CLUSTER_SUBNETB_ID', aws.subnetb.id)
     await api.modifySubnetAttribute(aws.subnetb.id)
 
-    // Create Application Load Balancer
-    const createAlbResponse = await api.createALB(aws.alb.name, aws.albSecurityGroup.id, aws.subneta.id, aws.subnetb.id)
-    aws.alb.arn = JSON.parse(createAlbResponse).LoadBalancers[0].LoadBalancerArn
-    config.set('ALB_ARN', aws.alb.arn)
-    await api.createListener(aws.alb.arn)
-
-    // Retrieve DNS Name for ALB
-    const describeLbResponse = await api.retrieveDNSName(aws.alb.arn)
-    albDnsName = JSON.parse(describeLbResponse).LoadBalancers[0].DNSName
-    console.log("   ")
-    console.log("Create a CNAME record at your custom domain")
-    console.log(`Map '*.staging' to this DNS Name:  ${albDnsName}`)
-    console.log("   ")
-
     // Create and attach internet gateway
     const createInternetGatewayResponse = await api.createInternetGateway(aws.internetGateway)
     aws.internetGateway.id = JSON.parse(createInternetGatewayResponse).InternetGateway.InternetGatewayId
@@ -100,7 +86,22 @@ class SetupCommand extends Command {
     await api.createRoute(aws.routeTable.id, aws.internetGateway.id)
 
     // Associate route table
-    await api.associateRouteTable(aws.routeTable.id, aws.subnet.id)
+    await api.associateRouteTable(aws.routeTable.id, aws.subneta.id)
+    await api.associateRouteTable(aws.routeTable.id, aws.subnetb.id)
+
+    // Create Application Load Balancer
+    const createAlbResponse = await api.createAlb(aws.alb.name, aws.albSecurityGroup.id, aws.subneta.id, aws.subnetb.id)
+    aws.alb.arn = JSON.parse(createAlbResponse).LoadBalancers[0].LoadBalancerArn
+    config.set('ALB_ARN', aws.alb.arn)
+    await api.createListener(aws.alb.arn)
+
+    // Retrieve DNS Name for ALB
+    const describeLbResponse = await api.retrieveDnsName(aws.alb.arn)
+    const albDnsName = JSON.parse(describeLbResponse).LoadBalancers[0].DNSName
+    console.log('   ')
+    console.log('Create a CNAME record at your custom domain')
+    console.log(`Map '*.staging' to this DNS Name:  ${albDnsName}`)
+    console.log('   ')
 
     // Create EFS security group and rules
     const createEfsSecurityGroupResponse = await api.createSecurityGroup(aws.vpc.id, aws.efsSecurityGroup)
