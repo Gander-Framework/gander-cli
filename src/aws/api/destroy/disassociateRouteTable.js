@@ -3,7 +3,7 @@ const executeProcess = require('../executeProcess')
 const Conf = require('conf')
 const config = new Conf()
 
-const vpcResourcesCleanup = async () => {
+const disassociateRouteTable = async () => {
   return executeProcess(
     'Disassociating Route Table',
     'Route Table Disassociated',
@@ -17,4 +17,4 @@ const vpcResourcesCleanup = async () => {
   )
 }
 
-module.exports = vpcResourcesCleanup
+module.exports = disassociateRouteTable

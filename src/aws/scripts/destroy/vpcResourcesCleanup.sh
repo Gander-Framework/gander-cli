@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# must first dissociate
-aws ec2 delete-route-table \
---route-table-id $ROUTE_TABLE_ID
-
 aws ec2 detach-internet-gateway \
 --internet-gateway-id $INTERNET_GATEWAY_ID \
 --vpc-id $VPC_ID
