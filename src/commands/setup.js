@@ -109,13 +109,16 @@ class SetupCommand extends Command {
     config.set('CLUSTER_SUBNET_ID', aws.subnet.id);
 
     await api.ec2.modifySubnetAttribute({ SubnetId: aws.subnet.id });
-    /*
-    // Create and attach internet gateway
-    const createInternetGatewayResponse = await api.createInternetGateway(aws.internetGateway);
-    aws.internetGateway.id = JSON.parse(createInternetGatewayResponse).InternetGateway.InternetGatewayId;
-    config.set('IGW_ID', aws.internetGateway.id);
-    await api.attachInternetGateway(aws.internetGateway.id, aws.vpc.id);
 
+    // Create and attach internet gateway
+    const createInternetGatewayResponse = await api.ec2.createInternetGateway({ Name: aws.internetGateway.name });
+    aws.internetGateway.id = createInternetGatewayResponse.InternetGateway.InternetGatewayId;
+    config.set('IGW_ID', aws.internetGateway.id);
+
+    await api.ec2.attachInternetGateway({
+      InternetGatewayId: aws.internetGateway.id, VpcId: aws.vpc.id,
+    });
+    /*
     // Create route table
     const createRouteTableResponse = await api.createRouteTable(aws.vpc.id, aws.routeTable);
     aws.routeTable.id = JSON.parse(createRouteTableResponse).RouteTable.RouteTableId;
