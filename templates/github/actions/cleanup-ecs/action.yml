@@ -57,9 +57,6 @@ runs:
 
         aws elbv2 delete-rule \
         --rule-arn $RULE_ARN
-
-        aws elbv2 delete-listener \
-        --listener-arn $LISTENER_ARN
       shell: bash
 
     - run: |
