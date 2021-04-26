@@ -196,7 +196,6 @@ runs:
         --conditions file://./rules-conditions.json \
         --priority $PR_NUMBER \
         --actions Type=forward,TargetGroupArn=$TARGET_GROUP_ARN \
-        --tags Key=Name,Value=$PROJECT-$PR_NUMBER \
         --query 'Rules[0].RuleArn' \
         --output text)
 
