@@ -1,5 +1,5 @@
 const path = require('path')
-const executeProcess = require('./executeProcess')
+const executeProcess = require('../executeProcess')
 const Conf = require('conf')
 const config = new Conf()
 
