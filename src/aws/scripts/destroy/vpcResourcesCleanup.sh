@@ -1,8 +1,5 @@
 #!/bin/bash
 
-aws ec2 detach-internet-gateway \
---internet-gateway-id $INTERNET_GATEWAY_ID \
---vpc-id $VPC_ID
 
 # must first detatch
 aws ec2 delete-internet-gateway \
