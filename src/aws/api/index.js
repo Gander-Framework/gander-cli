@@ -29,6 +29,7 @@ const ecrRepoDelete = require('./destroy/ecrRepoDelete')
 const vpcDelete = require('./destroy/vpcDelete')
 const iamDetachPolicyRole = require('./destroy/iamDetachPolicyRole')
 const describeMountTargets = require('./efsDescribeMountTargets')
+const disassociateRouteTable = require('./destroy/disassociateRouteTable')
 
 const api = {
   setupIam,
@@ -62,6 +63,7 @@ const api = {
   ecrRepoDelete, 
   iamDetachPolicyRole,
   describeMountTargets, 
+  disassociateRouteTable,
 }
 
 module.exports = api
