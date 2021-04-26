@@ -13,9 +13,15 @@ class destroyCommand extends Command {
     await api.deleteMountTarget()
 
     // TODO: delete EFS
+    await api.efsDelete()
+
+    // TODO: delete VPC resources
+    await api.vpcResourcesCleanup()
     // TODO: delete VPC
+    await api.vpcDelete()
     // TODO: delete cluster
     // TODO: delete ECR repo
+    await api.ecrRepoDelete()
   }
 }
 
