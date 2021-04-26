@@ -24,7 +24,6 @@ const iamDeletePolicy = require('./iamDeletePolicy.js')
 const iamDeleteRole = require('./iamDeleteRole')
 const deleteMountTarget = require('./efsDeleteMountTarget')
 const efsDelete = require('./destroy/efsDelete')
-const vpcResourcesCleanup = require('./destroy/vpcResourcesCleanup')
 const ecrRepoDelete = require('./destroy/ecrRepoDelete')
 const vpcDelete = require('./destroy/vpcDelete')
 const iamDetachPolicyRole = require('./destroy/iamDetachPolicyRole')
@@ -34,6 +33,7 @@ const deleteRouteTable = require('./destroy/deleteRouteTable')
 const detachInternetGateway = require('./destroy/detachInternetGateway')
 const deleteInternetGateway = require('./destroy/deleteInternetGateway')
 const deleteSubnet = require('./destroy/deleteSubnet')
+const deleteSecurityGroup = require('./destroy/deleteSecurityGroup')
 
 const api = {
   setupIam,
@@ -62,7 +62,6 @@ const api = {
   iamDeleteRole,
   deleteMountTarget,
   vpcDelete,
-  vpcResourcesCleanup,
   efsDelete,
   ecrRepoDelete, 
   iamDetachPolicyRole,
@@ -72,6 +71,7 @@ const api = {
   detachInternetGateway,
   deleteInternetGateway,
   deleteSubnet,
+  deleteSecurityGroup,
 }
 
 module.exports = api
