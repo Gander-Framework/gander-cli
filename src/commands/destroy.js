@@ -41,11 +41,14 @@ class DestroyCommand extends Command {
     await api.detachInternetGateway()
     await api.deleteInternetGateway()
     await api.deleteSubnet()
+    await api.deleteSecurityGroup('Cluster')
+    await api.deleteSecurityGroup('EFS')
 
     // TODO: delete VPC resources
     await api.vpcResourcesCleanup()
     // TODO: delete VPC
     await api.vpcDelete()
+    
     // TODO: delete cluster
 
     
