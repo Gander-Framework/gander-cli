@@ -21,21 +21,26 @@ class SetupCommand extends Command {
     console.log('\nGenerating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n');
 
     if (initialConfig.generateIam === 'yes') {
-      await api.iam.createGroup(aws.iam.groupName);
-      await api.iam.createUser(aws.iam.userName);
+      await api.iam.createGroup({ GroupName: aws.iam.groupName });
+      await api.iam.createUser({ UserName: aws.iam.userName });
     } else {
       aws.iam.groupName = null;
       aws.iam.userName = null;
     }
 
     // Create task execution role
-    const createPolicyResponse = await api.iam.createPolicy(aws.iam.policy.name, aws.iam.policy.path);
+    const createPolicyResponse = await api.iam.createPolicy({
+      PolicyName: aws.iam.policy.name,
+      PolicyPath: aws.iam.policy.path });
     aws.iam.policy.arn = createPolicyResponse.Policy.Arn;
 
-    await api.iam.createRole(aws.iam.role.name, aws.iam.role.path);
-    await api.iam.attachRolePolicy(aws.iam.role.name, aws.iam.policy.arn);
+    await api.iam.createRole({
+      RoleName: aws.iam.role.name,
+      TrustPath: aws.iam.role.path });
+    await api.iam.attachRolePolicy({
+      RoleName: aws.iam.role.name,
+      PolicyArn: aws.iam.policy.arn });
 
-    console.log('DONE TESTING IAM WITH SDK');
     // Create and configure VPC
     const createVpcResponse = await api.createVpc(aws.vpc);
     aws.vpc.id = JSON.parse(createVpcResponse).Vpc.VpcId;
