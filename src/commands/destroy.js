@@ -3,8 +3,9 @@ const prompts = require('../prompts')
 const api = require('../aws/api')
 
 
-class destroyCommand extends Command {
+class DestroyCommand extends Command {
   async run() {
+    await api.iamDetachPolicyRole()
     // TODO: delete fleetTaskExecutionRole
     await api.iamDeleteRole()
     // TODO: delete fleetTaskExecutionPolicy
@@ -25,6 +26,6 @@ class destroyCommand extends Command {
   }
 }
 
-destroyCommand.description = 'Teardown all of the Fleet infrastructure that was created during initial setup'
+DestroyCommand.description = 'Teardown all of the Fleet infrastructure that was created during initial setup'
 
 module.exports = DestroyCommand

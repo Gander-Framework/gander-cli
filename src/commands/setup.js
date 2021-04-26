@@ -67,7 +67,7 @@ class SetupCommand extends Command {
 
     // Associate route table
    const associateRouteTableResponse = await api.associateRouteTable(aws.routeTable.id, aws.subnet.id)
-   aws.routeTable.associationId = JSON.parse(associateRouteTableResponse).associationId
+   aws.routeTable.associationId = JSON.parse(associateRouteTableResponse).AssociationId
    config.set('ASSOCIATION_ID', aws.routeTable.associationId)
 
 

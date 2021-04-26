@@ -27,6 +27,7 @@ const efsDelete = require('./destroy/efsDelete')
 const vpcResourcesCleanup = require('./destroy/vpcResourcesCleanup')
 const ecrRepoDelete = require('./destroy/ecrRepoDelete')
 const vpcDelete = require('./destroy/vpcDelete')
+const iamDetachPolicyRole = require('./destroy/iamDetachPolicyRole')
 
 const api = {
   setupIam,
@@ -58,6 +59,7 @@ const api = {
   vpcResourcesCleanup,
   efsDelete,
   ecrRepoDelete, 
+  iamDetachPolicyRole,
 }
 
 module.exports = api
