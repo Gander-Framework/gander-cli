@@ -155,6 +155,51 @@ runs:
       shell: bash
 
     - run: |
+        echo "Creating Target Group"
+
+        VPC_ID=$(aws ec2 describe-vpcs \
+        --filters Name=tag:Name,Values=fleet-apps \
+        --query 'Vpcs[0].VpcId' \
+        --output text)
+        
+        TARGET_GROUP_ARN=$(aws elbv2 create-target-group \
+        --name Fleet-$PROJECT-$PR_NUMBER \
+        --vpc-id $VPC_ID \
+        --protocol HTTP \
+        --port 8080 \
+        --target-type ip \
+        --query 'TargetGroups[0].TargetGroupArn' \
+        --output text)
+
+        echo "Creating Rule"
+
+        ALB_ARN=$(aws elbv2 describe-load-balancers \
+        --query 'LoadBalancers[?LoadBalancerName==`fleet-apps`] | [0].LoadBalancerArn' \
+        --output text)
+
+        LISTENER_ARN=$(aws elbv2 describe-listeners \
+        --load-balancer-arn $ALB_ARN \
+        --query 'Listeners[?Port==`80`] | [0].ListenerArn' \
+        --output text)
+
+        cat << RULES >> ./rules-conditions.json
+        [
+          {
+            "Field": "host-header",
+            "Values": "$PROJECT-$PR_NUMBER.staging.$USER_DOMAIN"
+          }
+        ]
+        RULES
+
+        aws elbv2 create-rule \
+        --listener-arn $LISTENER_ARN \
+        --conditions file://./rules-conditions.json \
+        --priority $PR_NUMBER \
+        --actions Type=forward,TargetGroupArn=$TARGET_GROUP_ARN
+
+        echo "TARGET_GROUP_ARN=$TARGET_GROUP_ARN" >> $GITHUB_ENV
+
+    - run: |
         echo "Launching App Service"
         echo "APP_SERVICE=$(aws ecs create-service \
           --cluster $PROJECT \
@@ -167,6 +212,7 @@ runs:
               securityGroups=[$SG_ID], \
               assignPublicIp=ENABLED \
             }" \
+          --load-balancers targetGroupArn=$TARGET_GROUP_ARN,loadBalancerName=fleet-apps,containerName=api,containerPort=8080 \
           --query 'service.serviceArn' \
           --output text)" >> $GITHUB_ENV
       shell: bash
