@@ -66,7 +66,10 @@ class SetupCommand extends Command {
     await api.createRoute(aws.routeTable.id, aws.internetGateway.id)
 
     // Associate route table
-    await api.associateRouteTable(aws.routeTable.id, aws.subnet.id)
+   const associateRouteTableResponse = await api.associateRouteTable(aws.routeTable.id, aws.subnet.id)
+   aws.routeTable.associationId = JSON.parse(associateRouteTableResponse).associationId
+   config.set('ASSOCIATION_ID', aws.routeTable.associationId)
+
 
     // Create EFS security group and rules
     const createEfsSecurityGroupResponse = await api.createSecurityGroup(aws.vpc.id, aws.efsSecurityGroup)

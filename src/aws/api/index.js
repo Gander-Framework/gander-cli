@@ -23,6 +23,10 @@ const attachPolicyToRole = require('./iamAttachPolicyToRole.js')
 const iamDeletePolicy = require('./iamDeletePolicy.js')
 const iamDeleteRole = require('./iamDeleteRole')
 const deleteMountTarget = require('./efsDeleteMountTarget')
+const efsDelete = require('./destroy/efsDelete')
+const vpcResourcesCleanup = require('./destroy/vpcResourcesCleanup')
+const ecrRepoDelete = require('./destroy/ecrRepoDelete')
+const vpcDelete = require('./destroy/vpcDelete')
 
 const api = {
   setupIam,
@@ -50,6 +54,10 @@ const api = {
   iamDeletePolicy,
   iamDeleteRole,
   deleteMountTarget,
+  vpcDelete,
+  vpcResourcesCleanup,
+  efsDelete,
+  ecrRepoDelete, 
 }
 
 module.exports = api
