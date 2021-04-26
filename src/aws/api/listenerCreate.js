@@ -2,9 +2,9 @@
 const path = require('path')
 const executeProcess = require('./executeProcess.js')
 
-const createListener = async (albArn) => {
+const createListener = async albArn => {
   return executeProcess(
-    'Creating ALB Listener'
+    'Creating ALB Listener',
     'ALB Listener successfully created',
     () => {
       const script = path.resolve(__dirname, '../scripts/listenerCreate.sh')
