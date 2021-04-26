@@ -32,6 +32,7 @@ const describeMountTargets = require('./efsDescribeMountTargets')
 const disassociateRouteTable = require('./destroy/disassociateRouteTable')
 const deleteRouteTable = require('./destroy/deleteRouteTable')
 const detachInternetGateway = require('./destroy/detachInternetGateway')
+const deleteInternetGateway = require('./destroy/deleteInternetGateway')
 
 const api = {
   setupIam,
@@ -68,6 +69,7 @@ const api = {
   disassociateRouteTable,
   deleteRouteTable,
   detachInternetGateway,
+  deleteInternetGateway,
 }
 
 module.exports = api
