@@ -228,25 +228,7 @@ runs:
         aws ecs wait services-stable \
           --cluster $PROJECT \
           --services $PROJECT-$PR_NUMBER-$GITHUB_SHA
-      shell: bash
-    - run: |
-        echo "Getting the public URL of the service"
-        TASK_ID=$(aws ecs list-tasks \
-          --cluster $PROJECT \
-          --service-name $PROJECT-$PR_NUMBER-$GITHUB_SHA \
-          --query 'taskArns | [0]' \
-          --output text | grep -o "[^/]*$")
-
-        INTERFACE_ID=$(aws ecs describe-tasks \
-          --cluster $PROJECT \
-          --tasks $TASK_ID \
-          --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value | [0]' \
-          --output text)
-
+        
         echo "PUBLIC_URL=$PROJECT-$PR_NUMBER.staging.$USER_DOMAIN" >> $GITHUB_ENV
-
-        # echo "PUBLIC_URL=$(aws ec2 describe-network-interfaces \
-        # --network-interface-ids $INTERFACE_ID \
-        # --query 'NetworkInterfaces[0].Association.PublicDnsName' \
-        # --output text)" >> $GITHUB_ENV
       shell: bash
+
