@@ -4,10 +4,14 @@ const {
   ModifyVpcAttributeCommand,
   CreateSecurityGroupCommand,
   AuthorizeSecurityGroupIngressCommand,
+  AuthorizeSecurityGroupEgressCommand,
   CreateSubnetCommand,
   ModifySubnetAttributeCommand,
   CreateInternetGatewayCommand,
   AttachInternetGatewayCommand,
+  CreateRouteTableCommand,
+  CreateRouteCommand,
+  AssociateRouteTableCommand,
 } = require('@aws-sdk/client-ec2');
 
 const client = require('./client.js');
@@ -54,10 +58,20 @@ const createSecurityGroup = ({ VpcId, GroupName, Description }) => executeProces
 });
 
 const authorizeSecurityGroupIngress = ({ GroupId, IpPermissions }) => executeProcess({
-  startMsg: 'Configuring security group',
-  successMsg: 'Security group successfully configured',
+  startMsg: 'Configuring security group ingress rules',
+  successMsg: 'Security group ingress rules successfully configured',
   client: client.ec2,
   command: new AuthorizeSecurityGroupIngressCommand({
+    GroupId,
+    IpPermissions,
+  }),
+});
+
+const authorizeSecurityGroupEgress = ({ GroupId, IpPermissions }) => executeProcess({
+  startMsg: 'Configuring security group egress rules',
+  successMsg: 'Security group egress rules successfully configured',
+  client: client.ec2,
+  command: new AuthorizeSecurityGroupEgressCommand({
     GroupId,
     IpPermissions,
   }),
@@ -110,14 +124,52 @@ const attachInternetGateway = ({ VpcId, InternetGatewayId }) => executeProcess({
   }),
 });
 
+const createRouteTable = ({ VpcId, Name }) => executeProcess({
+  startMsg: 'Creating route table',
+  successMsg: 'Route table successfully created',
+  client: client.ec2,
+  command: new CreateRouteTableCommand({
+    VpcId,
+    TagSpecifications: [{
+      ResourceType: 'route-table',
+      Tags: [{ Key: 'Name', Value: Name }],
+    }],
+  }),
+});
+
+const createRoute = ({ RouteTableId, GatewayId }) => executeProcess({
+  startMsg: 'Creating route to internet gateway',
+  successMsg: 'Route successfully created',
+  client: client.ec2,
+  command: new CreateRouteCommand({
+    RouteTableId,
+    GatewayId,
+    DestinationCidrBlock: '0.0.0.0/0',
+  }),
+});
+
+const associateRouteTable = ({ RouteTableId, SubnetId }) => executeProcess({
+  startMsg: 'Associating route table with subnet',
+  successMsg: 'Route table successfully associated',
+  client: client.ec2,
+  command: new AssociateRouteTableCommand({
+    RouteTableId,
+    SubnetId,
+  }),
+});
+
 module.exports = {
   initializeClient,
   createVpc,
   modifyVpcAttribute,
   createSecurityGroup,
   authorizeSecurityGroupIngress,
+  authorizeSecurityGroupEgress,
   createSubnet,
   modifySubnetAttribute,
   createInternetGateway,
   attachInternetGateway,
+  createRouteTable,
+  createRoute,
+  associateRouteTable,
 };

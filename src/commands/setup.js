@@ -118,26 +118,60 @@ class SetupCommand extends Command {
     await api.ec2.attachInternetGateway({
       InternetGatewayId: aws.internetGateway.id, VpcId: aws.vpc.id,
     });
-    /*
+
     // Create route table
-    const createRouteTableResponse = await api.createRouteTable(aws.vpc.id, aws.routeTable);
-    aws.routeTable.id = JSON.parse(createRouteTableResponse).RouteTable.RouteTableId;
+    const createRouteTableResponse = await api.ec2.createRouteTable({
+      VpcId: aws.vpc.id,
+      Name: aws.routeTable.name,
+    });
+    aws.routeTable.id = createRouteTableResponse.RouteTable.RouteTableId;
     config.set('ROUTE_TABLE_ID', aws.routeTable.id);
 
     // Create route
-    await api.createRoute(aws.routeTable.id, aws.internetGateway.id);
+    await api.ec2.createRoute({
+      RouteTableId: aws.routeTable.id,
+      GatewayId: aws.internetGateway.id,
+    });
 
     // Associate route table
-    await api.associateRouteTable(aws.routeTable.id, aws.subnet.id);
+    await api.ec2.associateRouteTable({
+      RouteTableId: aws.routeTable.id,
+      SubnetId: aws.subnet.id,
+    });
 
     // Create EFS security group and rules
-    const createEfsSecurityGroupResponse = await api.createSecurityGroup(aws.vpc.id, aws.efsSecurityGroup);
-    aws.efsSecurityGroup.id = JSON.parse(createEfsSecurityGroupResponse).GroupId;
+    const createEfsSecurityGroupResponse = await api.ec2.createSecurityGroup({
+      VpcId: aws.vpc.id,
+      GroupName: aws.efsSecurityGroup.name,
+      Description: aws.efsSecurityGroup.description,
+    });
+    aws.efsSecurityGroup.id = createEfsSecurityGroupResponse.GroupId;
     config.set('EFS_SECURITY_GROUP_ID', aws.efsSecurityGroup.id);
 
-    await api.setEfsSgIngress(aws.efsSecurityGroup.id, aws.clusterSecurityGroup.id);
-    await api.setEfsSgEgress(aws.efsSecurityGroup.id, aws.clusterSecurityGroup.id);
+    await api.ec2.authorizeSecurityGroupIngress({
+      GroupId: aws.efsSecurityGroup.id,
+      IpPermissions: [
+        {
+          FromPort: 2049,
+          ToPort: 2049,
+          IpProtocol: 'tcp',
+          UserIdGroupPairs: [{ GroupId: aws.clusterSecurityGroup.id }],
+        },
+      ],
+    });
 
+    await api.ec2.authorizeSecurityGroupEgress({
+      GroupId: aws.clusterSecurityGroup.id,
+      IpPermissions: [
+        {
+          FromPort: 2049,
+          ToPort: 2049,
+          IpProtocol: 'tcp',
+          UserIdGroupPairs: [{ GroupId: aws.efsSecurityGroup.id }],
+        },
+      ],
+    });
+    /*
     // create EFS
     const createEfsResponse = await api.createEfs(aws.efs.region, aws.efs);
     aws.efs.id = JSON.parse(createEfsResponse).FileSystemId;
