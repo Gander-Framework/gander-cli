@@ -19,7 +19,7 @@ class SetupCommand extends Command {
     aws.subnet.availabilityZone = `${initialConfig.awsRegion}a`;
 
     console.log('\nGenerating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n');
-
+    /*
     // Initialize IAM client with correct region
     api.client.iam = api.iam.initializeClient(initialConfig.awsRegion);
 
@@ -46,19 +46,58 @@ class SetupCommand extends Command {
       RoleName: aws.iam.role.name,
       PolicyArn: aws.iam.policy.arn,
     });
+  */
+    api.client.ec2 = api.ec2.initializeClient(initialConfig.awsRegion);
 
     // Create and configure VPC
-    const createVpcResponse = await api.createVpc(aws.vpc);
-    aws.vpc.id = JSON.parse(createVpcResponse).Vpc.VpcId;
+    const createVpcResponse = await api.ec2.createVpc({
+      CidrBlock: aws.vpc.cidrBlock,
+      VpcName: aws.vpc.name,
+    });
+
+    aws.vpc.id = createVpcResponse.Vpc.VpcId;
     config.set('VPC_ID', aws.vpc.id);
-    await api.modifyVpcAttribute(aws.vpc.id);
+    await api.ec2.modifyVpcAttribute({ VpcId: aws.vpc.id });
 
     // Create security groups and rules
-    const clusterSecurityGroupResponse = await api.createSecurityGroup(aws.vpc.id, aws.clusterSecurityGroup);
-    aws.clusterSecurityGroup.id = JSON.parse(clusterSecurityGroupResponse).GroupId;
+    const clusterSecurityGroupResponse = await api.ec2.createSecurityGroup({
+      VpcId: aws.vpc.id,
+      GroupName: aws.clusterSecurityGroup.name,
+      Description: aws.clusterSecurityGroup.description,
+    });
+    aws.clusterSecurityGroup.id = clusterSecurityGroupResponse.GroupId;
     config.set('CLUSTER_SECURITY_GROUP_ID', aws.clusterSecurityGroup.id);
-    await api.setSgIngress(aws.clusterSecurityGroup.id);
 
+    await api.ec2.authorizeSecurityGroupIngress({
+      GroupId: aws.clusterSecurityGroup.id,
+      IpPermissions: [
+        {
+          FromPort: 80,
+          ToPort: 80,
+          IpProtocol: 'tcp',
+          IpRanges: [{ CidrIp: '0.0.0.0/0' }],
+        },
+        {
+          FromPort: 443,
+          ToPort: 443,
+          IpProtocol: 'tcp',
+          IpRanges: [{ CidrIp: '0.0.0.0/0' }],
+        },
+        {
+          FromPort: 2049,
+          ToPort: 2049,
+          IpProtocol: 'tcp',
+          IpRanges: [{ CidrIp: '0.0.0.0/0' }],
+        },
+        {
+          FromPort: 8080,
+          ToPort: 8080,
+          IpProtocol: 'tcp',
+          IpRanges: [{ CidrIp: '0.0.0.0/0' }],
+        },
+      ],
+    });
+    /*
     // Create and configure subnet
     const createSubnetResponse = await api.createSubnet(aws.vpc.id, aws.subnet);
     aws.subnet.id = JSON.parse(createSubnetResponse).Subnet.SubnetId;
@@ -121,6 +160,7 @@ class SetupCommand extends Command {
     config.set('EFS_CREATION_TOKEN', DEFAULT_NAME);
 
     console.log('All done! :D');
+    */
   }
 }
 

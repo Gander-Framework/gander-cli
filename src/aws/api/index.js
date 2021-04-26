@@ -1,10 +1,8 @@
 const client = require('./client');
 const iam = require('./iam');
-const createSecurityGroup = require('./secGroupSetup.js');
-const setSgIngress = require('./secGroupIngressSetup.js');
+const ec2 = require('./ec2');
 const setEfsSgIngress = require('./efsSecGroupIngress.js');
 const setEfsSgEgress = require('./efsSecGroupEgress.js');
-const createVpc = require('./vpcCreate.js');
 const modifyVpcAttribute = require('./vpcModifyAttribute.js');
 const createSubnet = require('./subnetCreate.js');
 const modifySubnetAttribute = require('./subnetModifyAttribute.js');
@@ -22,11 +20,9 @@ const createCluster = require('./ecsCreateCluster.js');
 const api = {
   client,
   iam,
-  createSecurityGroup,
-  setSgIngress,
+  ec2,
   setEfsSgIngress,
   setEfsSgEgress,
-  createVpc,
   modifyVpcAttribute,
   createSubnet,
   modifySubnetAttribute,
