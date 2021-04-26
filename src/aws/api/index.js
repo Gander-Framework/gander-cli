@@ -1,11 +1,6 @@
 const client = require('./client');
 const iam = require('./iam');
 const ec2 = require('./ec2');
-const setEfsSgIngress = require('./efsSecGroupIngress.js');
-const setEfsSgEgress = require('./efsSecGroupEgress.js');
-const createRouteTable = require('./routeTableCreate.js');
-const createRoute = require('./routeCreate.js');
-const associateRouteTable = require('./routeTableAssociate.js');
 const createEfs = require('./efsCreate.js');
 const createMountTarget = require('./efsCreateMountTarget.js');
 const describeFileSystem = require('./efsDescribeFileSystem.js');
@@ -16,11 +11,6 @@ const api = {
   client,
   iam,
   ec2,
-  setEfsSgIngress,
-  setEfsSgEgress,
-  createRouteTable,
-  createRoute,
-  associateRouteTable,
   createEfs,
   createMountTarget,
   describeFileSystem,
