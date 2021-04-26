@@ -38,6 +38,8 @@ class DestroyCommand extends Command {
     // VPC Dependency Journey -----------------------
     await api.disassociateRouteTable()
     await api.deleteRouteTable()
+    await api.detachInternetGateway()
+    await api.deleteInternetGateway()
 
     // TODO: delete VPC resources
     await api.vpcResourcesCleanup()
