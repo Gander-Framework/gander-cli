@@ -17,6 +17,8 @@ class SetupCommand extends Command {
     config.set('AWS_REGION', initialConfig.awsRegion)
 
     aws.subnet.availabilityZone = `${initialConfig.awsRegion}a`
+    aws.subneta.availabilityZone = `${initialConfig.awsRegion}a`
+    aws.subnetb.availabilityZone = `${initialConfig.awsRegion}b`
 
     console.log('\nGenerating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n')
 
@@ -44,11 +46,35 @@ class SetupCommand extends Command {
     config.set('CLUSTER_SECURITY_GROUP_ID', aws.clusterSecurityGroup.id)
     await api.setSgIngress(aws.clusterSecurityGroup.id)
 
-    // Create and configure subnet
+    // Create security groups and rules
+    const albSecurityGroupResponse = await api.createSecurityGroup(aws.vpc.id, aws.albSecurityGroup)
+    aws.albSecurityGroup.id = JSON.parse(albSecurityGroupResponse).GroupId
+    config.set('ALB_SECURITY_GROUP_ID', aws.albSecurityGroup.id)
+    await api.setSgIngress(aws.albSecurityGroup.id)
+    await api.setSgEgress(aws.albSecurityGroup.id)
+
+    // Create and configure private subnet
     const createSubnetResponse = await api.createSubnet(aws.vpc.id, aws.subnet)
     aws.subnet.id = JSON.parse(createSubnetResponse).Subnet.SubnetId
     config.set('CLUSTER_SUBNET_ID', aws.subnet.id)
     await api.modifySubnetAttribute(aws.subnet.id)
+
+    // Create and configure public subnet a
+    const createSubnetAResponse = await api.createSubnet(aws.vpc.id, aws.subneta)
+    aws.subneta.id = JSON.parse(createSubnetAResponse).Subnet.SubnetId
+    config.set('CLUSTER_SUBNETA_ID', aws.subneta.id)
+    await api.modifySubnetAttribute(aws.subneta.id)
+
+    // Create and configure public subnet b
+    const createSubnetBResponse = await api.createSubnet(aws.vpc.id, aws.subnetb)
+    aws.subnetb.id = JSON.parse(createSubnetBResponse).Subnet.SubnetId
+    config.set('CLUSTER_SUBNETB_ID', aws.subnetb.id)
+    await api.modifySubnetAttribute(aws.subnetb.id)
+
+    // Create Application Load Balancer
+    const createAlbResponse = await api.createALB(aws.alb.name, aws.albSecurityGroup.id, aws.subneta.id, aws.subnetb.id)
+    aws.alb.arn = JSON.parse(createAlbResponse).LoadBalancers[0].LoadBalancerArn
+    config.set('ALB_ARN', aws.alb.arn)
 
     // Create and attach internet gateway
     const createInternetGatewayResponse = await api.createInternetGateway(aws.internetGateway)
