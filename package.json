@@ -9,6 +9,7 @@
   "bugs": "https://github.com/Mush-Framework/fleet-cli/issues",
   "dependencies": {
     "@aws-sdk/client-ec2": "^3.13.1",
+    "@aws-sdk/client-ecr": "^3.13.1",
     "@aws-sdk/client-efs": "^3.13.1",
     "@aws-sdk/client-iam": "^3.13.1",
     "@oclif/command": "^1.8.0",
