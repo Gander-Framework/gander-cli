@@ -1,5 +1,4 @@
 const path = require('path')
-const exec = util.promisify(require('child_process').exec)
 const Conf = require('conf')
 const executeProcess = require('./executeProcess')
 const config = new Conf()
