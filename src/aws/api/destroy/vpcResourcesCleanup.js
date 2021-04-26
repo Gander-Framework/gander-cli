@@ -13,7 +13,7 @@ const vpcResourcesCleanup = async () => {
       const arg3 = `INTERNET_GATEWAY_ID=${config.get('IGW_ID')}`
       const arg4 = `VPC_ID=${config.get('VPC_ID')}`
       const arg5 = `SUBNET_ID=${config.get('CLUSTER_SUBNET_ID')}`
-      const script = path.resolve(__dirname, '../scripts/destroy/vpcDelete.sh')
+      const script = path.resolve(__dirname, '../../scripts/destroy/vpcDelete.sh')
 
       return `${arg1} ${arg2} ${arg3} ${arg4} ${arg5} ${script}`
     }
