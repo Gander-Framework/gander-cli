@@ -48,7 +48,7 @@ efs:
   id: ""
   name: *defaultName
   creationToken: *defaultName
-  region: ""
+  availabilityZone: ""
 
 mountTarget:
   id: ""
