@@ -86,6 +86,7 @@ class SetupCommand extends Command {
     await api.createRoute(aws.routeTable.id, aws.internetGateway.id)
 
     // Associate route table
+    await api.associateRouteTable(aws.routeTable.id, aws.subnet.id)
     await api.associateRouteTable(aws.routeTable.id, aws.subneta.id)
     await api.associateRouteTable(aws.routeTable.id, aws.subnetb.id)
 
