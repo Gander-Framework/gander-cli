@@ -6,6 +6,8 @@ const {
   AuthorizeSecurityGroupIngressCommand,
   CreateSubnetCommand,
   ModifySubnetAttributeCommand,
+  CreateInternetGatewayCommand,
+  AttachInternetGatewayCommand,
 } = require('@aws-sdk/client-ec2');
 
 const client = require('./client.js');
@@ -86,6 +88,28 @@ const modifySubnetAttribute = ({ SubnetId }) => executeProcess({
   }),
 });
 
+const createInternetGateway = ({ Name }) => executeProcess({
+  startMsg: 'Creating internet gateway',
+  successMsg: 'Internet gateway successfully created',
+  client: client.ec2,
+  command: new CreateInternetGatewayCommand({
+    TagSpecifications: [{
+      ResourceType: 'internet-gateway',
+      Tags: [{ Key: 'Name', Value: Name }],
+    }],
+  }),
+});
+
+const attachInternetGateway = ({ VpcId, InternetGatewayId }) => executeProcess({
+  startMsg: 'Attaching internet gateway to VPC',
+  successMsg: 'Internet gateway successfully attached',
+  client: client.ec2,
+  command: new AttachInternetGatewayCommand({
+    VpcId,
+    InternetGatewayId,
+  }),
+});
+
 module.exports = {
   initializeClient,
   createVpc,
@@ -94,4 +118,6 @@ module.exports = {
   authorizeSecurityGroupIngress,
   createSubnet,
   modifySubnetAttribute,
+  createInternetGateway,
+  attachInternetGateway,
 };

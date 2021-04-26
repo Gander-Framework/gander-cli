@@ -3,8 +3,6 @@ const iam = require('./iam');
 const ec2 = require('./ec2');
 const setEfsSgIngress = require('./efsSecGroupIngress.js');
 const setEfsSgEgress = require('./efsSecGroupEgress.js');
-const createInternetGateway = require('./igCreate.js');
-const attachInternetGateway = require('./igAttach.js');
 const createRouteTable = require('./routeTableCreate.js');
 const createRoute = require('./routeCreate.js');
 const associateRouteTable = require('./routeTableAssociate.js');
@@ -20,8 +18,6 @@ const api = {
   ec2,
   setEfsSgIngress,
   setEfsSgEgress,
-  createInternetGateway,
-  attachInternetGateway,
   createRouteTable,
   createRoute,
   associateRouteTable,
