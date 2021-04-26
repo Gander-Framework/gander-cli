@@ -30,6 +30,7 @@ const vpcDelete = require('./destroy/vpcDelete')
 const iamDetachPolicyRole = require('./destroy/iamDetachPolicyRole')
 const describeMountTargets = require('./efsDescribeMountTargets')
 const disassociateRouteTable = require('./destroy/disassociateRouteTable')
+const deleteRouteTable = require('./destroy/deleteRouteTable')
 
 const api = {
   setupIam,
@@ -64,6 +65,7 @@ const api = {
   iamDetachPolicyRole,
   describeMountTargets, 
   disassociateRouteTable,
+  deleteRouteTable,
 }
 
 module.exports = api
