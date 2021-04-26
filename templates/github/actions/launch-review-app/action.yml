@@ -186,7 +186,7 @@ runs:
         [
           {
             "Field": "host-header",
-            "Values": "$PROJECT-$PR_NUMBER.staging.$USER_DOMAIN"
+            "Values": ["$PROJECT-$PR_NUMBER.staging.$USER_DOMAIN"]
           }
         ]
         RULES
@@ -198,6 +198,7 @@ runs:
         --actions Type=forward,TargetGroupArn=$TARGET_GROUP_ARN
 
         echo "TARGET_GROUP_ARN=$TARGET_GROUP_ARN" >> $GITHUB_ENV
+      shell: bash
 
     - run: |
         echo "Launching App Service"
@@ -212,7 +213,7 @@ runs:
               securityGroups=[$SG_ID], \
               assignPublicIp=ENABLED \
             }" \
-          --load-balancers targetGroupArn=$TARGET_GROUP_ARN,loadBalancerName=fleet-apps,containerName=api,containerPort=8080 \
+          --load-balancers targetGroupArn=$TARGET_GROUP_ARN,containerName=api,containerPort=8080 \
           --query 'service.serviceArn' \
           --output text)" >> $GITHUB_ENV
       shell: bash
