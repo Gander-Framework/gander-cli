@@ -10,7 +10,7 @@ const iamDetachPolicyRole = async () => {
     () => {
       const arg1 = `POLICY_ARN=${config.get('POLICY_ARN')}`
       const arg2 = `ROLE_NAME=fleetTaskExecutionRole`
-      const script = path.resolve(__dirname, '../scripts/destroy/iamDetachPolicyRole.sh')
+      const script = path.resolve(__dirname, '../../scripts/destroy/iamDetachPolicyRole.sh')
 
       return `${arg1} ${arg2} ${script}`
     }

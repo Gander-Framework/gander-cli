@@ -9,7 +9,7 @@ const vpcDelete = async () => {
     'VPC Deleted',
     () => {
       const arg1 = `VPC_ID=${config.get('VPC_ID')}`
-      const script = path.resolve(__dirname, '../scripts/destroy/vpcDelete.sh')
+      const script = path.resolve(__dirname, '../../scripts/destroy/vpcDelete.sh')
 
       return `${arg1} ${script}`
     }

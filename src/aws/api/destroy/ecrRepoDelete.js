@@ -9,7 +9,7 @@ const ecrRepoDelete = async () => {
     'ECR Repository Deleted',
     () => {
       const arg1 = `REPO_NAME=fleet-ecr`
-      const script = path.resolve(__dirname, '../scripts/destroy/ecrRepoDelete.sh')
+      const script = path.resolve(__dirname, '../../scripts/destroy/ecrRepoDelete.sh')
 
       return `${arg1} ${script}`
     }
