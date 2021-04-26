@@ -40,6 +40,7 @@ class DestroyCommand extends Command {
     await api.deleteRouteTable()
     await api.detachInternetGateway()
     await api.deleteInternetGateway()
+    await api.deleteSubnet()
 
     // TODO: delete VPC resources
     await api.vpcResourcesCleanup()

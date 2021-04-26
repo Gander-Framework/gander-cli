@@ -33,6 +33,7 @@ const disassociateRouteTable = require('./destroy/disassociateRouteTable')
 const deleteRouteTable = require('./destroy/deleteRouteTable')
 const detachInternetGateway = require('./destroy/detachInternetGateway')
 const deleteInternetGateway = require('./destroy/deleteInternetGateway')
+const deleteSubnet = require('./destroy/deleteSubnet')
 
 const api = {
   setupIam,
@@ -70,6 +71,7 @@ const api = {
   deleteRouteTable,
   detachInternetGateway,
   deleteInternetGateway,
+  deleteSubnet,
 }
 
 module.exports = api
