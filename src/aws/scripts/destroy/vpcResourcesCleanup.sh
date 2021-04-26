@@ -1,10 +1,5 @@
 #!/bin/bash
 
-
-# must first detatch
-aws ec2 delete-internet-gateway \
---internet-gateway-id $INTERNET_GATEWAY_ID
-
 # must first terminate all running instances in the subnet
 aws ec2 delete-subnet \
 --subnet-id $CLUSTER_SUBNET_ID
