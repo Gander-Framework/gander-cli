@@ -8,6 +8,9 @@ const {
   copyWorkflowFilesToRepo,
 } = require('../util/fs')
 
+const Conf = require('conf');
+const config = new Conf();
+
 const getAppInfo = async () => {
   const appInfo = await prompts.appInfoPrompt()
   return appInfo
@@ -18,6 +21,7 @@ class InitCommand extends Command {
     createWorkflowDir()
     copyWorkflowFilesToRepo()
     const appInfo = await getAppInfo()
+    config.set('APP_NAME', appInfo.APP_NAME)
     await api.createCluster()
     await populateWorkflows(appInfo)
   }
