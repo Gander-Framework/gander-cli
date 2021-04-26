@@ -6,39 +6,12 @@ const {
   CreateRoleCommand,
   AttachRolePolicyCommand,
 } = require('@aws-sdk/client-iam');
-const path = require('path');
-const { fleetRootPath } = require('../../util/paths.js');
-const log = require('../../util/log.js');
 
-const executeProcess = async ({
-  startMsg,
-  successMsg,
-  client,
-  command,
-}) => {
-  const spinner = log.spin(startMsg);
-  let awsSuccess;
-
-  try {
-    const response = await client.send(command);
-    awsSuccess = response;
-  } catch (error) {
-    spinner.fail(`${error.name}: ${error.message}`);
-    process.exit(1);
-  }
-
-  spinner.succeed(successMsg);
-  return awsSuccess;
-};
+const executeProcess = require('./executeSdkProcess.js');
+const { loadJSON } = require('../../util');
 
 // TODO: pull region from config file
 const AWS_REGION = 'us-east-1';
-
-const loadJSON = inputPath => {
-  const pathFromRoot = path.join(fleetRootPath, inputPath);
-  const file = require(pathFromRoot);
-  return JSON.stringify(file);
-};
 
 const client = new IAMClient({
   region: AWS_REGION,

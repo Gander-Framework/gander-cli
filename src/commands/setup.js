@@ -31,15 +31,18 @@ class SetupCommand extends Command {
     // Create task execution role
     const createPolicyResponse = await api.iam.createPolicy({
       PolicyName: aws.iam.policy.name,
-      PolicyPath: aws.iam.policy.path });
+      PolicyPath: aws.iam.policy.path,
+    });
     aws.iam.policy.arn = createPolicyResponse.Policy.Arn;
 
     await api.iam.createRole({
       RoleName: aws.iam.role.name,
-      TrustPath: aws.iam.role.path });
+      TrustPath: aws.iam.role.path,
+    });
     await api.iam.attachRolePolicy({
       RoleName: aws.iam.role.name,
-      PolicyArn: aws.iam.policy.arn });
+      PolicyArn: aws.iam.policy.arn,
+    });
 
     // Create and configure VPC
     const createVpcResponse = await api.createVpc(aws.vpc);
