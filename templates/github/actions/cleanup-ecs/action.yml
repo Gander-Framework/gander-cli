@@ -51,8 +51,8 @@ runs:
         --output text)
 
         RULE_ARN=$(aws elbv2 describe-rules \
-        --listener-arn $LISTNER_ARN \
-        --query 'Rules[?Priority==`"$PR_NUMBER"`] | [0].RuleArn' \
+        --listener-arn $LISTENER_ARN \
+        --query "Rules[?Conditions[?Values[?contains(@, '$PROJECT-$PR_NUMBER')]]].RuleArn | [0]" \
         --output text)
 
         aws elbv2 delete-rule \
