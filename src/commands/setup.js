@@ -20,6 +20,9 @@ class SetupCommand extends Command {
 
     console.log('\nGenerating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n');
 
+    // Initialize IAM client with correct region
+    api.client.iam = api.iam.initializeClient(initialConfig.awsRegion);
+
     if (initialConfig.generateIam === 'yes') {
       await api.iam.createGroup({ GroupName: aws.iam.groupName });
       await api.iam.createUser({ UserName: aws.iam.userName });

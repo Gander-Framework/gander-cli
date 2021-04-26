@@ -1,3 +1,4 @@
+const client = require('./client');
 const iam = require('./iam');
 const createSecurityGroup = require('./secGroupSetup.js');
 const setSgIngress = require('./secGroupIngressSetup.js');
@@ -19,6 +20,7 @@ const createEcrRepository = require('./ecrCreateRepository.js');
 const createCluster = require('./ecsCreateCluster.js');
 
 const api = {
+  client,
   iam,
   createSecurityGroup,
   setSgIngress,

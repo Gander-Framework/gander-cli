@@ -13,6 +13,7 @@ const executeSdkProcess = async ({
     const response = await client.send(command);
     awsSuccess = response;
   } catch (error) {
+    console.log(error)
     spinner.fail(`${error.name}: ${error.message}`);
     process.exit(1);
   }
