@@ -19,7 +19,7 @@ class SetupCommand extends Command {
     aws.efs.availabilityZone = `${initialConfig.awsRegion}a`;
 
     console.log('\nGenerating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n');
-    /*
+
     // Initialize IAM client with correct region
     api.client.iam = api.iam.initializeClient(initialConfig.awsRegion);
 
@@ -46,7 +46,7 @@ class SetupCommand extends Command {
       RoleName: aws.iam.role.name,
       PolicyArn: aws.iam.policy.arn,
     });
-*/
+
     api.client.ec2 = api.ec2.initializeClient(initialConfig.awsRegion);
 
     // Create and configure VPC
@@ -200,10 +200,11 @@ class SetupCommand extends Command {
     });
     aws.mountTarget.id = createMountTargetResponse.MountTargetId;
     config.set('MOUNT_TARGET_ID', aws.mountTarget.id);
-    /*
+
     // Create ECR repository
-    await api.createEcrRepository();
-*/
+    api.client.ecr = api.ecr.initializeClient(initialConfig.awsRegion);
+    await api.ecr.createRepository();
+
     console.log('It may take around 10 minutes for AWS to fully spin up all infrastructure pieces. But for now, we\'re all done! :D');
 
     config.set('DEFAULT_SUBNET_NAME', DEFAULT_NAME);
