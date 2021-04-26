@@ -3,9 +3,6 @@ const iam = require('./iam');
 const ec2 = require('./ec2');
 const setEfsSgIngress = require('./efsSecGroupIngress.js');
 const setEfsSgEgress = require('./efsSecGroupEgress.js');
-const modifyVpcAttribute = require('./vpcModifyAttribute.js');
-const createSubnet = require('./subnetCreate.js');
-const modifySubnetAttribute = require('./subnetModifyAttribute.js');
 const createInternetGateway = require('./igCreate.js');
 const attachInternetGateway = require('./igAttach.js');
 const createRouteTable = require('./routeTableCreate.js');
@@ -23,9 +20,6 @@ const api = {
   ec2,
   setEfsSgIngress,
   setEfsSgEgress,
-  modifyVpcAttribute,
-  createSubnet,
-  modifySubnetAttribute,
   createInternetGateway,
   attachInternetGateway,
   createRouteTable,

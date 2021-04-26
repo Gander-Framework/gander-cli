@@ -97,13 +97,19 @@ class SetupCommand extends Command {
         },
       ],
     });
-    /*
-    // Create and configure subnet
-    const createSubnetResponse = await api.createSubnet(aws.vpc.id, aws.subnet);
-    aws.subnet.id = JSON.parse(createSubnetResponse).Subnet.SubnetId;
-    config.set('CLUSTER_SUBNET_ID', aws.subnet.id);
-    await api.modifySubnetAttribute(aws.subnet.id);
 
+    // Create and configure subnet
+    const createSubnetResponse = await api.ec2.createSubnet({
+      VpcId: aws.vpc.id,
+      AvailabilityZone: aws.subnet.availabilityZone,
+      CidrBlock: aws.subnet.cidrBlock,
+      SubnetName: aws.subnet.name,
+    });
+    aws.subnet.id = createSubnetResponse.Subnet.SubnetId;
+    config.set('CLUSTER_SUBNET_ID', aws.subnet.id);
+
+    await api.ec2.modifySubnetAttribute({ SubnetId: aws.subnet.id });
+    /*
     // Create and attach internet gateway
     const createInternetGatewayResponse = await api.createInternetGateway(aws.internetGateway);
     aws.internetGateway.id = JSON.parse(createInternetGatewayResponse).InternetGateway.InternetGatewayId;
