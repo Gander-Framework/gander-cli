@@ -14,7 +14,7 @@ env:
   SUBNET_NAME: DEFAULT_SUBNET_NAME # Fleet-Subnet
   SG_NAME: CLUSTER_SECURITY_GROUP # Fleet-Security-3
   FS_TOKEN: EFS_CREATION_TOKEN # FleetFS
-  USER_DOMAIN: "gander-example.com"
+  USER_DOMAIN: GANDER_DOMAIN
   REGION: USER_AWS_REGION # us-east-2
   PR_NUMBER: ${{ github.event.pull_request.number }}
 
