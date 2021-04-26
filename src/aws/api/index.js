@@ -28,6 +28,7 @@ const vpcResourcesCleanup = require('./destroy/vpcResourcesCleanup')
 const ecrRepoDelete = require('./destroy/ecrRepoDelete')
 const vpcDelete = require('./destroy/vpcDelete')
 const iamDetachPolicyRole = require('./destroy/iamDetachPolicyRole')
+const describeMountTargets = require('./efsDescribeMountTargets')
 
 const api = {
   setupIam,
@@ -60,6 +61,7 @@ const api = {
   efsDelete,
   ecrRepoDelete, 
   iamDetachPolicyRole,
+  describeMountTargets, 
 }
 
 module.exports = api

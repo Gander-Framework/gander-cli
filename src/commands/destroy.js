@@ -5,6 +5,7 @@ const api = require('../aws/api')
 
 class DestroyCommand extends Command {
   async run() {
+    
     await api.iamDetachPolicyRole()
     // TODO: delete fleetTaskExecutionRole
     await api.iamDeleteRole()
@@ -13,6 +14,16 @@ class DestroyCommand extends Command {
     // TODO: delete mount target
     await api.deleteMountTarget()
 
+
+    let mountTargetDeleted = false;
+    while(!mountTargetDeleted) {
+      const describeMountTargetsResponse = await api.describeMountTargets()
+      const mtLength = JSON.parse(describeMountTargetsResponse).MountTargets.length
+      mountTargetDeleted = mtLength === 0 ? true : false
+    }
+
+    
+    
     // TODO: delete EFS
     await api.efsDelete()
 
@@ -23,6 +34,7 @@ class DestroyCommand extends Command {
     // TODO: delete cluster
     // TODO: delete ECR repo
     await api.ecrRepoDelete()
+    
   }
 }
 
