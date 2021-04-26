@@ -39,6 +39,30 @@ runs:
         --query 'taskDefinition.taskDefinitionArn'
       shell: bash
     - run: |
+        echo "Deleting load balancer rules and listener"
+
+        ALB_ARN=$(aws elbv2 describe-load-balancers \
+        --query 'LoadBalancers[?LoadBalancerName==`fleet-apps`] | [0].LoadBalancerArn' \
+        --output text)
+
+        LISTENER_ARN=$(aws elbv2 describe-listeners \
+        --load-balancer-arn $ALB_ARN \
+        --query 'Listeners[?Port==`80`] | [0].ListenerArn' \
+        --output text)
+
+        RULE_ARN=$(aws elbv2 describe-rules \
+        --listener-arn $LISTNER_ARN \
+        --query 'Rules[?Priority==`"$PR_NUMBER"`] | [0].RuleArn' \
+        --output text)
+
+        aws elbv2 delete-rule \
+        --rule-arn $RULE_ARN
+
+        aws elbv2 delete-listener \
+        --listener-arn $LISTENER_ARN
+      shell: bash
+
+    - run: |
         ECS_SERVICE_NAME=$(aws ecs list-services \
         --cluster $PROJECT \
         --query 'serviceArns[*]' \
