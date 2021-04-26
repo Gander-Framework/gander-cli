@@ -1,6 +1,7 @@
 const {Command} =  require('@oclif/command')
 const prompts = require('../prompts')
 const api = require('../aws/api')
+const utils = require('../util')
 
 
 class DestroyCommand extends Command {
@@ -16,7 +17,9 @@ class DestroyCommand extends Command {
 
 
     let mountTargetDeleted = false;
+    const pollSpinner
     while(!mountTargetDeleted) {
+      utils.sleep(500)
       const describeMountTargetsResponse = await api.describeMountTargets()
       const mtLength = JSON.parse(describeMountTargetsResponse).MountTargets.length
       mountTargetDeleted = mtLength === 0 ? true : false
