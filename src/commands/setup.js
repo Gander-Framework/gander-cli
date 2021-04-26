@@ -14,9 +14,9 @@ class SetupCommand extends Command {
 
     const initialConfig = await prompts.welcome();
 
-    aws.efs.region = initialConfig.awsRegion;
     config.set('AWS_REGION', initialConfig.awsRegion);
     aws.subnet.availabilityZone = `${initialConfig.awsRegion}a`;
+    aws.efs.availabilityZone = `${initialConfig.awsRegion}a`;
 
     console.log('\nGenerating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n');
     /*
@@ -46,7 +46,7 @@ class SetupCommand extends Command {
       RoleName: aws.iam.role.name,
       PolicyArn: aws.iam.policy.arn,
     });
-  */
+*/
     api.client.ec2 = api.ec2.initializeClient(initialConfig.awsRegion);
 
     // Create and configure VPC
@@ -171,10 +171,14 @@ class SetupCommand extends Command {
         },
       ],
     });
-    /*
+
+    api.client.efs = api.efs.initializeClient(initialConfig.awsRegion);
     // create EFS
-    const createEfsResponse = await api.createEfs(aws.efs.region, aws.efs);
-    aws.efs.id = JSON.parse(createEfsResponse).FileSystemId;
+    const createEfsResponse = await api.efs.createFileSystem({
+      AvailabilityZoneName: aws.efs.availabilityZone,
+      CreationToken: aws.efs.creationToken,
+      Name: aws.efs.Name });
+    aws.efs.id = createEfsResponse.FileSystemId;
     config.set('EFS_ID', aws.efs.id);
 
     // Must wait until life cycle state of EFS is "available" before creating mount target
@@ -184,18 +188,22 @@ class SetupCommand extends Command {
       utils.sleep(500);
 
       // eslint-disable-next-line no-await-in-loop
-      const response = await api.describeFileSystem(aws.efs.id);
-      efsState = JSON.parse(response).FileSystems[0].LifeCycleState;
+      const response = await api.efs.describeFileSystem({ FileSystemId: aws.efs.id });
+      efsState = response.FileSystems[0].LifeCycleState;
     }
 
     // create mount target in subnet
-    const createMountTargetResponse = await api.createMountTarget(aws.efs.id, aws.subnet.id, aws.efsSecurityGroup.id);
-    aws.mountTarget.id = JSON.parse(createMountTargetResponse).MountTargetId;
+    const createMountTargetResponse = await api.efs.createMountTarget({
+      FileSystemId: aws.efs.id,
+      SubnetId: aws.subnet.id,
+      SecurityGroups: [aws.efsSecurityGroup.id],
+    });
+    aws.mountTarget.id = createMountTargetResponse.MountTargetId;
     config.set('MOUNT_TARGET_ID', aws.mountTarget.id);
-
+    /*
     // Create ECR repository
     await api.createEcrRepository();
-
+*/
     console.log('It may take around 10 minutes for AWS to fully spin up all infrastructure pieces. But for now, we\'re all done! :D');
 
     config.set('DEFAULT_SUBNET_NAME', DEFAULT_NAME);
@@ -203,7 +211,6 @@ class SetupCommand extends Command {
     config.set('EFS_CREATION_TOKEN', DEFAULT_NAME);
 
     console.log('All done! :D');
-    */
   }
 }
 
