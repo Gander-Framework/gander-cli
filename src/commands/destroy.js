@@ -35,6 +35,9 @@ class DestroyCommand extends Command {
     // TODO: delete ECR repo
     await api.ecrRepoDelete()
 
+    // VPC Dependency Journey -----------------------
+    await api.disassociateRouteTable()
+
     // TODO: delete VPC resources
     await api.vpcResourcesCleanup()
     // TODO: delete VPC
