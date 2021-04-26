@@ -7,7 +7,7 @@ const log = require('../util/log')
 
 class DestroyCommand extends Command {
   async run() {
-    
+    /*
     await api.iamDetachPolicyRole()
     // TODO: delete fleetTaskExecutionRole
     await api.iamDeleteRole()
@@ -38,14 +38,14 @@ class DestroyCommand extends Command {
     // VPC Dependency Journey -----------------------
     await api.disassociateRouteTable()
     await api.deleteRouteTable()
+    
     await api.detachInternetGateway()
     await api.deleteInternetGateway()
     await api.deleteSubnet()
+    */
     await api.deleteSecurityGroup('Cluster')
     await api.deleteSecurityGroup('EFS')
-
-    // TODO: delete VPC resources
-    await api.vpcResourcesCleanup()
+   
     // TODO: delete VPC
     await api.vpcDelete()
     

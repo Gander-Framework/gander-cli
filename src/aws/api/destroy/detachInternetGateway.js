@@ -10,7 +10,7 @@ const detachInternetGateway = async () => {
     () => {
       const arg1 = `INTERNET_GATEWAY_ID=${config.get('IGW_ID')}`
       const arg2 = `VPC_ID=${config.get('VPC_ID')}`
-      const script = path.resolve(__dirname, '../../scripts/destroy/vpcDelete.sh')
+      const script = path.resolve(__dirname, '../../scripts/destroy/detachInternetGateway.sh')
 
       return `${arg1} ${arg2} ${script}`
     }
