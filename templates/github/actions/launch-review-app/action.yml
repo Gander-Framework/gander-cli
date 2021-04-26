@@ -191,11 +191,17 @@ runs:
         ]
         RULES
 
-        aws elbv2 create-rule \
+        RULE_ARN=$(aws elbv2 create-rule \
         --listener-arn $LISTENER_ARN \
         --conditions file://./rules-conditions.json \
         --priority $PR_NUMBER \
-        --actions Type=forward,TargetGroupArn=$TARGET_GROUP_ARN
+        --actions Type=forward,TargetGroupArn=$TARGET_GROUP_ARN \
+        --query 'Rules[0].RuleArn' \
+        --output text)
+
+        aws rds add-tags-to-resource \
+        --resource-name $RULE_ARN \
+        --tags Key=Name,Value=$PROJECT-$PR_NUMBER
 
         echo "TARGET_GROUP_ARN=$TARGET_GROUP_ARN" >> $GITHUB_ENV
       shell: bash
@@ -237,8 +243,10 @@ runs:
           --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value | [0]' \
           --output text)
 
-        echo "PUBLIC_URL=$(aws ec2 describe-network-interfaces \
-        --network-interface-ids $INTERFACE_ID \
-        --query 'NetworkInterfaces[0].Association.PublicDnsName' \
-        --output text)" >> $GITHUB_ENV
+        echo "PUBLIC_URL=$PROJECT-$PR_NUMBER.staging.$USER_DOMAIN" >> $GITHUB_ENV
+
+        # echo "PUBLIC_URL=$(aws ec2 describe-network-interfaces \
+        # --network-interface-ids $INTERFACE_ID \
+        # --query 'NetworkInterfaces[0].Association.PublicDnsName' \
+        # --output text)" >> $GITHUB_ENV
       shell: bash
