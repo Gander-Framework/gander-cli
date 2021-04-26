@@ -196,12 +196,13 @@ runs:
         --conditions file://./rules-conditions.json \
         --priority $PR_NUMBER \
         --actions Type=forward,TargetGroupArn=$TARGET_GROUP_ARN \
+        --tags Key=Name,Value=$PROJECT-$PR_NUMBER \
         --query 'Rules[0].RuleArn' \
         --output text)
 
-        aws rds add-tags-to-resource \
-        --resource-name $RULE_ARN \
-        --tags Key=Name,Value=$PROJECT-$PR_NUMBER
+        # aws rds add-tags-to-resource \
+        # --resource-name $RULE_ARN \
+        # --tags Key=Name,Value=$PROJECT-$PR_NUMBER
 
         echo "TARGET_GROUP_ARN=$TARGET_GROUP_ARN" >> $GITHUB_ENV
       shell: bash
