@@ -13,11 +13,25 @@ const executeSdkProcess = async ({
     const response = await client.send(command);
     awsSuccess = response;
   } catch (error) {
+    console.log('\n', error);
     spinner.fail(`${error.name}: ${error.message}`);
     process.exit(1);
   }
 
+  // return client.send(command)
+  // .then(response => {
+  //   spinner.succeed(successMsg);
+  //   return response;
+  // })
+  // .catch(error => {
+  //   console.log('HIT ME');
+  //   console.log('\n', error);
+  //   spinner.fail(`${error.name}: ${error.message}`);
+  //   process.exit(1);
+  // });
+
   spinner.succeed(successMsg);
+
   return awsSuccess;
 };
 
