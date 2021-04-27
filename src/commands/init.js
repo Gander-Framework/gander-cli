@@ -10,15 +10,12 @@ const {
   copyWorkflowFilesToRepo,
 } = require('../util/fs')
 
-const Conf = require('conf');
-const config = new Conf();
-
 const getAppInfo = async () => {
   const appInfo = await prompts.appInfoPrompt()
   return appInfo
 }
 
-const addAppToConfigFile = (APP_NAME) => {
+const addAppToConfigFile = APP_NAME => {
   let apps = JSON.parse(config.get('APP_NAMES'))
   apps.push(APP_NAME)
   config.set('APP_NAMES', JSON.stringify(apps))
