@@ -17,6 +17,7 @@ const getAppInfo = async () => {
 
 class InitCommand extends Command {
   async run() {
+    console.log(config.path)
     createWorkflowDir()
     copyWorkflowFilesToRepo()
     const appInfo = await getAppInfo()
