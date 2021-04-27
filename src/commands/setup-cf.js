@@ -1,8 +1,13 @@
-const { Command } = require('@oclif/command')
-const Conf = require('conf')
+const { Command } = require('@oclif/command');
+const Conf = require('conf');
+const prompts = require('../prompts');
+const config = new Conf();
+
 class SetupCFCommand extends Command {
   async run() {
-    console.log('hello!')
+    const initialConfig = await prompts.welcome();
+    config.set('AWS_REGION', initialConfig.awsRegion);
+    
   }
 }
 
