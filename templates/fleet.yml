@@ -218,44 +218,44 @@ Resources:
                 Resource: "*"
 
 Outputs:
-  VPC_ID:
+  VPCID:
     Description: ID of the VPC
     Value: !Ref FleetVPC
-  CLUSTER_SECURITY_GROUP_ID:
+  ClusterSecurityGroupID:
     Description: Cluster Security Group ID
     Value: !Ref ClusterSecurity
-  ALB_SECURITY_GROUP_ID:
+  ALBSecurityGroupID:
     Description: Application Load Balancer Security Group ID
     Value: !Ref ALBSecurity
-  CLUSTER_SUBNET_ID:
+  ClusterSubnetID:
     Description: Cluster Subnet ID
     Value: !Ref ClusterSubnet
-  CLUSTER_SUBNETA_ID:
+  ALBSubnetAID:
     Description: Application Load Balancer Subnet A ID
     Value: !Ref ALBSubnetA
-  CLUSTER_SUBNETB_ID:
+  ALBSubnetBID:
     Description: Application Load Balancer Subnet B ID
     Value: !Ref ALBSubnetB
   # Cannot get ID of IGW. I don't think it matters
   # InternetGatewayID:
   #   Description: Internet Gateway ID
   #   Value:
-  ROUTE_TABLE_ID:
+  RouteTableID:
     Description: Route Table ID
     Value: !Ref RouteTable
-  ALB_ARN:
+  ALBARN:
     Description: Application Load Balancer ARN
     Value: !Ref ALB
-  LISTENER_ARN:
+  ListenerArn:
     Description: Application Load Balancer Listener ARN
     Value: !Ref Listener
-  ALB_DOMAIN:
+  ALBDomain:
     Description: Application Load Balancer Domain Name
     Value: !GetAtt ALB.DNSName
-  EFS_SECURITY_GROUP_ID:
+  EFSSecurityGroupID:
     Description: Elastic File System Mount Target Security Group ID
     Value: !Ref EFSSecurity
-  EFS_ID:
+  EFSID:
     Description: Elastic File System ID
     Value: !Ref EFS
   MountTargetID:
