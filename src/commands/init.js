@@ -23,13 +23,12 @@ const addAppToConfigFile = (APP_NAME) => {
 
 class InitCommand extends Command {
   async run() {
-    // console.log(config.path)
     // createWorkflowDir()
     // copyWorkflowFilesToRepo()
     const appInfo = await getAppInfo()
     addAppToConfigFile(appInfo.APP_NAME)
 
-    // await api.createCluster(appInfo.APP_NAME)
+    await api.createCluster(appInfo.APP_NAME)
     // await populateWorkflows(appInfo)
   }
 }

@@ -3,7 +3,17 @@ const prompts = require('../prompts')
 const api = require('../aws/api')
 const utils = require('../util')
 const log = require('../util/log')
+const Conf = require('conf')
+const config = new Conf()
 
+
+const destroyAllClusters = () => {
+  const appNames = JSON.parse(config.get('APP_NAMES'))
+  appNames.forEach(name => {
+    // TODO: call api.deleteCluster
+    api.deleteCluster(name)
+  })
+}
 
 class DestroyCommand extends Command {
   async run() {
@@ -55,8 +65,8 @@ class DestroyCommand extends Command {
     // TODO: delete VPC
     await api.vpcDelete()
     
-    // TODO: delete cluster
-
+    // TODO: delete clusters
+    destroyAllClusters()
     
   }
 }
