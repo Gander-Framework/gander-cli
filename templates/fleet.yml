@@ -84,7 +84,7 @@ Resources:
     Properties:
       GroupName: !Sub "{DefaultName}-cluster"
       GroupDescription: Security group for the running ECS services
-      VpcId: !Ref VPC
+      VpcId: !Ref FleetVPC
       SecurityGroupIngress:
         - Description: Allow port 8080 inbound traffic
           IpProtocol: tcp
