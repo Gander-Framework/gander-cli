@@ -150,6 +150,7 @@ Resources:
         - Key: Name
           Value: !Sub "${DefaultName}"
       PerformanceMode: generalPurpose
+      Encrypted: true
   MountTarget:
     Type: AWS::EFS::MountTarget
     Properties:
