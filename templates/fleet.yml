@@ -13,10 +13,6 @@ Parameters:
     Default: fleet-ecr
   UserAWSRegion:
     Description: The AWS Region you want your infrastructure in
-Mappings:
-
-Conditions:
-
 Resources:
   FleetVPC:
     Type: AWS::EC2::VPC
@@ -202,40 +198,41 @@ Resources:
 Outputs:
   VPCID:
     Description: ID of the VPC
-    Value:
+    Value: !Ref FleetVPC
   ClusterSecurityGroupID:
     Description: Cluster Security Group ID
-    Value:
+    Value: !Ref ClusterSecurity
   ALBSecurityGroupID:
     Description: Application Load Balancer Security Group ID
-    Value:
+    Value: !Ref ALBSecurity
   ClusterSubnetID:
     Description: Cluster Subnet ID
-    Value:
+    Value: !Ref ClusterSubnet
   ALBSubnetAID:
     Description: Application Load Balancer Subnet A ID
-    Value:
+    Value: !Ref ALBSubnetA
   ALBSubnetBID:
     Description:  Application Load Balancer Subnet B ID
-    Value:
-  InternetGatewayID:
-    Description: Internet Gateway ID
-    Value:
+    Value: !Ref ALBSubnetB
+  # Cannot get ID of IGW. I don't think it matters
+  # InternetGatewayID:
+  #   Description: Internet Gateway ID
+  #   Value: 
   RouteTableID:
     Description: Route Table ID
-    Value:
+    Value: !Ref RouteTable
   ALBARN:
     Description: Application Load Balancer ARN
-    Value:
+    Value: !Ref ALB
   ALBDomain:
     Description: Application Load Balancer Domain Name
-    Value:
+    Value: !GetAtt ALB.DNSName
   EFSSecurityGroupID:
     Description: Elastic File System Mount Target Security Group ID
-    Value:
+    Value: !Ref EFSSecurity
   EFSID:
     Description: Elastic File System ID
-    Value:
+    Value: !Ref EFS
   MountTargetID:
     Description: Elastic File System Mount Target ID
-    Value:
+    Value: !Ref MountTarget
