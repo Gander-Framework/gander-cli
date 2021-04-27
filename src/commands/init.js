@@ -15,15 +15,22 @@ const getAppInfo = async () => {
   return appInfo
 }
 
+const addAppToConfigFile = (APP_NAME) => {
+  let apps = JSON.parse(config.get('APP_NAMES'))
+  apps.push(APP_NAME)
+  config.set('APP_NAMES', JSON.stringify(apps))
+}
+
 class InitCommand extends Command {
   async run() {
-    console.log(config.path)
-    createWorkflowDir()
-    copyWorkflowFilesToRepo()
+    // console.log(config.path)
+    // createWorkflowDir()
+    // copyWorkflowFilesToRepo()
     const appInfo = await getAppInfo()
-    config.set('APP_NAME', appInfo.APP_NAME)
-    await api.createCluster()
-    await populateWorkflows(appInfo)
+    addAppToConfigFile(appInfo.APP_NAME)
+
+    // await api.createCluster(appInfo.APP_NAME)
+    // await populateWorkflows(appInfo)
   }
 }
 

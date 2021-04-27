@@ -5,9 +5,9 @@ const exec = util.promisify(require('child_process').exec)
 const Conf = require('conf')
 const config = new Conf()
 
-const ecsCreateCluster = async () => {
+const ecsCreateCluster = async (clusterName) => {
   const script = path.resolve(__dirname, '../scripts/ecsCreateCluster.sh')
-  const arg1 = `CLUSTER_NAME=${config.get('APP_NAME')}`
+  const arg1 = `CLUSTER_NAME=${clusterName}`
 
   try {
     const {stdout, stderr} = await exec(`${arg1} ${script}`)
