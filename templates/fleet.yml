@@ -83,7 +83,7 @@ Resources:
   ClusterSecurity:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: FleetClusterSecurity
+      GroupName: !Sub "{DefaultName}-cluster"
       GroupDescription: Security group for the running ECS services
       VpcId: !Ref VPC
       SecurityGroupIngress:
