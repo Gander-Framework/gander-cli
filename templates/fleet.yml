@@ -177,6 +177,18 @@ Resources:
       Subnets:
         - !Ref ALBSubnetA
         - !Ref ALBSubnetB
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+      Properties: 
+        DefaultActions: 
+          - Type: fixed-response
+            FixedResponseConfig:
+              ContentType: text/plain
+              StatusCode: 404
+              MessageBody: There is no Fleet Review App here
+        LoadBalancerArn: !Ref ALB
+        Port: 80
+        Protocol: HTTP
   FleetTaskExecutionRole:
     Type: AWS::IAM::Role
     Properties:
