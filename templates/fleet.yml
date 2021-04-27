@@ -3,60 +3,141 @@ Description: Setup for Fleet Apps
 Metadata:
 
 Parameters:
-
+  DefaultName:
+    Description: Default Name Prefix For your AWS Content
+    Type: String
+    Default: fleet-apps
+  UserAWSRegion:
+    Description: The AWS Region you want your infrastructure in
 Mappings:
 
 Conditions:
 
 Resources:
   FleetVPC:
-    Type: "AWS::EC2::VPC"
+    Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: "10.0.0.0/16"
+      CidrBlock: 10.0.0.0/16
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
-        - Key: "Name"
-          Value: "FleetApps"
-  ClusterSecurity:
-    Type: "AWS::EC2::SecurityGroup"
+        - Key: Name
+          Value: !Sub "{DefaultName}"
+  RouteTable:
+    Type: AWS::EC2::RouteTable
     Properties:
-      GroupName: "ClusterSecurity"
-      GroupDescription: "Security group for the running ECS services"
+      VpcId: !Ref FleetVPC
+  FleetIGW:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub "{DefaultName}"
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref FleetVPC
+      InternetGatewayId: !Ref FleetIGW
+  InternetConnection:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !ref RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref FleetInternet
+  ClusterSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Sub {UserAWSRegion}a
+      VpcId: !Ref FleetVPC
+      CidrBlock: 10.0.1.0/24
+      Tags:
+        - Key: Name
+          Value: !Sub "{DefaultName}"
+  ClusterInternet:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref ClusterSubnet
+      RouteTableId: !Ref RouteTable
+  ALBSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Sub "{UserAWSRegion}a"
+      VpcId: !Ref FleetVPC
+      CidrBlock: 10.0.2.0/24
+  ALBInternetA:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref ALBSubnetA
+      RouteTableId: !Ref RouteTable
+  ALBSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Sub "{UserAWSRegion}b"
+      VpcId: !Ref FleetVPC
+      CidrBlock: 10.0.3.0/24
+  ALBInternetB:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref ALBSubnetB
+      RouteTableId: !Ref RouteTable
+  ClusterSecurity:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: FleetClusterSecurity
+      GroupDescription: Security group for the running ECS services
       VpcId: !Ref VPC
-
       SecurityGroupIngress:
-        - Description: "Allow port 8080 inbound traffic"
+        - Description: Allow port 8080 inbound traffic
           IpProtocol: tcp
           FromPort: 8080
           ToPort: 8080
-        - Description: "Allow 2049 inbound traffic"
+          SourceSecurityGroupId: !GetAtt ALBSecurity.GroupId
+        - Description: Allow 2049 inbound traffic
           IpProtocol: tcp
           FromPort: 2049
           ToPort: 2049
-          # SourceSecurityGroupId: !GetAtt EFSSecurityGroup.GroupId
-      # SecurityGroupEgress: By not defining these it allows all outbound traffic
+          SourceSecurityGroupId: !GetAtt EFSSecurity.GroupId
+      # By not defining SecurityGroupEgress, it allows all outbound traffic
   EFSSecurity:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: EFSSecurity
+      GroupName: FleetEFSSecurity
       GroupDescription: Security Group for the Elastic File System
       VpcId: !Ref FleetVPC
+
+      # Only let EFS talk to the cluster
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 2049
           ToPort: 2049
           SourceSecurityGroupId: !GetAtt ClusterSecurity.GroupId
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 2049
+          ToPort: 2049
+          DestinationSecurityGroupId: !GetAtt ClusterSecurity.GroupId
+  ALBSecurity:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: FleetAlbSecurity
+      GroupDescription: Fleet Security Group for the Application Load Balancer
+      VpcId: !Ref FleetVPC
 
-      # This rule will make it so that it can only talk to the Cluster sec group. Not used in our current cli form though.
-      # Without it, it can talk to anything.
-      # SecurityGroupEgress:
-      #   - IpProtocol: tcp
-      #     FromPort: 2049
-      #     ToPort: 2049
-      #     DestinationSecurityGroupId: !GetAtt ClusterSecurity.GroupId
+      #Allow all incoming internet traffic to the ALB
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
 
-      Tags:
-        - Key:
-          Value:
+      # Only let it talk to the cluster
+      SecurityGroupEgress:
+        - IpProtocol: TCP
+          FromPort: 8080
+          ToPort: 8080
+          DestinationSecurityGroupId: !GetAtt ClusterSecurity.GroupId
 Outputs:
