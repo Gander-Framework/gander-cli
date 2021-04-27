@@ -8,7 +8,7 @@ env:
   PROJECT: APP_NAME # request-bin
   SUBNET_NAME: DEFAULT_SUBNET_NAME # Fleet-Subnet
   SG_NAME: CLUSTER_SECURITY_GROUP # Fleet-Security-3
-  FS_TOKEN: EFS_CREATION_TOKEN # FleetFS
+  FS_NAME: EFS_NAME # FleetFS
   REGION: USER_AWS_REGION # us-east-2
   PR_NUMBER: ${{ github.event.pull_request.number }}
 
@@ -52,8 +52,7 @@ jobs:
               --output text)" >> $GITHUB_ENV
           echo "FS_ID=$( \
             aws efs describe-file-systems \
-              --creation-token $FS_TOKEN \
-              --query 'FileSystems[0].FileSystemId' \
+              --query "FileSystems[?Tags[?Key=='Name' && Value=='$EFS_NAME']] | [0].FileSystemId" \
               --output text)" >> $GITHUB_ENV
 
       - name: Cleanup ECS
