@@ -2,10 +2,12 @@
 const path = require('path')
 const util = require('util')
 const exec = util.promisify(require('child_process').exec)
+const Conf = require('conf')
+const config = new Conf()
 
-const describeFileSystem = async efsId => {
-  const script = path.resolve(__dirname, '../scripts/efsDescribeFileSystem.sh')
-  const arg1 = `EFS_ID=${efsId}`
+const describeLoadBalancers = async () => {
+  const script = path.resolve(__dirname, '../scripts/loadBalancersDescribe.sh')
+  const arg1 = `ALB_LB_ARN=${config.get('ALB_ARN')}`
 
   try {
     const {stdout, stderr} = await exec(`${arg1} ${script}`)
@@ -15,4 +17,4 @@ const describeFileSystem = async efsId => {
   }
 }
 
-module.exports = describeFileSystem
+module.exports = describeLoadBalancers
