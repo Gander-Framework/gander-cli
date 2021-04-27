@@ -12,8 +12,7 @@ class DestroyCommand extends Command {
     while (!albDeleted) {
       utils.sleep(500)
       const describeLBResponse = await api.describeLoadBalancers()
-      const lbLength = JSON.parse(describeLBResponse).LoadBalancers.length
-      albDeleted = lbLength === 0
+      albDeleted = !describeLBResponse
     }
     pollSpinner.succeed('ALB and listener deleted')
 
