@@ -33,6 +33,7 @@ class SetupCommand extends Command {
     const policyArn = JSON.parse(createPolicyResponse).Policy.Arn
     await api.createRole()
     await api.attachPolicyToRole(policyArn)
+    config.set('POLICY_ARN', policyArn)
 
     // Create and configure VPC
     const createVpcResponse = await api.createVpc(aws.vpc)
@@ -86,7 +87,6 @@ class SetupCommand extends Command {
     await api.createRoute(aws.routeTable.id, aws.internetGateway.id)
 
     // Associate route table
-    await api.associateRouteTable(aws.routeTable.id, aws.subnet.id)
     await api.associateRouteTable(aws.routeTable.id, aws.subneta.id)
     await api.associateRouteTable(aws.routeTable.id, aws.subnetb.id)
 
@@ -106,6 +106,12 @@ class SetupCommand extends Command {
     console.log('Create a CNAME record at your custom domain')
     console.log(`Map '*.staging' to this DNS Name:  ${albDnsName}`)
     console.log('   ')
+
+   const associateRouteTableResponse = await api.associateRouteTable(aws.routeTable.id, aws.subnet.id)
+   aws.routeTable.associationId = JSON.parse(associateRouteTableResponse).AssociationId
+   config.set('ASSOCIATION_ID', aws.routeTable.associationId)
+
+
 
     // Create EFS security group and rules
     const createEfsSecurityGroupResponse = await api.createSecurityGroup(aws.vpc.id, aws.efsSecurityGroup)
@@ -148,6 +154,7 @@ class SetupCommand extends Command {
     config.set('DEFAULT_SUBNET_NAME', DEFAULT_NAME)
     config.set('CLUSTER_SECURITY_GROUP', `${DEFAULT_NAME}-cluster`)
     config.set('EFS_CREATION_TOKEN', DEFAULT_NAME)
+    config.set('APP_NAMES', "[]")
   }
 }
 
