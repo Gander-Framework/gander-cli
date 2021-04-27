@@ -27,6 +27,12 @@ const deleteSecurityGroup = require('./destroy/deleteSecurityGroup')
 const revokeSecurityGroupIngress = require('./destroy/revokeSecurityGroupIngress')
 const revokeSecurityGroupEgress = require('./destroy/revokeSecurityGroupEgress')
 const deleteCluster = require('./destroy/deleteCluster')
+const createSecurityGroup = require('./secGroupSetup')
+const setSgIngress = require('./secGroupIngressSetup.js')
+const setSgEgress = require('./secGroupEgressSetup.js')
+const createSubnet = require('./subnetCreate.js')
+const modifySubnetAttribute = require('./subnetModifyAttribute.js')
+const associateRouteTable = require('./routeTableAssociate.js')
 
 const api = {
   client,
@@ -58,6 +64,12 @@ const api = {
   revokeSecurityGroupIngress,
   revokeSecurityGroupEgress,
   deleteCluster,
+  createSecurityGroup,
+  setSgIngress,
+  setSgEgress,
+  modifySubnetAttribute,
+  createSubnet,
+  associateRouteTable,
 };
 
 module.exports = api;

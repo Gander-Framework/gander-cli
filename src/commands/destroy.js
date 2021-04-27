@@ -28,7 +28,7 @@ class DestroyCommand extends Command {
 
 
     let mountTargetDeleted = false;
-    const pollSpinner = log.spin('Deleting Mount Target')
+    let pollSpinner = log.spin('Deleting Mount Target')
     while(!mountTargetDeleted) {
       utils.sleep(500)
       const describeMountTargetsResponse = await api.describeMountTargets()
@@ -48,7 +48,7 @@ class DestroyCommand extends Command {
     await api.destroyAlb()
 
     let albDeleted = false
-    const pollSpinner = log.spin('Polling for ALB deletion')
+    pollSpinner = log.spin('Polling for ALB deletion')
     while (!albDeleted) {
       utils.sleep(500)
       const describeLBResponse = await api.describeLoadBalancers()
@@ -56,15 +56,12 @@ class DestroyCommand extends Command {
     }
     pollSpinner.succeed('ALB and listener deleted')
 
-    await api.destroyAlbSubnetsSg()
-
     // VPC Dependency Journey -----------------------
-    await api.disassociateRouteTable()
-    await api.deleteRouteTable()
+    await api.disassociateRouteTable()  // disassociate from cluster subnet
     
     await api.detachInternetGateway()
     await api.deleteInternetGateway()
-    await api.deleteSubnet()
+    await api.deleteSubnet() // delete cluster subnet
     
 
     // TODO: revoke ingress rule on EFS on port 2049 coming from Cluster SG
@@ -75,6 +72,8 @@ class DestroyCommand extends Command {
     await api.deleteSecurityGroup('Cluster')
     await api.deleteSecurityGroup('EFS')
    
+    await api.destroyAlbSubnetsSg()
+    await api.deleteRouteTable()
     // TODO: delete VPC
     await api.vpcDelete()
     

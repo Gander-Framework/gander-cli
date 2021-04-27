@@ -2,6 +2,7 @@ const { Command } = require('@oclif/command');
 const api = require('../aws/api');
 const prompts = require('../prompts');
 const utils = require('../util');
+const log = require('../util/log')
 
 const Conf = require('conf');
 const config = new Conf();
