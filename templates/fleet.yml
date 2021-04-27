@@ -148,4 +148,11 @@ Resources:
         - Key: Name
           Value: !Sub "{DefaultName}"
       PerformanceMode: generalPurpose
+  MountTarget:
+    Type: AWS::EFS::MountTarget
+    Properties: 
+      FileSystemId: !Ref EFS
+      SecurityGroups: 
+        - !Ref EFSSecurity
+      SubnetId: !Ref ClusterSubnet
 Outputs:
