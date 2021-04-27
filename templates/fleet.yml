@@ -91,6 +91,8 @@ Resources:
           FromPort: 8080
           ToPort: 8080
           SourceSecurityGroupId: !Ref ALBSecurity
+        # This rule is not required; there is never inbound 2049 traffic from EFSSec
+        # I have tested this on my local machine
         # - Description: Allow 2049 inbound traffic
         #   IpProtocol: tcp
         #   FromPort: 2049
