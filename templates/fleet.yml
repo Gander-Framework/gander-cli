@@ -1,7 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: Setup for Fleet Apps
-Metadata:
-
 Parameters:
   DefaultName:
     Description: Default Name Prefix For your AWS Content
@@ -12,6 +10,7 @@ Parameters:
     Type: String
     Default: fleet-ecr
   UserAWSRegion:
+    Type: String
     Description: The AWS Region you want your infrastructure in
 Resources:
   FleetVPC:
@@ -41,13 +40,13 @@ Resources:
   InternetConnection:
     Type: AWS::EC2::Route
     Properties:
-      RouteTableId: !ref RouteTable
+      RouteTableId: !Ref RouteTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref FleetInternet
   ClusterSubnet:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: !Sub {UserAWSRegion}a
+      AvailabilityZone: !Sub "{UserAWSRegion}a"
       VpcId: !Ref FleetVPC
       CidrBlock: 10.0.1.0/24
       Tags:
@@ -142,36 +141,36 @@ Resources:
           DestinationSecurityGroupId: !GetAtt ClusterSecurity.GroupId
   EFS:
     Type: AWS::EFS::FileSystem
-    Properties: 
+    Properties:
       AvailabilityZoneName: !Sub "{UserAWSRegion}a"
-      FileSystemTags: 
+      FileSystemTags:
         - Key: Name
           Value: !Sub "{DefaultName}"
       PerformanceMode: generalPurpose
   MountTarget:
     Type: AWS::EFS::MountTarget
-    Properties: 
+    Properties:
       FileSystemId: !Ref EFS
-      SecurityGroups: 
+      SecurityGroups:
         - !Ref EFSSecurity
       SubnetId: !Ref ClusterSubnet
   FleetRepo:
     Type: AWS::ECR::Repository
-    Properties: 
+    Properties:
       RepositoryName: !Sub "{ECRName}"
   ALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties: 
+    Properties:
       Name: !Sub "{DefaultName}"
-      SecurityGroups: 
+      SecurityGroups:
         - !Ref ALBSecurity
-      Subnets: 
+      Subnets:
         - !Ref ALBSubnetA
         - !Ref ALBSubnetB
   FleetTaskExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      AssumeRolePolicyDocument: 
+      AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
           - Effect: Allow
@@ -185,7 +184,7 @@ Resources:
             Version: "2012-10-17"
             Statement:
               - Effect: "Allow"
-                Action: 
+                Action:
                   - ecr:GetAuthorizationToken
                   - ecr:BatchCheckLayerAvailability
                   - ecr:GetDownloadUrlForLayer
@@ -212,12 +211,12 @@ Outputs:
     Description: Application Load Balancer Subnet A ID
     Value: !Ref ALBSubnetA
   ALBSubnetBID:
-    Description:  Application Load Balancer Subnet B ID
+    Description: Application Load Balancer Subnet B ID
     Value: !Ref ALBSubnetB
   # Cannot get ID of IGW. I don't think it matters
   # InternetGatewayID:
   #   Description: Internet Gateway ID
-  #   Value: 
+  #   Value:
   RouteTableID:
     Description: Route Table ID
     Value: !Ref RouteTable
