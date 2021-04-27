@@ -108,7 +108,7 @@ Resources:
   EFSSecurity:
     Type: AWS::EC2::SecurityGroup
     Properties:
-    GroupName: !Sub "${DefaultName}-efs"
+      GroupName: !Sub "${DefaultName}-efs"
       GroupDescription: Security Group for the Elastic File System
       VpcId: !Ref FleetVPC
 
@@ -126,7 +126,7 @@ Resources:
   ALBSecurity:
     Type: AWS::EC2::SecurityGroup
     Properties:
-    GroupName: !Sub "${DefaultName}-alb"
+      GroupName: !Sub "${DefaultName}-alb"
       GroupDescription: Fleet Security Group for the Application Load Balancer
       VpcId: !Ref FleetVPC
 
