@@ -38,6 +38,11 @@ class SetupCFCommand extends Command {
     config.set('EFS_CREATION_TOKEN', DEFAULT_NAME);
     config.set('EFS_NAME', DEFAULT_NAME);
     config.set('APP_NAMES', "[]");
+    console.log('   ')
+    console.log('Create a CNAME record at your custom domain')
+    console.log(`Map '*.staging' to this DNS Name:  ${outputs.ALBDomain}`)
+    console.log('   ')
+
   }
 }
 
