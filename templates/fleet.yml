@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Setup for Fleet Apps
+Metadata:
+
+Parameters:
+
+Mappings:
+
+Conditions:
+
+Resources:
+  FleetVPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: "10.0.0.0/16"
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: "Name"
+          Value: "FleetApps"
+  ClusterSecurity:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupName: "ClusterSecurity"
+      GroupDescription: "Security group for the running ECS services"
+      VpcId: !Ref VPC
+
+      SecurityGroupIngress:
+        - Description: "Allow port 8080 inbound traffic"
+          IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+        - Description: "Allow 2049 inbound traffic"
+          IpProtocol: tcp
+          FromPort: 2049
+          ToPort: 2049
+          # SourceSecurityGroupId: !GetAtt EFSSecurityGroup.GroupId
+      # SecurityGroupEgress: By not defining these it allows all outbound traffic
+  EFSSecurity:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: EFSSecurity
+      GroupDescription: Security Group for the Elastic File System
+      VpcId: !Ref FleetVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 2049
+          ToPort: 2049
+          SourceSecurityGroupId: !GetAtt ClusterSecurity.GroupId
+
+      # This rule will make it so that it can only talk to the Cluster sec group. Not used in our current cli form though.
+      # Without it, it can talk to anything.
+      # SecurityGroupEgress:
+      #   - IpProtocol: tcp
+      #     FromPort: 2049
+      #     ToPort: 2049
+      #     DestinationSecurityGroupId: !GetAtt ClusterSecurity.GroupId
+
+      Tags:
+        - Key:
+          Value:
+Outputs:
