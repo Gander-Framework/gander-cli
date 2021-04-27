@@ -163,5 +163,14 @@ Resources:
     Type: AWS::ECR::Repository
     Properties: 
       RepositoryName: !Sub "{ECRName}"
-      
+  ALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties: 
+      Name: !Sub "{DefaultName}"
+      SecurityGroups: 
+        - !Ref ALBSecurity
+      Subnets: 
+        - !Ref ALBSubnetA
+        - !Ref ALBSubnetB
+
 Outputs:
