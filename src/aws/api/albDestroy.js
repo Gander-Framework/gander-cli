@@ -7,6 +7,7 @@ const config = new Conf()
 const destroyAlb = async () => {
   return executeProcess(
     'Destroying application load balancer and listener',
+    'ALB and listener deleted',
     () => {
       const script = path.resolve(__dirname, '../scripts/albDestroy.sh')
       const arg1 = `ALB_LISTENER_ARN=${config.get('LISTENER_ARN')}`

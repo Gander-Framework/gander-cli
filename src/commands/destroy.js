@@ -6,6 +6,7 @@ const utils = require('../util')
 class DestroyCommand extends Command {
   async run() {
     await api.destroyAlb()
+    console.log('ALB DELETED')
 
     let albDeleted = false
     const pollSpinner = log.spin('Deleting ALB and listener')

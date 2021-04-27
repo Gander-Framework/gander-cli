@@ -26,6 +26,7 @@ const createListener = require('./listenerCreate.js')
 const retrieveDnsName = require('./dnsRetrieve.js')
 const destroyAlb = require('./albDestroy.js')
 const destroyAlbSubnetsSg = require('./albSubnetsSgDestroy.js')
+const describeLoadBalancers = require('./loadBalancersDescribe.js')
 
 const api = {
   setupIam,
@@ -56,6 +57,7 @@ const api = {
   retrieveDnsName,
   destroyAlb,
   destroyAlbSubnetsSg,
+  describeLoadBalancers,
 }
 
 module.exports = api
