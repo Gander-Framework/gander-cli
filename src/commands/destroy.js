@@ -3,7 +3,7 @@ const api = require('../aws/api')
 
 class DestroyCommand extends Command {
   async run() {
-    await api.albDestroy()
+    await api.destroyAlb()
   }
 }
 
