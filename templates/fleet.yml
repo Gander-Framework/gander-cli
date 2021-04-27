@@ -172,6 +172,7 @@ Resources:
   FleetTaskExecutionRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: fleetTaskExecutionRole
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
