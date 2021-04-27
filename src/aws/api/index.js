@@ -34,6 +34,7 @@ const detachInternetGateway = require('./destroy/detachInternetGateway')
 const deleteInternetGateway = require('./destroy/deleteInternetGateway')
 const deleteSubnet = require('./destroy/deleteSubnet')
 const deleteSecurityGroup = require('./destroy/deleteSecurityGroup')
+const revokeSecurityGroupIngress = require('./destroy/revokeSecurityGroupIngress')
 
 const api = {
   setupIam,
@@ -72,6 +73,7 @@ const api = {
   deleteInternetGateway,
   deleteSubnet,
   deleteSecurityGroup,
+  revokeSecurityGroupIngress,
 }
 
 module.exports = api
