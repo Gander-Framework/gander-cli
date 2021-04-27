@@ -15,10 +15,13 @@ class SetupCommand extends Command {
     const initialConfig = await prompts.welcome();
 
     config.set('AWS_REGION', initialConfig.awsRegion);
-    aws.subnet.availabilityZone = `${initialConfig.awsRegion}a`;
     aws.efs.availabilityZone = `${initialConfig.awsRegion}a`;
 
     console.log('\nGenerating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n');
+
+    aws.subnet.availabilityZone = `${initialConfig.awsRegion}a`
+    aws.subneta.availabilityZone = `${initialConfig.awsRegion}a`
+    aws.subnetb.availabilityZone = `${initialConfig.awsRegion}b`
 
     // Initialize IAM client with correct region
     api.client.iam = api.iam.initializeClient(initialConfig.awsRegion);
@@ -32,6 +35,7 @@ class SetupCommand extends Command {
     }
 
     // Create task execution role
+
     const createPolicyResponse = await api.iam.createPolicy({
       PolicyName: aws.iam.policy.name,
       PolicyPath: aws.iam.policy.path,
@@ -46,8 +50,12 @@ class SetupCommand extends Command {
       RoleName: aws.iam.role.name,
       PolicyArn: aws.iam.policy.arn,
     });
-
+    
+    config.set('POLICY_ARN', aws.iam.policy.arn)
     api.client.ec2 = api.ec2.initializeClient(initialConfig.awsRegion);
+
+
+
 
     // Create and configure VPC
     const createVpcResponse = await api.ec2.createVpc({
@@ -98,6 +106,7 @@ class SetupCommand extends Command {
       ],
     });
 
+
     // Create and configure subnet
     const createSubnetResponse = await api.ec2.createSubnet({
       VpcId: aws.vpc.id,
@@ -109,6 +118,26 @@ class SetupCommand extends Command {
     config.set('CLUSTER_SUBNET_ID', aws.subnet.id);
 
     await api.ec2.modifySubnetAttribute({ SubnetId: aws.subnet.id });
+
+    // Create security groups and rules
+    const albSecurityGroupResponse = await api.createSecurityGroup(aws.vpc.id, aws.albSecurityGroup)
+    aws.albSecurityGroup.id = JSON.parse(albSecurityGroupResponse).GroupId
+    config.set('ALB_SECURITY_GROUP_ID', aws.albSecurityGroup.id)
+    await api.setSgIngress(aws.albSecurityGroup.id)
+    await api.setSgEgress(aws.albSecurityGroup.id)
+
+
+    // Create and configure public subnet a
+    const createSubnetAResponse = await api.createSubnet(aws.vpc.id, aws.subneta)
+    aws.subneta.id = JSON.parse(createSubnetAResponse).Subnet.SubnetId
+    config.set('CLUSTER_SUBNETA_ID', aws.subneta.id)
+    await api.modifySubnetAttribute(aws.subneta.id)
+
+    // Create and configure public subnet b
+    const createSubnetBResponse = await api.createSubnet(aws.vpc.id, aws.subnetb)
+    aws.subnetb.id = JSON.parse(createSubnetBResponse).Subnet.SubnetId
+    config.set('CLUSTER_SUBNETB_ID', aws.subnetb.id)
+    await api.modifySubnetAttribute(aws.subnetb.id)
 
     // Create and attach internet gateway
     const createInternetGatewayResponse = await api.ec2.createInternetGateway({ Name: aws.internetGateway.name });
@@ -138,6 +167,31 @@ class SetupCommand extends Command {
       RouteTableId: aws.routeTable.id,
       SubnetId: aws.subnet.id,
     });
+
+    await api.associateRouteTable(aws.routeTable.id, aws.subneta.id)
+    await api.associateRouteTable(aws.routeTable.id, aws.subnetb.id)
+
+    // Create Application Load Balancer
+    const createAlbResponse = await api.createAlb(aws.alb.name, aws.albSecurityGroup.id, aws.subneta.id, aws.subnetb.id)
+    aws.alb.arn = JSON.parse(createAlbResponse).LoadBalancers[0].LoadBalancerArn
+    config.set('ALB_ARN', aws.alb.arn)
+
+    const createListenerResponse = await api.createListener(aws.alb.arn)
+    aws.listener.arn = JSON.parse(createListenerResponse).Listeners[0].ListenerArn
+    config.set('LISTENER_ARN', aws.listener.arn)
+
+    // Retrieve DNS Name for ALB
+    const describeLbResponse = await api.retrieveDnsName(aws.alb.arn)
+    const albDnsName = JSON.parse(describeLbResponse).LoadBalancers[0].DNSName
+    console.log('   ')
+    console.log('Create a CNAME record at your custom domain')
+    console.log(`Map '*.staging' to this DNS Name:  ${albDnsName}`)
+    console.log('   ')
+
+   const associateRouteTableResponse = await api.associateRouteTable(aws.routeTable.id, aws.subnet.id)
+   aws.routeTable.associationId = JSON.parse(associateRouteTableResponse).AssociationId
+   config.set('ASSOCIATION_ID', aws.routeTable.associationId)
+
 
     // Create EFS security group and rules
     const createEfsSecurityGroupResponse = await api.ec2.createSecurityGroup({
@@ -182,14 +236,22 @@ class SetupCommand extends Command {
     config.set('EFS_ID', aws.efs.id);
 
     // Must wait until life cycle state of EFS is "available" before creating mount target
-    let efsState = '';
+
+    let efsState = ''
+    const pollSpinner = log.spin('Initializing file system')
 
     while (efsState !== 'available') {
       utils.sleep(500);
 
       // eslint-disable-next-line no-await-in-loop
+
       const response = await api.efs.describeFileSystem({ FileSystemId: aws.efs.id });
       efsState = response.FileSystems[0].LifeCycleState;
+
+
+      if (efsState === 'available') {
+        pollSpinner.succeed('File system initialized')
+      }
     }
 
     // create mount target in subnet
@@ -205,13 +267,12 @@ class SetupCommand extends Command {
     api.client.ecr = api.ecr.initializeClient(initialConfig.awsRegion);
     await api.ecr.createRepository();
 
-    console.log('It may take around 10 minutes for AWS to fully spin up all infrastructure pieces. But for now, we\'re all done! :D');
+    console.log('It may take around 10 minutes for AWS to fully spin up all infrastructure pieces. \nBut for now, we\'re all done! :D')
 
-    config.set('DEFAULT_SUBNET_NAME', DEFAULT_NAME);
-    config.set('CLUSTER_SECURITY_GROUP', `${DEFAULT_NAME}-cluster`);
-    config.set('EFS_CREATION_TOKEN', DEFAULT_NAME);
-
-    console.log('All done! :D');
+    config.set('DEFAULT_SUBNET_NAME', DEFAULT_NAME)
+    config.set('CLUSTER_SECURITY_GROUP', `${DEFAULT_NAME}-cluster`)
+    config.set('EFS_CREATION_TOKEN', DEFAULT_NAME)
+    config.set('APP_NAMES', "[]")
   }
 }
 

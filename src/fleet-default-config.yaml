@@ -20,6 +20,19 @@ clusterSecurityGroup:
   name: fleet-apps-cluster
   description: "The security group for running fleet review apps as a Fargate service"
 
+albSecurityGroup:
+  id: ""
+  name: fleet-alb-sec-group
+  description: "The security group for the application load balancer"
+
+alb:
+  arn: ""
+  name: *defaultName
+
+listener:
+  arn: ""
+  name: *defaultName
+
 vpc:
   id: ""
   name: *defaultName
@@ -28,7 +41,19 @@ vpc:
 subnet:
   id: ""
   name: *defaultName
-  cidrBlock: "10.0.0.0/24"
+  cidrBlock: "10.0.1.0/24"
+  availabilityZone: ""
+
+subneta:
+  id: ""
+  name: "fleet-apps-alb-a"
+  cidrBlock: "10.0.2.0/24"
+  availabilityZone: ""
+
+subnetb:
+  id: ""
+  name: "fleet-apps-alb-b"
+  cidrBlock: "10.0.3.0/24"
   availabilityZone: ""
 
 internetGateway:
