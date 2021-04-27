@@ -201,14 +201,41 @@ Resources:
 
 Outputs:
   VPCID:
+    Description: ID of the VPC
+    Value:
   ClusterSecurityGroupID:
+    Description: Cluster Security Group ID
+    Value:
   ALBSecurityGroupID:
+    Description: Application Load Balancer Security Group ID
+    Value:
   ClusterSubnetID:
+    Description: Cluster Subnet ID
+    Value:
   ALBSubnetAID:
+    Description: Application Load Balancer Subnet A ID
+    Value:
   ALBSubnetBID:
+    Description:  Application Load Balancer Subnet B ID
+    Value:
   InternetGatewayID:
+    Description: Internet Gateway ID
+    Value:
   RouteTableID:
+    Description: Route Table ID
+    Value:
   ALBARN:
+    Description: Application Load Balancer ARN
+    Value:
+  ALBDomain:
+    Description: Application Load Balancer Domain Name
+    Value:
   EFSSecurityGroupID:
+    Description: Elastic File System Mount Target Security Group ID
+    Value:
   EFSID:
+    Description: Elastic File System ID
+    Value:
   MountTargetID:
+    Description: Elastic File System Mount Target ID
+    Value:
