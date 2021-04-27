@@ -52,8 +52,7 @@ jobs:
               --output text)" >> $GITHUB_ENV
           echo "FS_ID=$( \
             aws efs describe-file-systems \
-              --creation-token $FS_TOKEN \
-              --query 'FileSystems[0].FileSystemId' \
+              --query "FileSystems[?Tags[?Key=='Name' && Value=='$FS_NAME']] | [0].FileSystemId" \
               --output text)" >> $GITHUB_ENV
 
       - name: Cleanup ECS
