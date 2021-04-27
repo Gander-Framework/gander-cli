@@ -86,13 +86,17 @@ class SetupCommand extends Command {
 
     // Must wait until life cycle state of EFS is "available" before creating mount target
     let efsState = ''
-
+    const pollSpinner = log.spin('Initializing file system')
     while (efsState !== 'available') {
       utils.sleep(500)
 
       // eslint-disable-next-line no-await-in-loop
       const response = await api.describeFileSystem(aws.efs.id)
       efsState = JSON.parse(response).FileSystems[0].LifeCycleState
+
+      if (efsState === 'available') {
+        pollSpinner.succeed('File system initialized')
+      }
     }
 
     // create mount target in subnet
@@ -103,14 +107,12 @@ class SetupCommand extends Command {
     // Create ECR repository
     await api.createEcrRepository()
 
-    console.log('It may take around 10 minutes for AWS to fully spin up all infrastructure pieces. But for now, we\'re all done! :D')
+    console.log('It may take around 10 minutes for AWS to fully spin up all infrastructure pieces. \nBut for now, we\'re all done! :D')
 
     config.set('DEFAULT_SUBNET_NAME', DEFAULT_NAME)
     config.set('CLUSTER_SECURITY_GROUP', `${DEFAULT_NAME}-cluster`)
     config.set('EFS_CREATION_TOKEN', DEFAULT_NAME)
     config.set('APP_NAMES', "[]")
-
-    console.log('All done! :D')
   }
 }
 

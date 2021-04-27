@@ -1,0 +1,17 @@
+name: Build Application Server
+description: Builds your application server and pushes it to ECR
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        sudo add-apt-repository ppa:cncf-buildpacks/pack-cli && \
+        sudo apt-get update && \
+        sudo apt-get install pack-cli
+      shell: bash
+    - run: | # --cache-image $ECR_REGISTRY/$ECR_REPO:cache \
+        pack build $IMAGE_ARN \
+        --builder $BUILDER \
+        --path $SERVER_PATH \
+        --publish
+      shell: bash
