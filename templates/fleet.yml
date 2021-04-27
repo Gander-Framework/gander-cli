@@ -7,6 +7,10 @@ Parameters:
     Description: Default Name Prefix For your AWS Content
     Type: String
     Default: fleet-apps
+  ECRName:
+    Description: Name of the ECR Repository
+    Type: String
+    Default: fleet-ecr
   UserAWSRegion:
     Description: The AWS Region you want your infrastructure in
 Mappings:
@@ -155,4 +159,9 @@ Resources:
       SecurityGroups: 
         - !Ref EFSSecurity
       SubnetId: !Ref ClusterSubnet
+  FleetRepo:
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: !Sub "{ECRName}"
+      
 Outputs:
