@@ -15,4 +15,4 @@ const getStackOutputs = async (stackName) => {
   )
 }
 
-module.exports = setupEfsSgIngress
+module.exports = getStackOutputs

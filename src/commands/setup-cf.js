@@ -2,7 +2,7 @@ const { Command } = require('@oclif/command');
 const Conf = require('conf');
 const api = require('../aws/api');
 const prompts = require('../prompts');
-const paths = require('../utils/paths.js');
+const paths = require('../util/paths.js');
 
 const config = new Conf();
 
@@ -12,7 +12,7 @@ class SetupCFCommand extends Command {
     config.set('AWS_REGION', initialConfig.awsRegion);
 
     console.log('\nGenerating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n');
-    api.createStack('fleet-apps',paths.cloudFormationTemplatePath,initialConfig.awsRegion)
+    await api.createStack('fleet-apps',paths.cloudFormationTemplatePath,initialConfig.awsRegion)
     const outputs = JSON.parse(await api.getStackOutputs('fleet-apps'))
     console.log(outputs)
     
