@@ -145,6 +145,7 @@ class SetupCommand extends Command {
     config.set('DEFAULT_SUBNET_NAME', DEFAULT_NAME)
     config.set('CLUSTER_SECURITY_GROUP', `${DEFAULT_NAME}-cluster`)
     config.set('EFS_CREATION_TOKEN', DEFAULT_NAME)
+    config.set('EFS_NAME', DEFAULT_NAME)
   }
 }
 
