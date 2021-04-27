@@ -17,8 +17,8 @@ const destroyAllClusters = () => {
 
 class DestroyCommandCF extends Command {
   async run() {
+    await api.destroyStack('fleet-apps')
     destroyAllClusters()
-    await api.destroyStack('fleet-apps')    
   }
 }
 
