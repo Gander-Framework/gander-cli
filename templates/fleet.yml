@@ -42,7 +42,7 @@ Resources:
     Properties:
       RouteTableId: !Ref RouteTable
       DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref FleetInternet
+      GatewayId: !Ref FleetIGW
   ClusterSubnet:
     Type: AWS::EC2::Subnet
     Properties:
