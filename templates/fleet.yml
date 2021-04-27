@@ -140,4 +140,12 @@ Resources:
           FromPort: 8080
           ToPort: 8080
           DestinationSecurityGroupId: !GetAtt ClusterSecurity.GroupId
+  EFS:
+    Type: AWS::EFS::FileSystem
+    Properties: 
+      AvailabilityZoneName: !Sub "{UserAWSRegion}a"
+      FileSystemTags: 
+        - Key: Name
+          Value: !Sub "{DefaultName}"
+      PerformanceMode: generalPurpose
 Outputs:
