@@ -33,6 +33,7 @@ const setSgEgress = require('./secGroupEgressSetup.js')
 const createSubnet = require('./subnetCreate.js')
 const modifySubnetAttribute = require('./subnetModifyAttribute.js')
 const associateRouteTable = require('./routeTableAssociate.js')
+const createStack = require('./stackCreate.js')
 
 const api = {
   client,
@@ -70,6 +71,7 @@ const api = {
   modifySubnetAttribute,
   createSubnet,
   associateRouteTable,
+  createStack,
 };
 
 module.exports = api;

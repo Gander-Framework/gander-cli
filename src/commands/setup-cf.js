@@ -1,4 +1,5 @@
 const { Command } = require('@oclif/command')
+const Conf = require('conf')
 class SetupCFCommand extends Command {
   async run() {
     console.log('hello!')
