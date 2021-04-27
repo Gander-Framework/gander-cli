@@ -13,8 +13,9 @@ class SetupCFCommand extends Command {
 
     console.log('\nGenerating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n');
     api.createStack('fleet-apps',paths.cloudFormationTemplatePath,initialConfig.awsRegion)
-
-    api.getStackOutputs('fleet-apps')
+    const outputs = JSON.parse(await api.getStackOutputs('fleet-apps'))
+    console.log(outputs)
+    
   }
 }
 
