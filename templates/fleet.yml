@@ -91,11 +91,11 @@ Resources:
           FromPort: 8080
           ToPort: 8080
           SourceSecurityGroupId: !Ref ALBSecurity
-        - Description: Allow 2049 inbound traffic
-          IpProtocol: tcp
-          FromPort: 2049
-          ToPort: 2049
-          SourceSecurityGroupId: !Ref EFSSecurity
+        # - Description: Allow 2049 inbound traffic
+        #   IpProtocol: tcp
+        #   FromPort: 2049
+        #   ToPort: 2049
+        #   SourceSecurityGroupId: !Ref EFSSecurity
       # By not defining SecurityGroupEgress, it allows all outbound traffic
   EFSSecurity:
     Type: AWS::EC2::SecurityGroup
@@ -114,7 +114,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 2049
           ToPort: 2049
-          # DestinationSecurityGroupId: !Ref ClusterSecurity
+          DestinationSecurityGroupId: !Ref ClusterSecurity
   ALBSecurity:
     Type: AWS::EC2::SecurityGroup
     Properties:
