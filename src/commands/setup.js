@@ -17,6 +17,8 @@ class SetupCommand extends Command {
     config.set('AWS_REGION', initialConfig.awsRegion)
 
     aws.subnet.availabilityZone = `${initialConfig.awsRegion}a`
+    aws.subneta.availabilityZone = `${initialConfig.awsRegion}a`
+    aws.subnetb.availabilityZone = `${initialConfig.awsRegion}b`
 
     console.log('\nGenerating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n')
 
@@ -45,11 +47,30 @@ class SetupCommand extends Command {
     config.set('CLUSTER_SECURITY_GROUP_ID', aws.clusterSecurityGroup.id)
     await api.setSgIngress(aws.clusterSecurityGroup.id)
 
-    // Create and configure subnet
+    // Create security groups and rules
+    const albSecurityGroupResponse = await api.createSecurityGroup(aws.vpc.id, aws.albSecurityGroup)
+    aws.albSecurityGroup.id = JSON.parse(albSecurityGroupResponse).GroupId
+    config.set('ALB_SECURITY_GROUP_ID', aws.albSecurityGroup.id)
+    await api.setSgIngress(aws.albSecurityGroup.id)
+    await api.setSgEgress(aws.albSecurityGroup.id)
+
+    // Create and configure private subnet
     const createSubnetResponse = await api.createSubnet(aws.vpc.id, aws.subnet)
     aws.subnet.id = JSON.parse(createSubnetResponse).Subnet.SubnetId
     config.set('CLUSTER_SUBNET_ID', aws.subnet.id)
     await api.modifySubnetAttribute(aws.subnet.id)
+
+    // Create and configure public subnet a
+    const createSubnetAResponse = await api.createSubnet(aws.vpc.id, aws.subneta)
+    aws.subneta.id = JSON.parse(createSubnetAResponse).Subnet.SubnetId
+    config.set('CLUSTER_SUBNETA_ID', aws.subneta.id)
+    await api.modifySubnetAttribute(aws.subneta.id)
+
+    // Create and configure public subnet b
+    const createSubnetBResponse = await api.createSubnet(aws.vpc.id, aws.subnetb)
+    aws.subnetb.id = JSON.parse(createSubnetBResponse).Subnet.SubnetId
+    config.set('CLUSTER_SUBNETB_ID', aws.subnetb.id)
+    await api.modifySubnetAttribute(aws.subnetb.id)
 
     // Create and attach internet gateway
     const createInternetGatewayResponse = await api.createInternetGateway(aws.internetGateway)
@@ -66,9 +87,30 @@ class SetupCommand extends Command {
     await api.createRoute(aws.routeTable.id, aws.internetGateway.id)
 
     // Associate route table
+    await api.associateRouteTable(aws.routeTable.id, aws.subneta.id)
+    await api.associateRouteTable(aws.routeTable.id, aws.subnetb.id)
+
+    // Create Application Load Balancer
+    const createAlbResponse = await api.createAlb(aws.alb.name, aws.albSecurityGroup.id, aws.subneta.id, aws.subnetb.id)
+    aws.alb.arn = JSON.parse(createAlbResponse).LoadBalancers[0].LoadBalancerArn
+    config.set('ALB_ARN', aws.alb.arn)
+
+    const createListenerResponse = await api.createListener(aws.alb.arn)
+    aws.listener.arn = JSON.parse(createListenerResponse).Listeners[0].ListenerArn
+    config.set('LISTENER_ARN', aws.listener.arn)
+
+    // Retrieve DNS Name for ALB
+    const describeLbResponse = await api.retrieveDnsName(aws.alb.arn)
+    const albDnsName = JSON.parse(describeLbResponse).LoadBalancers[0].DNSName
+    console.log('   ')
+    console.log('Create a CNAME record at your custom domain')
+    console.log(`Map '*.staging' to this DNS Name:  ${albDnsName}`)
+    console.log('   ')
+
    const associateRouteTableResponse = await api.associateRouteTable(aws.routeTable.id, aws.subnet.id)
    aws.routeTable.associationId = JSON.parse(associateRouteTableResponse).AssociationId
    config.set('ASSOCIATION_ID', aws.routeTable.associationId)
+
 
 
     // Create EFS security group and rules

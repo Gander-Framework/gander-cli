@@ -20,6 +20,11 @@ const appInfoPrompt = async () => {
     name: 'DATABASE_NAME',
     message: 'What is the name of your database?',
     type: 'input'
+  },
+  {
+    name: 'GANDER_DOMAIN',
+    message: 'What is your domain? (e.g. example.com)',
+    type: 'input'
   }])
   return response
 }

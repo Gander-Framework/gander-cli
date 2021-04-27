@@ -44,6 +44,19 @@ class DestroyCommand extends Command {
 
     // TODO: delete ECR repo
     await api.ecrRepoDelete()
+    
+    await api.destroyAlb()
+
+    let albDeleted = false
+    const pollSpinner = log.spin('Polling for ALB deletion')
+    while (!albDeleted) {
+      utils.sleep(500)
+      const describeLBResponse = await api.describeLoadBalancers()
+      albDeleted = !describeLBResponse
+    }
+    pollSpinner.succeed('ALB and listener deleted')
+
+    await api.destroyAlbSubnetsSg()
 
     // VPC Dependency Journey -----------------------
     await api.disassociateRouteTable()

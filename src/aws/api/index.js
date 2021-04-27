@@ -1,6 +1,7 @@
 const setupIam = require('./iamSetup.js')
 const createSecurityGroup = require('./secGroupSetup.js')
 const setSgIngress = require('./secGroupIngressSetup.js')
+const setSgEgress = require('./secGroupEgressSetup.js')
 const setEfsSgIngress = require('./efsSecGroupIngress.js')
 const setEfsSgEgress = require('./efsSecGroupEgress.js')
 const createVpc = require('./vpcCreate.js')
@@ -20,6 +21,12 @@ const createCluster = require('./ecsCreateCluster.js')
 const createPolicy = require('./iamCreatePolicy.js')
 const createRole = require('./iamCreateRole.js')
 const attachPolicyToRole = require('./iamAttachPolicyToRole.js')
+const createAlb = require('./albCreate.js')
+const createListener = require('./listenerCreate.js')
+const retrieveDnsName = require('./dnsRetrieve.js')
+const destroyAlb = require('./albDestroy.js')
+const destroyAlbSubnetsSg = require('./albSubnetsSgDestroy.js')
+const describeLoadBalancers = require('./loadBalancersDescribe.js')
 const iamDeletePolicy = require('./iamDeletePolicy.js')
 const iamDeleteRole = require('./iamDeleteRole')
 const deleteMountTarget = require('./efsDeleteMountTarget')
@@ -43,6 +50,7 @@ const api = {
   setupIam,
   createSecurityGroup,
   setSgIngress,
+  setSgEgress,
   setEfsSgIngress,
   setEfsSgEgress,
   createVpc,
@@ -62,6 +70,12 @@ const api = {
   createPolicy,
   createRole,
   attachPolicyToRole,
+  createAlb,
+  createListener,
+  retrieveDnsName,
+  destroyAlb,
+  destroyAlbSubnetsSg,
+  describeLoadBalancers,
   iamDeletePolicy,
   iamDeleteRole,
   deleteMountTarget,
