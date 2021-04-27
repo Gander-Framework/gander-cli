@@ -233,7 +233,7 @@ Outputs:
   ALBSubnetAID:
     Description: Application Load Balancer Subnet A ID
     Value: !Ref ALBSubnetA
-  ALBSubnetBID:
+  ALBSubnetAID:
     Description: Application Load Balancer Subnet B ID
     Value: !Ref ALBSubnetB
   # Cannot get ID of IGW. I don't think it matters
