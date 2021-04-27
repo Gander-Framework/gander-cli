@@ -45,8 +45,10 @@ class DestroyCommand extends Command {
     */
 
     // TODO: revoke ingress rule on EFS on port 2049 coming from Cluster SG
-    await api.revokeSecurityGroupIngress()
+    await api.revokeSecurityGroupIngress(2049)
     // TODO: revoke egress rule on Cluster, port 2049, going to EFS SG
+    await api.revokeSecurityGroupEgress(2049)
+    
     await api.deleteSecurityGroup('Cluster')
     await api.deleteSecurityGroup('EFS')
    
