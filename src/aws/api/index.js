@@ -24,6 +24,7 @@ const attachPolicyToRole = require('./iamAttachPolicyToRole.js')
 const createAlb = require('./albCreate.js')
 const createListener = require('./listenerCreate.js')
 const retrieveDnsName = require('./dnsRetrieve.js')
+const destroyAlb = require('./albDestroy.js')
 
 const api = {
   setupIam,
@@ -52,6 +53,7 @@ const api = {
   createAlb,
   createListener,
   retrieveDnsName,
+  destroyAlb,
 }
 
 module.exports = api
