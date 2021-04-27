@@ -6,14 +6,13 @@ const utils = require('../util')
 class DestroyCommand extends Command {
   async run() {
     await api.destroyAlb()
-    console.log('ALB DELETED')
 
     let albDeleted = false
-    const pollSpinner = log.spin('Deleting ALB and listener')
+    const pollSpinner = log.spin('Polling for ALB deletion')
     while (!albDeleted) {
       utils.sleep(500)
-      const describeLoadBalancersResponse = await api.describeLoadBalancers()
-      const lbLength = JSON.parse(describeLoadBalancersResponse).LoadBalancerDescriptions.length
+      const describeLBResponse = await api.describeLoadBalancers()
+      const lbLength = JSON.parse(describeLBResponse).LoadBalancers.length
       albDeleted = lbLength === 0
     }
     pollSpinner.succeed('ALB and listener deleted')
