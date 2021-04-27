@@ -200,3 +200,15 @@ Resources:
                 Resource: "*"
 
 Outputs:
+  VPCID:
+  ClusterSecurityGroupID:
+  ALBSecurityGroupID:
+  ClusterSubnetID:
+  ALBSubnetAID:
+  ALBSubnetBID:
+  InternetGatewayID:
+  RouteTableID:
+  ALBARN:
+  EFSSecurityGroupID:
+  EFSID:
+  MountTargetID:
