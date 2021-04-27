@@ -7,7 +7,7 @@ const log = require('../util/log')
 
 class DestroyCommand extends Command {
   async run() {
-    /*
+    
     await api.iamDetachPolicyRole()
     // TODO: delete fleetTaskExecutionRole
     await api.iamDeleteRole()
@@ -42,7 +42,7 @@ class DestroyCommand extends Command {
     await api.detachInternetGateway()
     await api.deleteInternetGateway()
     await api.deleteSubnet()
-    */
+    
 
     // TODO: revoke ingress rule on EFS on port 2049 coming from Cluster SG
     await api.revokeSecurityGroupIngress(2049)
