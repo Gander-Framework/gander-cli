@@ -94,7 +94,10 @@ class SetupCommand extends Command {
     const createAlbResponse = await api.createAlb(aws.alb.name, aws.albSecurityGroup.id, aws.subneta.id, aws.subnetb.id)
     aws.alb.arn = JSON.parse(createAlbResponse).LoadBalancers[0].LoadBalancerArn
     config.set('ALB_ARN', aws.alb.arn)
-    await api.createListener(aws.alb.arn)
+
+    const createListenerResponse = await api.createListener(aws.alb.arn)
+    aws.listener.arn = JSON.parse(createListenerResponse).Listeners[0].ListenerArn
+    config.set('LISTENER_ARN', aws.listener.arn)
 
     // Retrieve DNS Name for ALB
     const describeLbResponse = await api.retrieveDnsName(aws.alb.arn)
