@@ -34,6 +34,7 @@ const createSubnet = require('./subnetCreate.js')
 const modifySubnetAttribute = require('./subnetModifyAttribute.js')
 const associateRouteTable = require('./routeTableAssociate.js')
 const createStack = require('./stackCreate.js')
+const getStackOutputs = require('./getStackOutputs.js')
 
 const api = {
   client,
@@ -72,6 +73,7 @@ const api = {
   createSubnet,
   associateRouteTable,
   createStack,
+  getStackOutputs,
 };
 
 module.exports = api;
