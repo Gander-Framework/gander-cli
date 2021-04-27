@@ -21,7 +21,7 @@ Resources:
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: !Sub "{DefaultName}"
+          Value: !Sub "${DefaultName}"
   RouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
@@ -31,7 +31,7 @@ Resources:
     Properties:
       Tags:
         - Key: Name
-          Value: !Sub "{DefaultName}"
+          Value: !Sub "${DefaultName}"
   AttachGateway:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
@@ -46,12 +46,12 @@ Resources:
   ClusterSubnet:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: !Sub "{UserAWSRegion}a"
+      AvailabilityZone: !Sub "${UserAWSRegion}a"
       VpcId: !Ref FleetVPC
       CidrBlock: 10.0.1.0/24
       Tags:
         - Key: Name
-          Value: !Sub "{DefaultName}"
+          Value: !Sub "${DefaultName}"
   ClusterInternet:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -60,7 +60,7 @@ Resources:
   ALBSubnetA:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: !Sub "{UserAWSRegion}a"
+      AvailabilityZone: !Sub "${UserAWSRegion}a"
       VpcId: !Ref FleetVPC
       CidrBlock: 10.0.2.0/24
   ALBInternetA:
@@ -71,7 +71,7 @@ Resources:
   ALBSubnetB:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: !Sub "{UserAWSRegion}b"
+      AvailabilityZone: !Sub "${UserAWSRegion}b"
       VpcId: !Ref FleetVPC
       CidrBlock: 10.0.3.0/24
   ALBInternetB:
@@ -82,7 +82,7 @@ Resources:
   ClusterSecurity:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: !Sub "{DefaultName}-cluster"
+      GroupName: !Sub "${DefaultName}-cluster"
       GroupDescription: Security group for the running ECS services
       VpcId: !Ref FleetVPC
       SecurityGroupIngress:
@@ -140,14 +140,15 @@ Resources:
         - IpProtocol: TCP
           FromPort: 8080
           ToPort: 8080
+          CidrIp: 0.0.0.0/0
           # DestinationSecurityGroupId: !Ref ClusterSecurity
   EFS:
     Type: AWS::EFS::FileSystem
     Properties:
-      AvailabilityZoneName: !Sub "{UserAWSRegion}a"
+      AvailabilityZoneName: !Sub "${UserAWSRegion}a"
       FileSystemTags:
         - Key: Name
-          Value: !Sub "{DefaultName}"
+          Value: !Sub "${DefaultName}"
       PerformanceMode: generalPurpose
   MountTarget:
     Type: AWS::EFS::MountTarget
@@ -159,11 +160,11 @@ Resources:
   FleetRepo:
     Type: AWS::ECR::Repository
     Properties:
-      RepositoryName: !Sub "{ECRName}"
+      RepositoryName: !Ref ECRName
   ALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      Name: !Sub "{DefaultName}"
+      Name: !Sub "${DefaultName}"
       SecurityGroups:
         - !Ref ALBSecurity
       Subnets:
