@@ -2,11 +2,18 @@
 globalName: &defaultName "fleet-apps"
 
 region:
-serviceRoleArn:
 
 iam: 
   groupName: *defaultName
   userName: *defaultName
+  policy:
+    name: "fleetTaskExecutionPolicy"
+    path: "/templates/iamPolicies/taskExecutionPolicy.json"
+    arn:
+  role:
+    name: "fleetTaskExecutionRole"
+    path: "/templates/iamPolicies/trustRelationship.json"
+    arn:
 
 clusterSecurityGroup:
   id: ""
@@ -66,7 +73,7 @@ efs:
   id: ""
   name: *defaultName
   creationToken: *defaultName
-  region: ""
+  availabilityZone: ""
 
 mountTarget:
   id: ""

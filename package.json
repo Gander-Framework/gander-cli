@@ -8,12 +8,18 @@
   },
   "bugs": "https://github.com/Mush-Framework/fleet-cli/issues",
   "dependencies": {
+    "@aws-sdk/client-ec2": "^3.13.1",
+    "@aws-sdk/client-ecr": "^3.13.1",
+    "@aws-sdk/client-efs": "^3.13.1",
+    "@aws-sdk/client-iam": "^3.13.1",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "@oclif/plugin-help": "^3.2.2",
     "conf": "^10.0.1",
     "inquirer": "^8.0.0",
+    "install": "^0.13.0",
     "js-yaml": "^4.1.0",
+    "npm": "^7.11.1",
     "ora": "^5.4.0"
   },
   "devDependencies": {
