@@ -36,6 +36,7 @@ const deleteSubnet = require('./destroy/deleteSubnet')
 const deleteSecurityGroup = require('./destroy/deleteSecurityGroup')
 const revokeSecurityGroupIngress = require('./destroy/revokeSecurityGroupIngress')
 const revokeSecurityGroupEgress = require('./destroy/revokeSecurityGroupEgress')
+const deleteCluster = require('./destroy/deleteCluster')
 
 
 const api = {
@@ -77,6 +78,7 @@ const api = {
   deleteSecurityGroup,
   revokeSecurityGroupIngress,
   revokeSecurityGroupEgress,
+  deleteCluster,
 }
 
 module.exports = api
