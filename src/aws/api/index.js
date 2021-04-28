@@ -1,38 +1,28 @@
-// const createCluster = require('./ecsCreateCluster.js');
-// const deleteCluster = require('./deleteCluster')
-// const createStack = require('./stackCreate.js')
-// const getStackOutputs = require('./getStackOutputs.js')
-// const destroyStack = require('./deleteStack')
-// const api = {
-//   createStack,
-//   getStackOutputs,
-//   destroyStack,
-//   createCluster,
-//   deleteCluster,
-// };
-
-// module.exports = api;
-
 const {
   CloudFormationClient,
   CreateStackCommand,
   DescribeStacksCommand,
+  DeleteStackCommand,
 } = require('@aws-sdk/client-cloudformation');
-
+const {
+  ECSClient,
+  DeleteClusterCommand,
+} = require('@aws-sdk/client-ecs');
 const executeProcess = require('./executeSdkProcess.js');
 
-const cloudFormation = {
-  client: null,
+const clients = {
+  cloudFormation: null,
+  ecs: null,
 };
 
-const initializeClient = region => new CloudFormationClient({
+const initializeCfClient = async region => new CloudFormationClient({
   region,
 });
 
 const createStack = ({ StackName, TemplateBody }) => executeProcess({
   startMsg: 'Initializing CloudFormation Stack creation',
   successMsg: 'CloudFormation Stack initialized',
-  client: cloudFormation.client,
+  client: clients.cloudFormation,
   command: new CreateStackCommand({
     Capabilities: ['CAPABILITY_NAMED_IAM'],
     StackName,
@@ -47,16 +37,41 @@ const createStack = ({ StackName, TemplateBody }) => executeProcess({
 const getStackOutputs = async ({ StackName }) => executeProcess({
   startMsg: 'Retrieving AWS resource information',
   successMsg: 'AWS resource information retrieved',
-  client: cloudFormation.client,
+  client: clients.cloudFormation,
   command: new DescribeStacksCommand({
     StackName,
   }),
   noSpinner: true,
 });
 
+const deleteStack = async ({ StackName }) => executeProcess({
+  startMsg: 'Initializing Gander stack deletion',
+  successMsg: 'Gander stack is ready for deletion',
+  client: clients.cloudFormation,
+  command: new DeleteStackCommand({
+    StackName,
+  }),
+});
+
+const initializeEcsClient = async region => new ECSClient({
+  region,
+});
+
+const deleteCluster = async ({ cluster }) => executeProcess({
+  startMsg: `Deleting cluster ${cluster}`,
+  successMsg: `${cluster} deleted`,
+  client: clients.cloudFormation,
+  command: new DeleteClusterCommand({
+    cluster,
+  }),
+});
+
 module.exports = {
-  cloudFormation,
-  initializeClient,
+  clients,
+  initializeCfClient,
+  initializeEcsClient,
   createStack,
   getStackOutputs,
+  deleteStack,
+  deleteCluster,
 };

@@ -14,12 +14,12 @@ class SetupCFCommand extends Command {
     const initialConfig = await prompts.welcome();
     config.set('AWS_REGION', initialConfig.awsRegion);
 
-    api.cloudFormation.client = await api.initializeClient(initialConfig.awsRegion);
+    api.clients.cloudFormation = await api.initializeCfClient(config.get('AWS_REGION'));
 
     console.log('\nGenerating your Gander infrastructure. This may take a few minutes, so grab some coffee~ \n');
 
     await api.createStack({
-      StackName: 'gander-apps',
+      StackName: DEFAULT_NAME,
       TemplateBody: fs.readFileSync(paths.cloudFormationTemplatePath),
     });
 
@@ -28,14 +28,14 @@ class SetupCFCommand extends Command {
       successMsg: 'AWS infrastructure provisioned successfully',
       desiredState: 'CREATE_COMPLETE',
       describeFn: api.getStackOutputs,
-      describeArgs: { StackName: 'gander-apps' },
+      describeArgs: { StackName: DEFAULT_NAME },
       resCallback: response => {
         return response.Stacks[0].StackStatus;
       },
     });
 
     const rawOutputs = await api.getStackOutputs({
-      StackName: 'gander-apps',
+      StackName: DEFAULT_NAME,
     });
     let outputs = {};
     rawOutputs.Stacks[0].Outputs.forEach(output => {
