@@ -1,14 +1,9 @@
-const welcome = require('./welcome.js')
-const saveConfig = require('./saveConfig.js')
-const testInitPrompt = require('./testInitPrompt');
+const welcome = require('./welcome.js');
 const appInfoPrompt = require('./appInfoPrompt');
-
 
 const prompts = {
   welcome,
-  saveConfig,
-  testInitPrompt,
-  appInfoPrompt
-}
+  appInfoPrompt,
+};
 
-module.exports = prompts
+module.exports = prompts;
