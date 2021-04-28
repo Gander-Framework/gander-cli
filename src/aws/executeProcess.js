@@ -1,6 +1,7 @@
 const log = require('../util/log.js');
+const chalk = require('chalk');
 
-const executeSdkProcess = async ({
+const executeProcess = async ({
   startMsg,
   successMsg,
   client,
@@ -11,27 +12,27 @@ const executeSdkProcess = async ({
   let awsSuccess;
 
   if (!noSpinner) {
-    spinner = log.spin(startMsg);
+    spinner = log.spin(chalk.cyan(startMsg));
   }
 
   try {
     const response = await client.send(command);
     awsSuccess = response;
   } catch (error) {
-    console.log('\n', error);
-
     if (!noSpinner) {
-      spinner.fail(`${error.name}: ${error.message}`);
+      spinner.fail(chalk.red.bold(`${error.name}: ${error.message}`));
+    } else {
+      console.log(error);
     }
 
     process.exit(1);
   }
 
   if (!noSpinner) {
-    spinner.succeed(successMsg);
+    spinner.succeed(chalk.green(successMsg));
   }
 
   return awsSuccess;
 };
 
-module.exports = executeSdkProcess;
+module.exports = executeProcess;
