@@ -31,9 +31,12 @@ const userActionPaths = actionFolderPaths.slice(1).map(path => `${path}/action.y
 
 const taskExecutionPolicyPath = path.resolve()
 
+const cloudFormationTemplatePath = path.join(fleetRootPath, 'templates/cloudformation/fleet.yml')
+
 module.exports = {
   fleetRootPath,
   fleetBuildWorkflowTemplatePath,
+  cloudFormationTemplatePath,
   userBuildWorkflowPath,
   fleetTeardownWorkflowPath,
   userTeardownWorkflowPath,

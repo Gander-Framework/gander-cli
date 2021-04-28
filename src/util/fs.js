@@ -38,7 +38,7 @@ const populateBuildWorkflow = (appInfo) => {
   buildWorkflowFile = buildWorkflowFile.replace("GANDER_DOMAIN", appInfo.GANDER_DOMAIN)
   buildWorkflowFile = buildWorkflowFile.replace("DEFAULT_SUBNET_NAME", config.get('DEFAULT_SUBNET_NAME'))
   buildWorkflowFile = buildWorkflowFile.replace("CLUSTER_SECURITY_GROUP", config.get('CLUSTER_SECURITY_GROUP'))
-  buildWorkflowFile = buildWorkflowFile.replace("EFS_CREATION_TOKEN", config.get('EFS_CREATION_TOKEN'))
+  buildWorkflowFile = buildWorkflowFile.replace("EFS_NAME", config.get('EFS_NAME'))
   buildWorkflowFile = buildWorkflowFile.replace("USER_AWS_REGION", config.get('AWS_REGION'))
   fs.writeFileSync(userBuildWorkflowPath, buildWorkflowFile)
 }
@@ -53,7 +53,7 @@ const populateTeardownWorkflow = (appInfo) => {
   teardownWorkflowFile = teardownWorkflowFile.replace("APP_NAME", appInfo.APP_NAME)
   teardownWorkflowFile = teardownWorkflowFile.replace("DEFAULT_SUBNET_NAME", config.get('DEFAULT_SUBNET_NAME'))
   teardownWorkflowFile = teardownWorkflowFile.replace("CLUSTER_SECURITY_GROUP", config.get('CLUSTER_SECURITY_GROUP'))
-  teardownWorkflowFile = teardownWorkflowFile.replace("EFS_CREATION_TOKEN", config.get('EFS_CREATION_TOKEN'))
+  teardownWorkflowFile = teardownWorkflowFile.replace("EFS_NAME", config.get('EFS_NAME'))
   teardownWorkflowFile = teardownWorkflowFile.replace("USER_AWS_REGION", config.get('AWS_REGION'))
   fs.writeFileSync(userTeardownWorkflowPath, teardownWorkflowFile)
 }

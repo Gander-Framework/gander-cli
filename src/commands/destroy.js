@@ -15,74 +15,13 @@ const destroyAllClusters = () => {
   })
 }
 
-class DestroyCommand extends Command {
+class DestroyCommandCF extends Command {
   async run() {
-    
-    await api.iamDetachPolicyRole()
-    // TODO: delete fleetTaskExecutionRole
-    await api.iamDeleteRole()
-    // TODO: delete fleetTaskExecutionPolicy
-    await api.iamDeletePolicy()
-    // TODO: delete mount target
-    await api.deleteMountTarget()
-
-
-    let mountTargetDeleted = false;
-    let pollSpinner = log.spin('Deleting Mount Target')
-    while(!mountTargetDeleted) {
-      utils.sleep(500)
-      const describeMountTargetsResponse = await api.describeMountTargets()
-      const mtLength = JSON.parse(describeMountTargetsResponse).MountTargets.length
-      mountTargetDeleted = mtLength === 0 ? true : false
-    }
-    pollSpinner.succeed('Mount Target deleted')
-
-    
-    
-    // TODO: delete EFS
-    await api.efsDelete()
-
-    // TODO: delete ECR repo
-    await api.ecrRepoDelete()
-    
-    await api.destroyAlb()
-
-    let albDeleted = false
-    pollSpinner = log.spin('Polling for ALB deletion')
-    while (!albDeleted) {
-      utils.sleep(500)
-      const describeLBResponse = await api.describeLoadBalancers()
-      albDeleted = !describeLBResponse
-    }
-    pollSpinner.succeed('ALB and listener deleted')
-
-    // VPC Dependency Journey -----------------------
-    await api.disassociateRouteTable()  // disassociate from cluster subnet
-    
-    await api.detachInternetGateway()
-    await api.deleteInternetGateway()
-    await api.deleteSubnet() // delete cluster subnet
-    
-
-    // TODO: revoke ingress rule on EFS on port 2049 coming from Cluster SG
-    await api.revokeSecurityGroupIngress(2049)
-    // TODO: revoke egress rule on Cluster, port 2049, going to EFS SG
-    await api.revokeSecurityGroupEgress(2049)
-    
-    await api.deleteSecurityGroup('Cluster')
-    await api.deleteSecurityGroup('EFS')
-   
-    await api.destroyAlbSubnetsSg()
-    await api.deleteRouteTable()
-    // TODO: delete VPC
-    await api.vpcDelete()
-    
-    // TODO: delete clusters
+    await api.destroyStack('fleet-apps')
     destroyAllClusters()
-    
   }
 }
 
-DestroyCommand.description = 'Teardown all of the Fleet infrastructure that was created during initial setup'
+DestroyCommandCF.description = 'Teardown all of the Fleet infrastructure that was created during initial setup using CloudFormation'
 
-module.exports = DestroyCommand
+module.exports = DestroyCommandCF

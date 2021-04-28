@@ -13,7 +13,7 @@ env:
   DB_NAME: DATABASE_NAME # request_bin
   SUBNET_NAME: DEFAULT_SUBNET_NAME # Fleet-Subnet
   SG_NAME: CLUSTER_SECURITY_GROUP # Fleet-Security-3
-  FS_TOKEN: EFS_CREATION_TOKEN # FleetFS
+  FS_NAME: EFS_NAME # FleetFS
   USER_DOMAIN: GANDER_DOMAIN
   REGION: USER_AWS_REGION # us-east-2
   PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -49,41 +49,9 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      #This step will do six things:
-      # 1. set the server image arn environment variable
-      # 2. set the seeder image arn environment variable
-      # 3. Set Subnet ID environment variable
-      # 4. Set Security Group ID Environment Variable
-      # 5. Get the Task Execution Role Arn and set it to an environment variable
-      # 6. Get the fs-id of our EFS and set it to an environment variable
-      - name: set required environment variables
-
-        id: aws-ids
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      - name: Set ECR Environment Variable
         run: |
-          echo "IMAGE_ARN=$ECR_REGISTRY/$ECR_REPO:$PROJECT-$PR_NUMBER" >> $GITHUB_ENV
-          echo "SEED_IMAGE_ARN=$ECR_REGISTRY/$ECR_REPO:$PROJECT-seed-$PR_NUMBER" >> $GITHUB_ENV
-          echo "SUBNET_ID=$( \
-            aws ec2 describe-subnets \
-              --filters Name=tag:Name,Values=$SUBNET_NAME \
-              --query 'Subnets[0].SubnetId' \
-              --output text)" >> $GITHUB_ENV
-          echo "SG_ID=$( \
-            aws ec2 describe-security-groups \
-              --filters Name=group-name,Values=$SG_NAME \
-              --query 'SecurityGroups[0].GroupId' \
-              --output text)" >> $GITHUB_ENV
-          echo "TASK_EXECUTION_ROLE_ARN=$( \
-            aws iam get-role \
-              --role-name fleetTaskExecutionRole \
-              --query 'Role.Arn' \
-              --output text)" >> $GITHUB_ENV
-          echo "FS_ID=$( \
-            aws efs describe-file-systems \
-              --creation-token $FS_TOKEN \
-              --query 'FileSystems[0].FileSystemId' \
-              --output text)" >> $GITHUB_ENV
+          echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
 
       - name: Build the Application Server
         id: build-server

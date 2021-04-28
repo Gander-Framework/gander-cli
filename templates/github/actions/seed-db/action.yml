@@ -5,6 +5,27 @@ runs:
   using: "composite"
   steps:
     - run: |
+        echo "SUBNET_ID=$( \
+          aws ec2 describe-subnets \
+            --filters Name=tag:Name,Values=$SUBNET_NAME \
+            --query 'Subnets[0].SubnetId' \
+            --output text)" >> $GITHUB_ENV
+        echo "SG_ID=$( \
+          aws ec2 describe-security-groups \
+            --filters Name=group-name,Values=$SG_NAME \
+            --query 'SecurityGroups[0].GroupId' \
+            --output text)" >> $GITHUB_ENV
+        echo "TASK_EXECUTION_ROLE_ARN=$( \
+          aws iam get-role \
+            --role-name fleetTaskExecutionRole \
+            --query 'Role.Arn' \
+            --output text)" >> $GITHUB_ENV
+        echo "FS_ID=$( \
+          aws efs describe-file-systems \
+            --query "FileSystems[?Tags[?Key=='Name' && Value=='$FS_NAME']] | [0].FileSystemId" \
+            --output text)" >> $GITHUB_ENV
+      shell: bash
+    - run: |
         cat << SCRIPT > ./seeder-script.sh
         #!/bin/sh
         mv ./init.sql ./efs-file-transfer/
@@ -12,6 +33,7 @@ runs:
         SCRIPT
 
         echo "Creating Seeder Image"
+        SEED_IMAGE_ARN=$ECR_REGISTRY/$ECR_REPO:$PROJECT-seed-$PR_NUMBER
 
         docker build -t $SEED_IMAGE_ARN -f- . <<EOF
         FROM alpine:3.13
@@ -22,6 +44,7 @@ runs:
         ENTRYPOINT ["/startup.sh"]
         EOF
 
+        echo "SEED_IMAGE_ARN=$SEED_IMAGE_ARN" >> $GITHUB_ENV
       shell: bash
     - run: |
         docker push $SEED_IMAGE_ARN
