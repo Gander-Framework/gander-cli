@@ -212,7 +212,7 @@ Resources:
         - Type: fixed-response
           FixedResponseConfig:
             ContentType: text/plain
-            StatusCode: 404
+            StatusCode: "404"
             MessageBody: There is no Fleet Review App here
   FleetTaskExecutionRole:
     Type: AWS::IAM::Role
@@ -250,7 +250,7 @@ Resources:
       Policies:
         - PolicyName: CreateAndDestroyReviewApps
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -282,28 +282,28 @@ Resources:
                 Resource: "*"
                 Condition:
                   ForAnyValue:StringEquals:
-                    ec2:ResourceTag/GanderApps: 'four_eyes'
-                    ecs:ResourceTag/GanderApps: 'four_eyes'
-                    ecr:ResourceTag/GanderApps: 'four_eyes'
-                    elasticloadbalancing:ResourceTag/GanderApps: 'four_eyes'
-                    iam:ResourceTag/GanderApps: 'four_eyes'
-                    elasticfilesystem:ResourceTag/GanderApps: 'four_eyes'
+                    ec2:ResourceTag/GanderApps: "four_eyes"
+                    ecs:ResourceTag/GanderApps: "four_eyes"
+                    ecr:ResourceTag/GanderApps: "four_eyes"
+                    elasticloadbalancing:ResourceTag/GanderApps: "four_eyes"
+                    iam:ResourceTag/GanderApps: "four_eyes"
+                    elasticfilesystem:ResourceTag/GanderApps: "four_eyes"
               - Effect: Allow
-                Action: 
+                Action:
                   - sts:GetCallerIdentity
                   - ecr:GetAuthorizationToken
                 Resource: "*"
   UserCredentials:
-    Type: 'AWS::IAM::AccessKey'
+    Type: "AWS::IAM::AccessKey"
     Properties:
       UserName: !Ref GithubUser
 
 Outputs:
   AccessKeyId:
-    Description: 'Access Key'
+    Description: "Access Key"
     Value: !Ref UserCredentials
   AccessKeySecret:
-    Description: 'Secret Key'
+    Description: "Secret Key"
     Value: !GetAtt UserCredentials.SecretAccessKey
   VPCID:
     Description: ID of the VPC
