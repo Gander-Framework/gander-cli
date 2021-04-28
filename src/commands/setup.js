@@ -24,21 +24,25 @@ class SetupCFCommand extends Command {
     });
 
     await waitForState({
+      startMsg: 'Provisioning AWS resources',
+      successMsg: 'AWS infrastructure provisioned successfully',
       desiredState: 'CREATE_COMPLETE',
       describeFn: api.getStackOutputs,
-      resourceId: { StackName: 'gander-apps' },
+      describeArgs: { StackName: 'gander-apps' },
       resCallback: response => {
         return response.Stacks[0].StackStatus;
       },
     });
 
-    const rawOutputs = await api.getStackOutputs({ StackName: 'gander-apps' });
+    const rawOutputs = await api.getStackOutputs({
+      StackName: 'gander-apps',
+    });
     let outputs = {};
     rawOutputs.Stacks[0].Outputs.forEach(output => {
       outputs[output.OutputKey] = output.OutputValue;
     });
 
-    console.log('It may take around 10 minutes for AWS to fully spin up all infrastructure pieces. \nBut for now, we\'re all done! :D');
+    console.log('\nIt may take around 10 minutes for AWS to fully spin up all infrastructure pieces. \nBut for now, we\'re all done! :D');
 
     config.set('VPC_ID', outputs.VPCID);
     config.set('CLUSTER_SECURITY_GROUP_ID', outputs.ClusterSecurityGroupID);

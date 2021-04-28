@@ -1,3 +1,5 @@
+const log = require('./log.js');
+
 /* eslint-disable no-await-in-loop */
 const sleep = milliseconds => {
   const date = Date.now();
@@ -7,15 +9,25 @@ const sleep = milliseconds => {
   } while (currentDate - date < milliseconds);
 };
 
-const waitForState = async ({ desiredState, describeFn, resourceId, resCallback }) => {
+const waitForState = async ({
+  startMsg,
+  successMsg,
+  desiredState,
+  describeFn,
+  describeArgs,
+  resCallback,
+}) => {
+  const spinner = log.spin(startMsg);
   let resourceState = '';
 
   while (resourceState !== desiredState) {
     sleep(500);
 
-    const response = await describeFn(resourceId);
+    const response = await describeFn(describeArgs);
     resourceState = resCallback(response);
   }
+
+  spinner.succeed(successMsg);
 };
 
 const waitForDeletion = (describeFn, resourceId) => {
