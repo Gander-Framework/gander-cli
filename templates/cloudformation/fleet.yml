@@ -283,6 +283,10 @@ Resources:
               - Effect: Allow
                 Action: sts:GetCallerIdentity
                 Resource: "*"
+  PublishCredentials:
+    Type: 'AWS::IAM::AccessKey'
+    Properties:
+      UserName: !Ref GithubUser
 
 Outputs:
   VPCID:
