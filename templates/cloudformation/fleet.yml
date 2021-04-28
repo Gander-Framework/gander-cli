@@ -20,6 +20,8 @@ Resources:
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
+        - Key: GanderApps
+          Value: four_eyes
         - Key: Name
           Value: !Sub "${DefaultName}"
   RouteTable:
@@ -50,6 +52,8 @@ Resources:
       VpcId: !Ref FleetVPC
       CidrBlock: 10.0.1.0/24
       Tags:
+        - Key: GanderApps
+          Value: four_eyes
         - Key: Name
           Value: !Sub "${DefaultName}"
   ClusterInternet:
@@ -64,6 +68,8 @@ Resources:
       VpcId: !Ref FleetVPC
       CidrBlock: 10.0.2.0/24
       Tags:
+        - Key: GanderApps
+          Value: four_eyes
         - Key: Name
           Value: !Sub "${DefaultName}-alb-a"
   ALBInternetA:
@@ -78,6 +84,8 @@ Resources:
       VpcId: !Ref FleetVPC
       CidrBlock: 10.0.3.0/24
       Tags:
+        - Key: GanderApps
+          Value: four_eyes
         - Key: Name
           Value: !Sub "${DefaultName}-alb-b"
   ALBInternetB:
@@ -88,6 +96,9 @@ Resources:
   ClusterSecurity:
     Type: AWS::EC2::SecurityGroup
     Properties:
+      Tags:
+        - Key: GanderApps
+          Value: four_eyes
       GroupName: !Sub "${DefaultName}-cluster"
       GroupDescription: Security group for the running ECS services
       VpcId: !Ref FleetVPC
@@ -108,6 +119,9 @@ Resources:
   EFSSecurity:
     Type: AWS::EC2::SecurityGroup
     Properties:
+      Tags:
+        - Key: GanderApps
+          Value: four_eyes
       GroupName: !Sub "${DefaultName}-efs"
       GroupDescription: Security Group for the Elastic File System
       VpcId: !Ref FleetVPC
@@ -126,6 +140,9 @@ Resources:
   ALBSecurity:
     Type: AWS::EC2::SecurityGroup
     Properties:
+      Tags:
+        - Key: GanderApps
+          Value: four_eyes
       GroupName: !Sub "${DefaultName}-alb"
       GroupDescription: Fleet Security Group for the Application Load Balancer
       VpcId: !Ref FleetVPC
@@ -155,6 +172,8 @@ Resources:
       FileSystemTags:
         - Key: Name
           Value: !Sub "${DefaultName}"
+        - Key: GanderApps
+          Value: four_eyes
       PerformanceMode: generalPurpose
       Encrypted: true
   MountTarget:
@@ -167,10 +186,16 @@ Resources:
   FleetRepo:
     Type: AWS::ECR::Repository
     Properties:
+      Tags:
+        - Key: GanderApps
+          Value: four_eyes
       RepositoryName: !Ref ECRName
   ALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
+      Tags:
+        - Key: GanderApps
+          Value: four_eyes
       Name: !Sub "${DefaultName}"
       SecurityGroups:
         - !Ref ALBSecurity
@@ -192,6 +217,9 @@ Resources:
   FleetTaskExecutionRole:
     Type: AWS::IAM::Role
     Properties:
+      Tags:
+        - Key: GanderApps
+          Value: four_eyes
       RoleName: fleetTaskExecutionRole
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
@@ -215,6 +243,45 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                   - logs:CreateLogGroup
+                Resource: "*"
+  GithubUser:
+    Type: AWS::IAM::User
+    Properties:
+      Policies:
+        - PolicyName: CreateAndDestroyReviewApps
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecs:DeregisterTaskDefinition
+                  - ecs:DeleteService
+                  - iam:GetRole
+                  - ec2:Describe*
+                  - ecs:Describe*
+                  - ecs:CreateCluster
+                  - ecs:CreateService
+                  - ecs:List*
+                  - ecs:RunTask
+                  - ecs:RegisterTaskDefinition
+                  - elasticloadbalancing:DeleteTargetGroup
+                  - elasticloadbalancing:DeleteRule
+                  - elasticloadbalancing:Describe*
+                  - elasticloadbalancing:CreateTargetGroup
+                  - elasticloadbalancing:CreateRule
+                  - elasticfilesystem:DeleteAccessPoint
+                  - elasticfilesystem:DescribeFileSystems
+                  - elasticfilesystem:CreateAccessPoint
+                Resource: "*"
+                Condition:
+                  ForAnyValue:StringEquals:
+                    ec2:ResourceTag/GanderApps: 'four_eyes'
+                    ecs:ResourceTag/GanderApps: 'four_eyes'
+                    elasticloadbalancing:ResourceTag/GanderApps: 'four_eyes'
+                    iam:ResourceTag/GanderApps: 'four_eyes'
+                    elasticfilesystem:ResourceTag/GanderApps: 'four_eyes'
+              - Effect: Allow
+                Action: sts:GetCallerIdentity
                 Resource: "*"
 
 Outputs:
