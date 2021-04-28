@@ -7,10 +7,10 @@ const sleep = milliseconds => {
   } while (currentDate - date < milliseconds);
 };
 
-const waitForState = async (desiredState, describeFn, resourceId, resCallback) => {
+const waitForState = async ({ desiredState, describeFn, resourceId, resCallback }) => {
   let resourceState = '';
 
-  while (resourceState != desiredState) {
+  while (resourceState !== desiredState) {
     sleep(500);
 
     const response = await describeFn(resourceId);

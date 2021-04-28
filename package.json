@@ -8,6 +8,7 @@
   },
   "bugs": "https://github.com/Gander-Framework/gander-cli/issues",
   "dependencies": {
+    "@aws-sdk/client-cloudformation": "^3.13.1",
     "@aws-sdk/client-ec2": "^3.13.1",
     "@aws-sdk/client-ecr": "^3.13.1",
     "@aws-sdk/client-efs": "^3.13.1",
