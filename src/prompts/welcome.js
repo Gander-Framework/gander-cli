@@ -16,7 +16,7 @@ const welcome = async () => {
     name: 'awsRegion',
     message: 'What AWS region would you want Fleet to operate in?',
     type: 'input',
-    default: 'us-east-1',
+    default: 'us-east-2',
   }]);
   return response;
 };
