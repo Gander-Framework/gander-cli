@@ -50,7 +50,7 @@
       "@oclif/plugin-help"
     ]
   },
-  "repository": "Mush-Framework/fleet-cli",
+  "repository": "Gander-Framework/gander-cli",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint .",

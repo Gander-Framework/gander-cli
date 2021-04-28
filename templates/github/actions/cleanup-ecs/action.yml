@@ -42,7 +42,7 @@ runs:
         echo "Deleting load balancer rules and target group"
 
         ALB_ARN=$(aws elbv2 describe-load-balancers \
-        --query 'LoadBalancers[?LoadBalancerName==`fleet-apps`] | [0].LoadBalancerArn' \
+        --query 'LoadBalancers[?LoadBalancerName==`gander-apps`] | [0].LoadBalancerArn' \
         --output text)
 
         LISTENER_ARN=$(aws elbv2 describe-listeners \
@@ -59,7 +59,7 @@ runs:
         --rule-arn $RULE_ARN
 
         TARGET_GROUP_ARN=$(aws elbv2 describe-target-groups \
-        --names Fleet-$PROJECT-$PR_NUMBER \
+        --names Gander-$PROJECT-$PR_NUMBER \
         --query 'TargetGroups[0].TargetGroupArn' \
         --output text)
 

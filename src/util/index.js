@@ -1,7 +1,7 @@
 const fs = require('fs');
 const yaml = require('js-yaml');
 const path = require('path');
-const { fleetRootPath } = require('./paths.js');
+const { ganderRootPath } = require('./paths.js');
 
 const utils = {
   display: (response, error) => {
@@ -18,7 +18,7 @@ const utils = {
   },
 
   readConfig: () => {
-    const config = path.resolve(__dirname, '../fleet-default-config.yaml');
+    const config = path.resolve(__dirname, '../gander-default-config.yaml');
     try {
       let fileContents = fs.readFileSync(config, 'utf8');
       let data = yaml.load(fileContents);
@@ -30,11 +30,11 @@ const utils = {
 
   writeConfig: (data, path) => {
     let yamlStr = yaml.dump(data);
-    fs.writeFileSync(`${path}/fleet-infrastructure.yaml`, yamlStr, 'utf8');
+    fs.writeFileSync(`${path}/gander-infrastructure.yaml`, yamlStr, 'utf8');
   },
 
   loadJson: inputPath => {
-    const pathFromRoot = path.join(fleetRootPath, inputPath);
+    const pathFromRoot = path.join(ganderRootPath, inputPath);
     const file = require(pathFromRoot);
     return JSON.stringify(file);
   },

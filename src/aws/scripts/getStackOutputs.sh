@@ -1,4 +1,4 @@
 aws cloudformation describe-stacks \
---stack-name fleet-apps \
+--stack-name gander-apps \
 --query "Stacks[?StackName=='$STACK_NAME'] | [0].Outputs" \
 --output json
