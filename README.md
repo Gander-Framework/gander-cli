@@ -1,29 +1,12 @@
-fleet-cli
+Gander-CLI
 =========
 
-framework to create full-stack review apps on AWS
+A drop-in solution to create full-stack review apps on AWS.
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/fleet-cli.svg)](https://npmjs.org/package/fleet-cli)
 [![Downloads/week](https://img.shields.io/npm/dw/fleet-cli.svg)](https://npmjs.org/package/fleet-cli)
 [![License](https://img.shields.io/npm/l/fleet-cli.svg)](https://github.com/Mush-Framework/fleet-cli/blob/master/package.json)
-
-# Notes for Fleet creators
-
-- To run a command you're building, type `./bin/run COMMAND`.
-- This framework recommends using the library `inquirer` for prompting and collecting answers from the user.
-- Assumes user has AWS CLI and credentials set up
-
-Structure of app:
-```
-|-- src: 
-|   |---- aws
-|         |---- api: js funcs to call andrew's scripts
-|         |---- scripts: andrew scripts to actually make api calls
-|   |---- commands: the main func that is invoked upon typing `fleet BLAH`
-|   |---- util
-|         |---- prompts: funcs that display questions to user and collects answers
-```
 
 ---
 
