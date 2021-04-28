@@ -289,6 +289,12 @@ Resources:
       UserName: !Ref GithubUser
 
 Outputs:
+  AccessKeyId:
+    Description: 'Access Key'
+    Value: !Ref GithubUser
+  AccessKeySecret:
+    Description: 'Secret Key'
+    Value: !GetAtt GithubUser.SecretAccessKey
   VPCID:
     Description: ID of the VPC
     Value: !Ref FleetVPC
