@@ -3,6 +3,8 @@ const api = require('../aws/api');
 const Conf = require('conf');
 const config = new Conf();
 
+const DEFAULT_NAME = 'gander-apps';
+
 const destroyAllClusters = () => {
   const appNames = JSON.parse(config.get('APP_NAMES'));
   appNames.forEach(name => {
@@ -12,7 +14,11 @@ const destroyAllClusters = () => {
 
 class DestroyCommandCF extends Command {
   async run() {
-    await api.destroyStack('gander-apps');
+    api.clients.cloudFormation = await api.initializeCfClient(config.get('AWS_REGION'));
+
+    api.clients.ecs = await api.initializeEcsClient(config.get('AWS_REGION'));
+
+    await api.deleteStack({ StackName: DEFAULT_NAME });
     destroyAllClusters();
   }
 }
