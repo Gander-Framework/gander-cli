@@ -13,13 +13,15 @@ class SetupCFCommand extends Command {
     const initialConfig = await prompts.welcome();
     config.set('AWS_REGION', initialConfig.awsRegion);
 
-    console.log('\nGenerating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n');
-    await api.createStack('fleet-apps',paths.cloudFormationTemplatePath,initialConfig.awsRegion)
-    const rawOutputs = JSON.parse(await api.getStackOutputs('fleet-apps'))
+    console.log('\nGenerating your Gander infrastructure. This may take a few minutes, so grab some coffee~ \n');
+
+    await api.createStack('fleet-apps', paths.cloudFormationTemplatePath, initialConfig.awsRegion);
+    const rawOutputs = JSON.parse(await api.getStackOutputs('fleet-apps'));
     let outputs = {};
-    rawOutputs.forEach(output => outputs[output.OutputKey] = output.OutputValue)
-    
-    console.log('It may take around 10 minutes for AWS to fully spin up all infrastructure pieces. \nBut for now, we\'re all done! :D')
+    rawOutputs.forEach(output => outputs[output.OutputKey] = output.OutputValue);
+
+    console.log('It may take around 10 minutes for AWS to fully spin up all infrastructure pieces. \nBut for now, we\'re all done! :D');
+
     config.set('VPC_ID', outputs.VPCID);
     config.set('CLUSTER_SECURITY_GROUP_ID', outputs.ClusterSecurityGroupID);
     config.set('CLUSTER_SUBNET_ID', outputs.ClusterSubnetID);
@@ -36,14 +38,14 @@ class SetupCFCommand extends Command {
     config.set('DEFAULT_SUBNET_NAME', DEFAULT_NAME);
     config.set('CLUSTER_SECURITY_GROUP', `${DEFAULT_NAME}-cluster`);
     config.set('EFS_NAME', DEFAULT_NAME);
-    config.set('APP_NAMES', "[]");
-    console.log('   ')
-    console.log('Create a CNAME record at your custom domain')
-    console.log(`Map '*.staging' to this DNS Name:  ${outputs.ALBDomain}`)
-    console.log('   ')
+    config.set('APP_NAMES', '[]');
 
+    console.log('   ');
+    console.log('Create a CNAME record at your custom domain');
+    console.log(`Map '*.staging' to this DNS Name:  ${outputs.ALBDomain}`);
+    console.log('   ');
   }
 }
 
-SetupCFCommand.description = 'Create an AWS VPC using CloudFormation'
+SetupCFCommand.description = 'Create all the AWS resources required to deploy Gander review apps';
 module.exports = SetupCFCommand;
