@@ -6,6 +6,7 @@ const {
 } = require('@aws-sdk/client-cloudformation');
 const {
   ECSClient,
+  CreateClusterCommand,
   DeleteClusterCommand,
 } = require('@aws-sdk/client-ecs');
 const executeProcess = require('./executeSdkProcess.js');
@@ -45,8 +46,8 @@ const getStackOutputs = async ({ StackName }) => executeProcess({
 });
 
 const deleteStack = async ({ StackName }) => executeProcess({
-  startMsg: 'Initializing Gander stack deletion',
-  successMsg: 'Gander stack is ready for deletion',
+  startMsg: 'Initiating Gander Cloudformation stack deletion',
+  successMsg: 'Stack deletion initiated - it will take a few minutes to delete all AWS resources',
   client: clients.cloudFormation,
   command: new DeleteStackCommand({
     StackName,
@@ -57,10 +58,19 @@ const initializeEcsClient = async region => new ECSClient({
   region,
 });
 
+const createCluster = async ({ clusterName }) => executeProcess({
+  startMsg: `Creating cluster ${clusterName}`,
+  successMsg: `${clusterName} cluster successfully created`,
+  client: clients.ecs,
+  command: new CreateClusterCommand({
+    clusterName,
+  }),
+});
+
 const deleteCluster = async ({ cluster }) => executeProcess({
   startMsg: `Deleting cluster ${cluster}`,
   successMsg: `${cluster} deleted`,
-  client: clients.cloudFormation,
+  client: clients.ecs,
   command: new DeleteClusterCommand({
     cluster,
   }),
@@ -73,5 +83,6 @@ module.exports = {
   createStack,
   getStackOutputs,
   deleteStack,
+  createCluster,
   deleteCluster,
 };

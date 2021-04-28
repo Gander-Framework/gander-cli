@@ -26,7 +26,10 @@ class InitCommand extends Command {
     copyWorkflowFilesToRepo();
     const appInfo = await getAppInfo();
     addAppToConfigFile(appInfo.APP_NAME);
-    await api.createCluster(appInfo.APP_NAME);
+
+    api.clients.ecs = await api.initializeEcsClient(config.get('AWS_REGION'));
+    await api.createCluster({ clusterName: appInfo.APP_NAME });
+
     await populateWorkflows(appInfo);
   }
 }
