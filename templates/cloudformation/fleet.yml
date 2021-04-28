@@ -258,7 +258,6 @@ Resources:
                   - ecs:DeleteService
                   - ecs:CreateCluster
                   - ecs:CreateService
-                  - ecs:List*
                   - ecs:RunTask
                   - ecs:RegisterTaskDefinition
                 Resource: "*"
@@ -303,6 +302,7 @@ Resources:
                   - elasticfilesystem:DescribeFileSystems
                   - elasticloadbalancing:Describe*
                   - ecs:Describe*
+                  - ecs:List*
                   - ec2:Describe*
                   - sts:GetCallerIdentity
                   - ecr:GetAuthorizationToken
