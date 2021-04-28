@@ -130,6 +130,7 @@ runs:
         echo "DELETE_TASK_DEF=$(aws ecs register-task-definition \
         --family $PROJECT-delete-$PR_NUMBER \
         --cli-input-json file://delete-task.json \
+        --tags key=GanderApps,value=four_eyes \
         --query 'join(`:`,taskDefinition.[family,to_string(revision)])' \
         --output text)" >> $GITHUB_ENV
       shell: bash
