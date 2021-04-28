@@ -267,13 +267,6 @@ Resources:
                     ecs:ResourceTag/GanderApps: "four_eyes"
               - Effect: Allow
                 Action:
-                  - ec2:Describe*
-                Resource: "*"
-                Condition:
-                  StringEquals:
-                    ec2:ResourceTag/GanderApps: "four_eyes"
-              - Effect: Allow
-                Action:
                   - iam:GetRole
                 Resource: "*"
                 Condition:
@@ -297,11 +290,9 @@ Resources:
                 Action:
                   - elasticloadbalancing:DeleteTargetGroup
                   - elasticloadbalancing:DeleteRule
-                  - elasticloadbalancing:Describe*
                   - elasticloadbalancing:CreateTargetGroup
                   - elasticloadbalancing:CreateRule
                   - elasticfilesystem:DeleteAccessPoint
-                  - elasticfilesystem:DescribeFileSystems
                   - elasticfilesystem:CreateAccessPoint
                 Resource: "*"
                 Condition:
@@ -309,7 +300,10 @@ Resources:
                     elasticfilesystem:ResourceTag/GanderApps: "four_eyes"
               - Effect: Allow
                 Action:
+                  - elasticfilesystem:DescribeFileSystems
+                  - elasticloadbalancing:Describe*
                   - ecs:Describe*
+                  - ec2:Describe*
                   - sts:GetCallerIdentity
                   - ecr:GetAuthorizationToken
                 Resource: "*"
