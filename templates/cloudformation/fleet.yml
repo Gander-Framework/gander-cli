@@ -263,6 +263,14 @@ Resources:
                   - ecs:CreateService
                   - ecs:List*
                   - ecs:RunTask
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchGetImage
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:InitiateLayerUpload
+                  - ecr:CompleteLayerUpload
+                  - ecr:UploadLayerPart
+                  - ecr:PutImage
+                  - ecr:BatchDeleteImage
                   - ecs:RegisterTaskDefinition
                   - elasticloadbalancing:DeleteTargetGroup
                   - elasticloadbalancing:DeleteRule
@@ -277,13 +285,14 @@ Resources:
                   ForAnyValue:StringEquals:
                     ec2:ResourceTag/GanderApps: 'four_eyes'
                     ecs:ResourceTag/GanderApps: 'four_eyes'
+                    ecr:ResourceTag/GanderApps: 'four_eyes'
                     elasticloadbalancing:ResourceTag/GanderApps: 'four_eyes'
                     iam:ResourceTag/GanderApps: 'four_eyes'
                     elasticfilesystem:ResourceTag/GanderApps: 'four_eyes'
               - Effect: Allow
                 Action: sts:GetCallerIdentity
                 Resource: "*"
-  PublishCredentials:
+  UserCredentials:
     Type: 'AWS::IAM::AccessKey'
     Properties:
       UserName: !Ref GithubUser
@@ -291,10 +300,10 @@ Resources:
 Outputs:
   AccessKeyId:
     Description: 'Access Key'
-    Value: !Ref GithubUser
+    Value: !Ref UserCredentials
   AccessKeySecret:
     Description: 'Secret Key'
-    Value: !GetAtt GithubUser.SecretAccessKey
+    Value: !GetAtt UserCredentials.SecretAccessKey
   VPCID:
     Description: ID of the VPC
     Value: !Ref FleetVPC
