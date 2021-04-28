@@ -3,11 +3,11 @@ const Conf = require('conf');
 const api = require('../aws');
 const prompts = require('../prompts');
 const paths = require('../util/paths.js');
-const fs = require('fs');
-const config = new Conf();
 const waitForState = require('../util/wait.js');
+const fs = require('fs');
 
 const DEFAULT_NAME = 'gander-apps';
+const config = new Conf();
 
 class SetupCFCommand extends Command {
   async run() {
