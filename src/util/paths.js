@@ -1,6 +1,7 @@
 const path = require('path');
 
-const ganderRootPath = path.join(__dirname, '/../..'); // ends up at root level of gander-cli
+// Ends up at root level of gander-cli
+const ganderRootPath = path.join(__dirname, '/../..');
 
 const ganderBuildWorkflowTemplatePath = path.join(ganderRootPath, '/templates/github/workflows/build-review-app.yml');
 const userBuildWorkflowPath = path.join(process.cwd(), '/.github/workflows/build-review-app.yml');
