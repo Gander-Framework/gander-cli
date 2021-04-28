@@ -263,7 +263,6 @@ Resources:
                   - ecs:CreateService
                   - ecs:List*
                   - ecs:RunTask
-                  - ecr:GetAuthorizationToken
                   - ecr:BatchGetImage
                   - ecr:BatchCheckLayerAvailability
                   - ecr:InitiateLayerUpload
@@ -290,7 +289,9 @@ Resources:
                     iam:ResourceTag/GanderApps: 'four_eyes'
                     elasticfilesystem:ResourceTag/GanderApps: 'four_eyes'
               - Effect: Allow
-                Action: sts:GetCallerIdentity
+                Action: 
+                  - sts:GetCallerIdentity
+                  - ecr:GetAuthorizationToken
                 Resource: "*"
   UserCredentials:
     Type: 'AWS::IAM::AccessKey'
