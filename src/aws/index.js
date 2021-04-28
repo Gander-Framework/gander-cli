@@ -9,7 +9,7 @@ const {
   CreateClusterCommand,
   DeleteClusterCommand,
 } = require('@aws-sdk/client-ecs');
-const executeProcess = require('./executeSdkProcess.js');
+const executeProcess = require('./executeProcess.js');
 
 const clients = {
   cloudFormation: null,

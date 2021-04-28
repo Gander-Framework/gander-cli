@@ -30,8 +30,6 @@ const ganderActionTemplatePaths = [
 ];
 const userActionPaths = actionFolderPaths.slice(1).map(path => `${path}/action.yml`);
 
-const taskExecutionPolicyPath = path.resolve();
-
 const cloudFormationTemplatePath = path.join(ganderRootPath, 'templates/cloudformation/gander.yml');
 
 module.exports = {
@@ -43,7 +41,6 @@ module.exports = {
   userTeardownWorkflowPath,
   githubFolderPath,
   workflowFolderPath,
-  taskExecutionPolicyPath,
   actionFolderPaths,
   ganderActionTemplatePaths,
   userActionPaths,
