@@ -256,13 +256,32 @@ Resources:
                 Action:
                   - ecs:DeregisterTaskDefinition
                   - ecs:DeleteService
-                  - iam:GetRole
-                  - ec2:Describe*
                   - ecs:Describe*
                   - ecs:CreateCluster
                   - ecs:CreateService
                   - ecs:List*
                   - ecs:RunTask
+                  - ecs:RegisterTaskDefinition
+                Resource: "*"
+                Condition:
+                  StringEquals:
+                    ecs:ResourceTag/GanderApps: "four_eyes"
+              - Effect: Allow
+                Action:
+                  - ec2:Describe*
+                Resource: "*"
+                Condition:
+                  StringEquals:
+                    ec2:ResourceTag/GanderApps: "four_eyes"
+              - Effect: Allow
+                Action:
+                  - iam:GetRole
+                Resource: "*"
+                Condition:
+                  StringEquals:
+                    iam:ResourceTag/GanderApps: "four_eyes"
+              - Effect: Allow
+                Action:
                   - ecr:BatchGetImage
                   - ecr:BatchCheckLayerAvailability
                   - ecr:InitiateLayerUpload
@@ -270,7 +289,13 @@ Resources:
                   - ecr:UploadLayerPart
                   - ecr:PutImage
                   - ecr:BatchDeleteImage
-                  - ecs:RegisterTaskDefinition
+                Resource: "*"
+                Condition:
+                  StringEquals:
+                    ecr:ResourceTag/GanderApps: "four_eyes"
+
+              - Effect: Allow
+                Action:
                   - elasticloadbalancing:DeleteTargetGroup
                   - elasticloadbalancing:DeleteRule
                   - elasticloadbalancing:Describe*
@@ -281,12 +306,7 @@ Resources:
                   - elasticfilesystem:CreateAccessPoint
                 Resource: "*"
                 Condition:
-                  StringEqualsIfExists:
-                    ec2:ResourceTag/GanderApps: "four_eyes"
-                    ecs:ResourceTag/GanderApps: "four_eyes"
-                    ecr:ResourceTag/GanderApps: "four_eyes"
-                    elasticloadbalancing:ResourceTag/GanderApps: "four_eyes"
-                    iam:ResourceTag/GanderApps: "four_eyes"
+                  StringEquals:
                     elasticfilesystem:ResourceTag/GanderApps: "four_eyes"
               - Effect: Allow
                 Action:
