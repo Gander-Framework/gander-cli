@@ -6,7 +6,7 @@ const paths = require('../util/paths.js');
 
 const config = new Conf();
 
-const DEFAULT_NAME = 'fleet-apps';
+const DEFAULT_NAME = 'gander-apps';
 
 class SetupCFCommand extends Command {
   async run() {
@@ -15,8 +15,8 @@ class SetupCFCommand extends Command {
 
     console.log('\nGenerating your Gander infrastructure. This may take a few minutes, so grab some coffee~ \n');
 
-    await api.createStack('fleet-apps', paths.cloudFormationTemplatePath, initialConfig.awsRegion);
-    const rawOutputs = JSON.parse(await api.getStackOutputs('fleet-apps'));
+    await api.createStack('gander-apps', paths.cloudFormationTemplatePath, initialConfig.awsRegion);
+    const rawOutputs = JSON.parse(await api.getStackOutputs('gander-apps'));
     let outputs = {};
     rawOutputs.forEach(output => outputs[output.OutputKey] = output.OutputValue);
 

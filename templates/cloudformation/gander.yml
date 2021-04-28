@@ -1,19 +1,19 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Setup for Fleet Apps
+Description: Setup for Gander Review Apps
 Parameters:
   DefaultName:
     Description: Default Name Prefix For your AWS Content
     Type: String
-    Default: fleet-apps
+    Default: gander-apps
   ECRName:
     Description: Name of the ECR Repository
     Type: String
-    Default: fleet-ecr
+    Default: gander-ecr
   UserAWSRegion:
     Type: String
     Description: The AWS Region you want your infrastructure in
 Resources:
-  FleetVPC:
+  GanderVPC:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: 10.0.0.0/16
@@ -25,8 +25,8 @@ Resources:
   RouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref FleetVPC
-  FleetIGW:
+      VpcId: !Ref GanderVPC
+  GanderIGW:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
@@ -35,19 +35,19 @@ Resources:
   AttachGateway:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
-      VpcId: !Ref FleetVPC
-      InternetGatewayId: !Ref FleetIGW
+      VpcId: !Ref GanderVPC
+      InternetGatewayId: !Ref GanderIGW
   InternetConnection:
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref RouteTable
       DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref FleetIGW
+      GatewayId: !Ref GanderIGW
   ClusterSubnet:
     Type: AWS::EC2::Subnet
     Properties:
       AvailabilityZone: !Sub "${UserAWSRegion}a"
-      VpcId: !Ref FleetVPC
+      VpcId: !Ref GanderVPC
       CidrBlock: 10.0.1.0/24
       Tags:
         - Key: Name
@@ -61,7 +61,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       AvailabilityZone: !Sub "${UserAWSRegion}a"
-      VpcId: !Ref FleetVPC
+      VpcId: !Ref GanderVPC
       CidrBlock: 10.0.2.0/24
       Tags:
         - Key: Name
@@ -75,7 +75,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       AvailabilityZone: !Sub "${UserAWSRegion}b"
-      VpcId: !Ref FleetVPC
+      VpcId: !Ref GanderVPC
       CidrBlock: 10.0.3.0/24
       Tags:
         - Key: Name
@@ -90,7 +90,7 @@ Resources:
     Properties:
       GroupName: !Sub "${DefaultName}-cluster"
       GroupDescription: Security group for the running ECS services
-      VpcId: !Ref FleetVPC
+      VpcId: !Ref GanderVPC
       SecurityGroupIngress:
         - Description: Allow port 8080 inbound traffic
           IpProtocol: tcp
@@ -110,7 +110,7 @@ Resources:
     Properties:
       GroupName: !Sub "${DefaultName}-efs"
       GroupDescription: Security Group for the Elastic File System
-      VpcId: !Ref FleetVPC
+      VpcId: !Ref GanderVPC
 
       # Only let EFS talk to the cluster
       SecurityGroupIngress:
@@ -127,8 +127,8 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: !Sub "${DefaultName}-alb"
-      GroupDescription: Fleet Security Group for the Application Load Balancer
-      VpcId: !Ref FleetVPC
+      GroupDescription: Gander Security Group for the Application Load Balancer
+      VpcId: !Ref GanderVPC
 
       #Allow all incoming internet traffic to the ALB
       SecurityGroupIngress:
@@ -164,7 +164,7 @@ Resources:
       SecurityGroups:
         - !Ref EFSSecurity
       SubnetId: !Ref ClusterSubnet
-  FleetRepo:
+  GanderRepo:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName: !Ref ECRName
@@ -188,11 +188,11 @@ Resources:
           FixedResponseConfig:
             ContentType: text/plain
             StatusCode: 404
-            MessageBody: There is no Fleet Review App here
-  FleetTaskExecutionRole:
+            MessageBody: There is no Gander Review App here
+  GanderTaskExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: fleetTaskExecutionRole
+      RoleName: ganderTaskExecutionRole
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -202,7 +202,7 @@ Resources:
             Action:
               - sts:AssumeRole
       Policies:
-        - PolicyName: fleetTaskExecutionPolicy
+        - PolicyName: ganderTaskExecutionPolicy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -220,7 +220,7 @@ Resources:
 Outputs:
   VPCID:
     Description: ID of the VPC
-    Value: !Ref FleetVPC
+    Value: !Ref GanderVPC
   ClusterSecurityGroupID:
     Description: Cluster Security Group ID
     Value: !Ref ClusterSecurity

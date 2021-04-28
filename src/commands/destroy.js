@@ -12,7 +12,7 @@ const destroyAllClusters = () => {
 
 class DestroyCommandCF extends Command {
   async run() {
-    await api.destroyStack('fleet-apps');
+    await api.destroyStack('gander-apps');
     destroyAllClusters();
   }
 }
