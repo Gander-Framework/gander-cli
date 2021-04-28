@@ -2,9 +2,10 @@ const { Command } = require('@oclif/command');
 const Conf = require('conf');
 const api = require('../aws');
 const prompts = require('../prompts');
-const paths = require('../util/paths.js');
-const waitForState = require('../util/wait.js');
+const paths = require('../util/paths');
+const waitForState = require('../util/wait');
 const fs = require('fs');
+const log = require('../util/log.js');
 
 const DEFAULT_NAME = 'gander-apps';
 const config = new Conf();
@@ -16,7 +17,8 @@ class SetupCFCommand extends Command {
 
     api.clients.cloudFormation = await api.initializeCfClient(config.get('AWS_REGION'));
 
-    console.log('\nGenerating your Gander infrastructure. This may take a few minutes, so grab some coffee~ \n');
+    log.info('\nGenerating your Gander infrastructure.');
+    console.log('This may take a few minutes, so grab some coffee ☕\n');
 
     await api.createStack({
       StackName: DEFAULT_NAME,
@@ -42,8 +44,6 @@ class SetupCFCommand extends Command {
       outputs[output.OutputKey] = output.OutputValue;
     });
 
-    console.log('\nIt may take around 10 minutes for AWS to fully spin up all infrastructure pieces. \nBut for now, we\'re all done! :D');
-
     config.set('VPC_ID', outputs.VPCID);
     config.set('CLUSTER_SECURITY_GROUP_ID', outputs.ClusterSecurityGroupID);
     config.set('CLUSTER_SUBNET_ID', outputs.ClusterSubnetID);
@@ -66,6 +66,8 @@ class SetupCFCommand extends Command {
     console.log('Create a CNAME record at your custom domain');
     console.log(`Map '*.staging' to this DNS Name:  ${outputs.ALBDomain}`);
     console.log('   ');
+
+    console.log('\nIt may take around 10 minutes for AWS to fully spin up all infrastructure pieces. \nBut for now, we\'re all done! :D');
   }
 }
 

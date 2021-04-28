@@ -1,4 +1,5 @@
 const ora = require('ora')
+const chalk = require('chalk')
 
 module.exports = {
   spin(msg, opts) {
@@ -8,6 +9,6 @@ module.exports = {
   },
 
   info(msg) {
-    ora().info(msg)
+    console.log(chalk.keyword('orange').bold(msg));
   },
 }

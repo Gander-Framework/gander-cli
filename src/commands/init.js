@@ -3,6 +3,7 @@ const prompts = require('../prompts');
 const api = require('../aws');
 const Conf = require('conf');
 const config = new Conf();
+const log = require('../util/log.js');
 const {
   populateWorkflows,
   createWorkflowDir,
@@ -22,6 +23,7 @@ const addAppToConfigFile = APP_NAME => {
 
 class InitCommand extends Command {
   async run() {
+    log.info('🐥 Initializing your project repository with Gander\n');
     createWorkflowDir();
     copyWorkflowFilesToRepo();
     const appInfo = await getAppInfo();
