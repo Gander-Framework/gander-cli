@@ -30,8 +30,8 @@ const initializeClient = region => new CloudFormationClient({
 });
 
 const createStack = ({ StackName, TemplateBody }) => executeProcess({
-  startMsg: 'Creating CloudFormation Stack for Gander',
-  successMsg: 'CloudFormation Stack Created',
+  startMsg: 'Initializing CloudFormation Stack creation',
+  successMsg: 'CloudFormation Stack initialized',
   client: cloudFormation.client,
   command: new CreateStackCommand({
     Capabilities: ['CAPABILITY_NAMED_IAM'],
@@ -51,6 +51,7 @@ const getStackOutputs = async ({ StackName }) => executeProcess({
   command: new DescribeStacksCommand({
     StackName,
   }),
+  noSpinner: true,
 });
 
 module.exports = {

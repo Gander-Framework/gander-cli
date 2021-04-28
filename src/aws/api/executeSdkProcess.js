@@ -5,32 +5,31 @@ const executeSdkProcess = async ({
   successMsg,
   client,
   command,
+  noSpinner,
 }) => {
-  const spinner = log.spin(startMsg);
+  let spinner;
   let awsSuccess;
+
+  if (!noSpinner) {
+    spinner = log.spin(startMsg);
+  }
 
   try {
     const response = await client.send(command);
     awsSuccess = response;
   } catch (error) {
     console.log('\n', error);
-    spinner.fail(`${error.name}: ${error.message}`);
+
+    if (!noSpinner) {
+      spinner.fail(`${error.name}: ${error.message}`);
+    }
+
     process.exit(1);
   }
 
-  // return client.send(command)
-  // .then(response => {
-  //   spinner.succeed(successMsg);
-  //   return response;
-  // })
-  // .catch(error => {
-  //   console.log('HIT ME');
-  //   console.log('\n', error);
-  //   spinner.fail(`${error.name}: ${error.message}`);
-  //   process.exit(1);
-  // });
-
-  spinner.succeed(successMsg);
+  if (!noSpinner) {
+    spinner.succeed(successMsg);
+  }
 
   return awsSuccess;
 };
