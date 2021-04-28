@@ -3,8 +3,9 @@ const Conf = require('conf');
 const api = require('../aws/api');
 const prompts = require('../prompts');
 const paths = require('../util/paths.js');
-
+const fs = require('fs');
 const config = new Conf();
+const waitForState = require('../util/wait.js');
 
 const DEFAULT_NAME = 'gander-apps';
 
@@ -13,12 +14,29 @@ class SetupCFCommand extends Command {
     const initialConfig = await prompts.welcome();
     config.set('AWS_REGION', initialConfig.awsRegion);
 
+    api.cloudFormation.client = await api.initializeClient(initialConfig.awsRegion);
+
     console.log('\nGenerating your Gander infrastructure. This may take a few minutes, so grab some coffee~ \n');
 
-    await api.createStack('gander-apps', paths.cloudFormationTemplatePath, initialConfig.awsRegion);
-    const rawOutputs = JSON.parse(await api.getStackOutputs('gander-apps'));
+    await api.createStack({
+      StackName: 'gander-apps',
+      TemplateBody: fs.readFileSync(paths.cloudFormationTemplatePath),
+    });
+
+    await waitForState({
+      desiredState: 'CREATE_COMPLETE',
+      describeFn: api.getStackOutputs,
+      resourceId: { StackName: 'gander-apps' },
+      resCallback: response => {
+        return response.Stacks[0].StackStatus;
+      },
+    });
+
+    const rawOutputs = await api.getStackOutputs({ StackName: 'gander-apps' });
     let outputs = {};
-    rawOutputs.forEach(output => outputs[output.OutputKey] = output.OutputValue);
+    rawOutputs.Stacks[0].Outputs.forEach(output => {
+      outputs[output.OutputKey] = output.OutputValue;
+    });
 
     console.log('It may take around 10 minutes for AWS to fully spin up all infrastructure pieces. \nBut for now, we\'re all done! :D');
 

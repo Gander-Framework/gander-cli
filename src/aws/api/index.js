@@ -1,14 +1,61 @@
-const createCluster = require('./ecsCreateCluster.js');
-const deleteCluster = require('./deleteCluster')
-const createStack = require('./stackCreate.js')
-const getStackOutputs = require('./getStackOutputs.js')
-const destroyStack = require('./deleteStack')
-const api = {
-  createStack,
-  getStackOutputs,
-  destroyStack,
-  createCluster,
-  deleteCluster,
+// const createCluster = require('./ecsCreateCluster.js');
+// const deleteCluster = require('./deleteCluster')
+// const createStack = require('./stackCreate.js')
+// const getStackOutputs = require('./getStackOutputs.js')
+// const destroyStack = require('./deleteStack')
+// const api = {
+//   createStack,
+//   getStackOutputs,
+//   destroyStack,
+//   createCluster,
+//   deleteCluster,
+// };
+
+// module.exports = api;
+
+const {
+  CloudFormationClient,
+  CreateStackCommand,
+  DescribeStacksCommand,
+} = require('@aws-sdk/client-cloudformation');
+
+const executeProcess = require('./executeSdkProcess.js');
+
+const cloudFormation = {
+  client: null,
 };
 
-module.exports = api;
+const initializeClient = region => new CloudFormationClient({
+  region,
+});
+
+const createStack = ({ StackName, TemplateBody }) => executeProcess({
+  startMsg: 'Creating CloudFormation Stack for Gander',
+  successMsg: 'CloudFormation Stack Created',
+  client: cloudFormation.client,
+  command: new CreateStackCommand({
+    Capabilities: ['CAPABILITY_NAMED_IAM'],
+    StackName,
+    TemplateBody,
+    Parameters: [{
+      ParameterKey: 'UserAWSRegion',
+      ParameterValue: 'us-east-1',
+    }],
+  }),
+});
+
+const getStackOutputs = async ({ StackName }) => executeProcess({
+  startMsg: 'Retrieving AWS resource information',
+  successMsg: 'AWS resource information retrieved',
+  client: cloudFormation.client,
+  command: new DescribeStacksCommand({
+    StackName,
+  }),
+});
+
+module.exports = {
+  cloudFormation,
+  initializeClient,
+  createStack,
+  getStackOutputs,
+};
