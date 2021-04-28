@@ -256,10 +256,8 @@ Resources:
                 Action:
                   - ecs:DeregisterTaskDefinition
                   - ecs:DeleteService
-                  - ecs:CreateCluster
                   - ecs:CreateService
                   - ecs:RunTask
-                  - ecs:RegisterTaskDefinition
                 Resource: "*"
                 Condition:
                   StringEquals:
@@ -302,6 +300,7 @@ Resources:
                   - elasticfilesystem:DescribeFileSystems
                   - elasticloadbalancing:Describe*
                   - ecs:Describe*
+                  - ecs:RegisterTaskDefinition
                   - ecs:List*
                   - ec2:Describe*
                   - sts:GetCallerIdentity
