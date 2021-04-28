@@ -281,7 +281,7 @@ Resources:
                   - elasticfilesystem:CreateAccessPoint
                 Resource: "*"
                 Condition:
-                  ForAnyValue:StringEquals:
+                  StringEqualsIfExists:
                     ec2:ResourceTag/GanderApps: "four_eyes"
                     ecs:ResourceTag/GanderApps: "four_eyes"
                     ecr:ResourceTag/GanderApps: "four_eyes"
