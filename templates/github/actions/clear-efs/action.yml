@@ -5,26 +5,27 @@ runs:
   using: "composite"
   steps:
     - run: |
-      echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
-      echo "SUBNET_ID=$( \
-        aws ec2 describe-subnets \
-          --filters Name=tag:Name,Values=$SUBNET_NAME \
-          --query 'Subnets[0].SubnetId' \
-          --output text)" >> $GITHUB_ENV
-      echo "SG_ID=$( \
-        aws ec2 describe-security-groups \
-          --filters Name=group-name,Values=$SG_NAME \
-          --query 'SecurityGroups[0].GroupId' \
-          --output text)" >> $GITHUB_ENV
-      echo "TASK_EXECUTION_ROLE_ARN=$( \
-        aws iam get-role \
-          --role-name fleetTaskExecutionRole \
-          --query 'Role.Arn' \
-          --output text)" >> $GITHUB_ENV
-      echo "FS_ID=$( \
-        aws efs describe-file-systems \
-          --query "FileSystems[?Tags[?Key=='Name' && Value=='$FS_NAME']] | [0].FileSystemId" \
-          --output text)" >> $GITHUB_ENV
+        echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
+        echo "SUBNET_ID=$( \
+          aws ec2 describe-subnets \
+            --filters Name=tag:Name,Values=$SUBNET_NAME \
+            --query 'Subnets[0].SubnetId' \
+            --output text)" >> $GITHUB_ENV
+        echo "SG_ID=$( \
+          aws ec2 describe-security-groups \
+            --filters Name=group-name,Values=$SG_NAME \
+            --query 'SecurityGroups[0].GroupId' \
+            --output text)" >> $GITHUB_ENV
+        echo "TASK_EXECUTION_ROLE_ARN=$( \
+          aws iam get-role \
+            --role-name fleetTaskExecutionRole \
+            --query 'Role.Arn' \
+            --output text)" >> $GITHUB_ENV
+        echo "FS_ID=$( \
+          aws efs describe-file-systems \
+            --query "FileSystems[?Tags[?Key=='Name' && Value=='$FS_NAME']] | [0].FileSystemId" \
+            --output text)" >> $GITHUB_ENV
+      shell: bash
     - run: |
         DATA_ACCESS_POINT=$(aws efs describe-access-points \
         --query "AccessPoints[?ClientToken=='$PROJECT-$PR_NUMBER-data'] | [0].AccessPointId" \

@@ -24,6 +24,7 @@ runs:
           aws efs describe-file-systems \
             --query "FileSystems[?Tags[?Key=='Name' && Value=='$FS_NAME']] | [0].FileSystemId" \
             --output text)" >> $GITHUB_ENV
+      shell: bash
     - run: |
         cat << SCRIPT > ./seeder-script.sh
         #!/bin/sh
