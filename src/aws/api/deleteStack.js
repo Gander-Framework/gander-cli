@@ -1,5 +1,5 @@
 const path = require('path')
-const executeProcess = require('../executeProcess')
+const executeProcess = require('./executeProcess')
 
 const deleteStack = async (stackName) => {
   return executeProcess(
@@ -7,7 +7,7 @@ const deleteStack = async (stackName) => {
     `${stackName} CloudFormation Stack deleted`,
     () => {
       const arg1 = `STACK_NAME=${stackName}`
-      const script = path.resolve(__dirname, '../../scripts/destroy/deleteStack.sh')
+      const script = path.resolve(__dirname, '../scripts/deleteStack.sh')
 
       return `${arg1} ${script}`
     }

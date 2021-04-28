@@ -1,1 +1,0 @@
-aws ecr create-repository --repository-name fleet-ecr
