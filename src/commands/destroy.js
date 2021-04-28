@@ -1,5 +1,5 @@
 const { Command } =  require('@oclif/command');
-const api = require('../aws/api');
+const api = require('../aws');
 const Conf = require('conf');
 const config = new Conf();
 

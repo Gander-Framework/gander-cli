@@ -1,6 +1,6 @@
 const { Command } = require('@oclif/command');
 const Conf = require('conf');
-const api = require('../aws/api');
+const api = require('../aws');
 const prompts = require('../prompts');
 const paths = require('../util/paths.js');
 const fs = require('fs');
