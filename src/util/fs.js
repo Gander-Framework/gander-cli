@@ -17,7 +17,7 @@ const {
 const createFolder = path => {
   if (!fs.existsSync(path)) {
     fs.mkdirSync(path);
-    console.log('Gander created folder at:', chalk.cyan(path));
+    console.log('Gander created folder at:', chalk.cyan(path.replace(process.cwd(), '.')));
   }
 };
 
