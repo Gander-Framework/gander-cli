@@ -150,7 +150,7 @@ runs:
 
         echo "APP_TASK_DEF=$(aws ecs register-task-definition \
         --family $PROJECT-$PR_NUMBER \
-        --tags Key=GanderApps,Value=four_eyes \
+        --tags key=GanderApps,value=four_eyes \
         --cli-input-json file://app-task.json \
         --query 'join(`:`,taskDefinition.[family,to_string(revision)])' \
         --output text)" >> $GITHUB_ENV
