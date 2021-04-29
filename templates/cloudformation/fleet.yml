@@ -254,9 +254,8 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - ecs:DeregisterTaskDefinition
-                  - ecs:DeleteService
                   - ecs:CreateService
+                  - ecs:DeleteService
                   - ecs:RunTask
                 Resource: "*"
                 Condition:
@@ -299,6 +298,7 @@ Resources:
                   - elasticloadbalancing:CreateTargetGroup
                   - elasticloadbalancing:DeleteTargetGroup
                   - elasticloadbalancing:Describe*
+                  - ecs:DeregisterTaskDefinition
                   - ecs:Describe*
                   - ecs:RegisterTaskDefinition
                   - ecs:List*
