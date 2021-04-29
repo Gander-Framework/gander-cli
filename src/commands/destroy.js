@@ -19,7 +19,7 @@ class DestroyCommandCF extends Command {
     const destroyInput = await prompts.confirmDestroy();
     if (destroyInput.closedAllPrs === 'No' || destroyInput.iAmSure === 'No') {
       log.error('Destroy operation cancelled.');
-      this.exit(1);
+      this.exit(0);
     }
 
     api.clients.cloudFormation = await api.initializeCfClient(config.get('AWS_REGION'));
