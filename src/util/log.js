@@ -12,7 +12,7 @@ module.exports = {
     return spinner.start()
   },
 
-  headers(msg) {
+  header(msg) {
     console.log(primary(msg));
   },
 

@@ -2,7 +2,7 @@ const inquirer = require('inquirer');
 const log = require('../util/log');
 
 const appInfoPrompt = async () => {
-  log.info('\nNow we just need a few pieces of information to finish configuring Gander in this repository');
+  log.header('\nNow we just need a few pieces of information to finish configuring Gander in this repository');
   let response = await inquirer.prompt([{
     name: 'APP_NAME',
     message: 'What is the name of your app?',
