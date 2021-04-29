@@ -3,7 +3,9 @@ const chalk = require('chalk')
 
 const primary = chalk.keyword('orange').bold
 const secondary = chalk.cyan
-const text = chalk.white
+const neutral = chalk.white
+const emphasis = chalk.bold.red
+const success = chalk.green
 
 module.exports = {
   spin(msg, opts) {
@@ -21,6 +23,16 @@ module.exports = {
   },
 
   text(msg) {
-    console.log(text(msg));
+    console.log(neutral(msg));
   },
+
+  error(msg) {
+    console.log(emphasis(msg))
+  },
+
+  primary: (msg) => primary(msg),
+  secondary: (msg) => secondary(msg),
+  neutral: (msg) => neutral(msg),
+  emphasis: (msg) => emphasis(msg),
+  success: (msg) => success(msg)
 }

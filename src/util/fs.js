@@ -1,5 +1,6 @@
 const fs = require('fs');
 const chalk = require('chalk');
+const log = require('./log.js');
 const Conf = require('conf');
 const config = new Conf();
 const {
@@ -17,7 +18,8 @@ const {
 const createFolder = path => {
   if (!fs.existsSync(path)) {
     fs.mkdirSync(path);
-    console.log('Gander created folder at:', chalk.cyan(path.replace(process.cwd(), '.')));
+    process.stdout.write('Gander created folder at: ');
+    log.info(path.replace(process.cwd(), '.'));
   }
 };
 

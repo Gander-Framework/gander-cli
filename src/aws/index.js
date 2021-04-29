@@ -30,7 +30,7 @@ const createStack = ({ StackName, TemplateBody }) => executeProcess({
     TemplateBody,
     Parameters: [{
       ParameterKey: 'UserAWSRegion',
-      ParameterValue: 'us-east-1',
+      ParameterValue: 'us-east-2',
     }],
   }),
 });

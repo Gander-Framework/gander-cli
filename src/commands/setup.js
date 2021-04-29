@@ -18,7 +18,7 @@ class SetupCFCommand extends Command {
     api.clients.cloudFormation = await api.initializeCfClient(config.get('AWS_REGION'));
 
     log.header('\nGenerating your Gander infrastructure.');
-    console.log('In the mean time, feel free to take a stretch and grab some coffee ☕\n');
+    log.text('In the mean time, feel free to take a stretch and grab some coffee ☕\n');
 
     await api.createStack({
       StackName: DEFAULT_NAME,
@@ -62,12 +62,13 @@ class SetupCFCommand extends Command {
     config.set('EFS_NAME', DEFAULT_NAME);
     config.set('APP_NAMES', '[]');
 
-    console.log('   ');
-    console.log('Create a CNAME record at your custom domain');
-    console.log(`Map '*.staging' to this DNS Name:  ${outputs.ALBDomain}`);
-    console.log('   ');
+    log.text('   ');
+    log.header('Create a CNAME record at your custom domain');
+    process.stdout.write("Map '*.staging' to this DNS Name:  ");
+    log.info(outputs.ALBDomain);
+    log.text('   ');
 
-    console.log('\nIt may take around 10 minutes for AWS to fully spin up all infrastructure pieces. \nBut for now, we\'re all done! :D');
+    log.text('\nIt may take around 10 minutes for AWS to fully spin up all infrastructure pieces. \nBut for now, we\'re all done! 🤓');
   }
 }
 

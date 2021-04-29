@@ -1,5 +1,4 @@
 const log = require('../util/log.js');
-const chalk = require('chalk');
 
 const executeProcess = async ({
   startMsg,
@@ -12,24 +11,24 @@ const executeProcess = async ({
   let awsSuccess;
 
   if (!noSpinner) {
-    spinner = log.spin(chalk.cyan(startMsg));
+    spinner = log.spin(log.secondary(startMsg));
   }
 
   try {
     const response = await client.send(command);
     awsSuccess = response;
   } catch (error) {
-    if (!noSpinner) {
-      spinner.fail(chalk.red.bold(`${error.name}: ${error.message}`));
+    if (noSpinner) {
+      log.error(error);
     } else {
-      console.log(error);
+      spinner.fail(log.error(`${error.name}: ${error.message}`));
     }
 
     process.exit(1);
   }
 
   if (!noSpinner) {
-    spinner.succeed(chalk.green(successMsg));
+    spinner.succeed(log.success(successMsg));
   }
 
   return awsSuccess;
