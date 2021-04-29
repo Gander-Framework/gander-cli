@@ -1,7 +1,7 @@
 const { Command } =  require('@oclif/command');
+const log = require('../util/log');
 const Conf = require('conf');
 const config = new Conf();
-const log = require('../util/log');
 
 class ListCommand extends Command {
   async run() {
