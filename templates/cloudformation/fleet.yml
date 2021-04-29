@@ -264,7 +264,6 @@ Resources:
                   - ecr:UploadLayerPart
                   - ecr:PutImage
                   - ecr:BatchDeleteImage
-                  - elasticfilesystem:DescribeAccessPoints
                   - elasticfilesystem:DeleteAccessPoint
                   - elasticloadbalancing:DeleteRule
                   - elasticloadbalancing:DeleteTargetGroup
@@ -275,6 +274,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - elasticfilesystem:CreateAccessPoint
+                  - elasticfilesystem:DescribeAccessPoints
                   - ecs:CreateService
                   - ecs:DeregisterTaskDefinition
                   - elasticloadbalancing:CreateRule
