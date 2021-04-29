@@ -254,10 +254,9 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - ecs:CreateService
                   - ecs:DeleteService
-                  - ecs:RunTask
                   - iam:GetRole
+                  - ecs:RunTask
                   - ecr:BatchGetImage
                   - ecr:BatchCheckLayerAvailability
                   - ecr:InitiateLayerUpload
@@ -266,7 +265,6 @@ Resources:
                   - ecr:PutImage
                   - ecr:BatchDeleteImage
                   - elasticfilesystem:DeleteAccessPoint
-                  - elasticfilesystem:CreateAccessPoint
                   - elasticloadbalancing:DeleteRule
                   - elasticloadbalancing:DeleteTargetGroup
                   - ecs:DeregisterTaskDefinition
@@ -276,6 +274,8 @@ Resources:
                     aws:ResourceTag/GanderApps: "four_eyes"
               - Effect: Allow
                 Action:
+                  - elasticfilesystem:CreateAccessPoint
+                  - ecs:CreateService
                   - elasticloadbalancing:CreateRule
                   - elasticloadbalancing:CreateTargetGroup
                   - elasticfilesystem:DescribeFileSystems
