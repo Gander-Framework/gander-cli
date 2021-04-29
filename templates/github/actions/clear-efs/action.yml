@@ -140,6 +140,7 @@ runs:
         echo "DELETE_TASK=$(aws ecs run-task \
           --cluster $PROJECT \
           --task-definition $DELETE_TASK_DEF \
+          --tags Key=GanderApps,Value=four_eyes \
           --count 1 \
           --launch-type "FARGATE" \
           --network-configuration "awsvpcConfiguration={ \
