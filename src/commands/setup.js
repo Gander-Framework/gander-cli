@@ -10,12 +10,11 @@ const DEFAULT_NAME = 'fleet-apps';
 
 class SetupCFCommand extends Command {
   async run() {
-    // const = await prompts.welcome();
-    const awsRegion = 'us-east-2';
-    config.set('AWS_REGION', awsRegion);
+    const initialConfig = await prompts.welcome();
+    config.set('AWS_REGION', initialConfig.awsRegion);
 
     console.log('\nGenerating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n');
-    await api.createStack('fleet-apps',paths.cloudFormationTemplatePath,awsRegion)
+    await api.createStack('fleet-apps',paths.cloudFormationTemplatePath,initialConfig.awsRegion)
     const rawOutputs = JSON.parse(await api.getStackOutputs('fleet-apps'))
     let outputs = {};
     rawOutputs.forEach(output => outputs[output.OutputKey] = output.OutputValue)
