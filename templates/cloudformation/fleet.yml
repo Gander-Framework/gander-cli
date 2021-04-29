@@ -267,7 +267,6 @@ Resources:
                   - elasticfilesystem:DeleteAccessPoint
                   - elasticloadbalancing:DeleteRule
                   - elasticloadbalancing:DeleteTargetGroup
-                  - ecs:DeregisterTaskDefinition
                 Resource: "*"
                 Condition:
                   StringEquals:
@@ -276,6 +275,7 @@ Resources:
                 Action:
                   - elasticfilesystem:CreateAccessPoint
                   - ecs:CreateService
+                  - ecs:DeregisterTaskDefinition
                   - elasticloadbalancing:CreateRule
                   - elasticloadbalancing:CreateTargetGroup
                   - elasticfilesystem:DescribeFileSystems
