@@ -10,8 +10,9 @@ const appInfoPrompt = async () => {
   },
   {
     name: 'APP_SERVER_PATH',
-    message: 'What is the path to your application\'s server?',
+    message: 'What directory is your application\'s entrypoint in?',
     type: 'input',
+    default: './',
   },
   {
     name: 'DB_SETUP_PATH',

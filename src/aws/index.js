@@ -69,7 +69,7 @@ const createCluster = async ({ clusterName }) => executeProcess({
 
 const deleteCluster = async ({ cluster }) => executeProcess({
   startMsg: `Deleting cluster ${cluster}`,
-  successMsg: `${cluster} deleted`,
+  successMsg: `${cluster} cluster deleted`,
   client: clients.ecs,
   command: new DeleteClusterCommand({
     cluster,
