@@ -257,19 +257,7 @@ Resources:
                   - ecs:CreateService
                   - ecs:DeleteService
                   - ecs:RunTask
-                Resource: "*"
-                Condition:
-                  StringEquals:
-                    ecs:ResourceTag/GanderApps: "four_eyes"
-              - Effect: Allow
-                Action:
                   - iam:GetRole
-                Resource: "*"
-                Condition:
-                  StringEquals:
-                    iam:ResourceTag/GanderApps: "four_eyes"
-              - Effect: Allow
-                Action:
                   - ecr:BatchGetImage
                   - ecr:BatchCheckLayerAvailability
                   - ecr:InitiateLayerUpload
@@ -277,30 +265,23 @@ Resources:
                   - ecr:UploadLayerPart
                   - ecr:PutImage
                   - ecr:BatchDeleteImage
-                Resource: "*"
-                Condition:
-                  StringEquals:
-                    ecr:ResourceTag/GanderApps: "four_eyes"
-
-              - Effect: Allow
-                Action:
                   - elasticfilesystem:DescribeFileSystems
                   - elasticfilesystem:DeleteAccessPoint
                   - elasticfilesystem:CreateAccessPoint
-                Resource: "*"
-                Condition:
-                  StringEquals:
-                    elasticfilesystem:ResourceTag/GanderApps: "four_eyes"
-              - Effect: Allow
-                Action:
                   - elasticloadbalancing:DeleteRule
                   - elasticloadbalancing:CreateRule
                   - elasticloadbalancing:CreateTargetGroup
                   - elasticloadbalancing:DeleteTargetGroup
-                  - elasticloadbalancing:Describe*
                   - ecs:DeregisterTaskDefinition
-                  - ecs:Describe*
                   - ecs:RegisterTaskDefinition
+                Resource: "*"
+                Condition:
+                  StringEquals:
+                    aws:ResourceTag/GanderApps: "four_eyes"
+              - Effect: Allow
+                Action:
+                  - elasticloadbalancing:Describe*
+                  - ecs:Describe*
                   - ecs:List*
                   - ec2:Describe*
                   - sts:GetCallerIdentity

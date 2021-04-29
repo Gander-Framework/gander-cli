@@ -11,6 +11,7 @@ runs:
           aws efs create-access-point \
             --client-token $PROJECT-$PR_NUMBER-data \
             --file-system-id $FS_ID \
+            --tags Key=GanderApps,Value=four_eyes \
             --root-directory "Path=/$PROJECT-$PR_NUMBER/data,CreationInfo={OwnerUid=0,OwnerGid=0,Permissions=777}" \
             --query 'AccessPointId' \
             --output text \
@@ -149,7 +150,7 @@ runs:
 
         echo "APP_TASK_DEF=$(aws ecs register-task-definition \
         --family $PROJECT-$PR_NUMBER \
-        --tags key=GanderApps,value=four_eyes \
+        --tags Key=GanderApps,Value=four_eyes \
         --cli-input-json file://app-task.json \
         --query 'join(`:`,taskDefinition.[family,to_string(revision)])' \
         --output text)" >> $GITHUB_ENV
@@ -167,6 +168,7 @@ runs:
         --name Fleet-$PROJECT-$PR_NUMBER \
         --vpc-id $VPC_ID \
         --protocol HTTP \
+        --tags Key=GanderApps,Value=four_eyes \
         --port 8080 \
         --target-type ip \
         --query 'TargetGroups[0].TargetGroupArn' \
@@ -196,13 +198,10 @@ runs:
         --listener-arn $LISTENER_ARN \
         --conditions file://./rules-conditions.json \
         --priority $PR_NUMBER \
+        --tags Key=GanderApps,Value=four_eyes \
         --actions Type=forward,TargetGroupArn=$TARGET_GROUP_ARN \
         --query 'Rules[0].RuleArn' \
         --output text)
-
-        # aws rds add-tags-to-resource \
-        # --resource-name $RULE_ARN \
-        # --tags Key=Name,Value=$PROJECT-$PR_NUMBER
 
         echo "TARGET_GROUP_ARN=$TARGET_GROUP_ARN" >> $GITHUB_ENV
       shell: bash
