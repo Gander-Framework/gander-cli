@@ -1,5 +1,7 @@
 const { Command } =  require('@oclif/command');
 const api = require('../aws');
+const log = require('../util/log');
+const prompts = require('../prompts');
 const Conf = require('conf');
 const config = new Conf();
 
@@ -14,6 +16,12 @@ const destroyAllClusters = () => {
 
 class DestroyCommandCF extends Command {
   async run() {
+    const destroyInput = await prompts.confirmDestroy();
+    if (destroyInput.closedAllPrs === 'No' || destroyInput.iAmSure === 'No') {
+      log.error('Destroy operation cancelled.');
+      this.exit(1);
+    }
+
     api.clients.cloudFormation = await api.initializeCfClient(config.get('AWS_REGION'));
     api.clients.ecs = await api.initializeEcsClient(config.get('AWS_REGION'));
 
