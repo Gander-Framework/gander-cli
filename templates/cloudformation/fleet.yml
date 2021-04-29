@@ -285,10 +285,7 @@ Resources:
 
               - Effect: Allow
                 Action:
-                  - elasticloadbalancing:DeleteTargetGroup
-                  - elasticloadbalancing:DeleteRule
-                  - elasticloadbalancing:CreateTargetGroup
-                  - elasticloadbalancing:CreateRule
+                  - elasticfilesystem:DescribeFileSystems
                   - elasticfilesystem:DeleteAccessPoint
                   - elasticfilesystem:CreateAccessPoint
                 Resource: "*"
@@ -297,7 +294,10 @@ Resources:
                     elasticfilesystem:ResourceTag/GanderApps: "four_eyes"
               - Effect: Allow
                 Action:
-                  - elasticfilesystem:DescribeFileSystems
+                  - elasticloadbalancing:DeleteRule
+                  - elasticloadbalancing:CreateRule
+                  - elasticloadbalancing:CreateTargetGroup
+                  - elasticloadbalancing:DeleteTargetGroup
                   - elasticloadbalancing:Describe*
                   - ecs:Describe*
                   - ecs:RegisterTaskDefinition
