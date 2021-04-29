@@ -268,8 +268,6 @@ Resources:
                   - elasticfilesystem:DeleteAccessPoint
                   - elasticfilesystem:CreateAccessPoint
                   - elasticloadbalancing:DeleteRule
-                  - elasticloadbalancing:CreateRule
-                  - elasticloadbalancing:CreateTargetGroup
                   - elasticloadbalancing:DeleteTargetGroup
                   - ecs:DeregisterTaskDefinition
                 Resource: "*"
@@ -278,6 +276,8 @@ Resources:
                     aws:ResourceTag/GanderApps: "four_eyes"
               - Effect: Allow
                 Action:
+                  - elasticloadbalancing:CreateRule
+                  - elasticloadbalancing:CreateTargetGroup
                   - elasticfilesystem:DescribeFileSystems
                   - elasticloadbalancing:Describe*
                   - ecs:Describe*
