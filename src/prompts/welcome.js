@@ -3,7 +3,7 @@ const inquirer = require('inquirer');
 const log = require('../util/log');
 
 const welcome = async () => {
-  log.info('🐥 Welcome to Gander-CLI!');
+  log.header('🐥 Welcome to Gander-CLI!');
 
   console.log('\nTo help you get set up, please make sure you have your AWS credentials configured with the CLI.\n');
 

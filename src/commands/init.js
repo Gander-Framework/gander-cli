@@ -23,7 +23,7 @@ const addAppToConfigFile = APP_NAME => {
 
 class InitCommand extends Command {
   async run() {
-    log.info('🐥 Initializing your project repository with Gander\n');
+    log.header('🐥 Initializing your project repository with Gander\n');
     createWorkflowDir();
     copyWorkflowFilesToRepo();
     const appInfo = await getAppInfo();

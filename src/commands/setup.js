@@ -17,7 +17,7 @@ class SetupCFCommand extends Command {
 
     api.clients.cloudFormation = await api.initializeCfClient(config.get('AWS_REGION'));
 
-    log.info('\nGenerating your Gander infrastructure.');
+    log.header('\nGenerating your Gander infrastructure.');
     console.log('In the mean time, feel free to take a stretch and grab some coffee ☕\n');
 
     await api.createStack({
