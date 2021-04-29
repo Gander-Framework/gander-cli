@@ -27,11 +27,11 @@ const waitForState = async ({
     resourceState = resCallback(response);
   }
 
-  spinner.succeed(successMsg);
+  spinner.succeed(log.success(successMsg));
 };
 
-const waitForDeletion = (describeFn, resourceId) => {
+// const waitForDeletion = (describeFn, resourceId) => {
 
-};
+// };
 
 module.exports = waitForState;
