@@ -41,6 +41,8 @@ class SetupCFCommand extends Command {
     console.log('Create a CNAME record at your custom domain')
     console.log(`Map '*.staging' to this DNS Name:  ${outputs.ALBDomain}`)
     console.log('   ')
+    console.log(`Key ID:    ${outputs.AccessKeyId}`)
+    console.log(`Secret ID: ${outputs.AccessKeySecret}`)
 
   }
 }
