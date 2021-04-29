@@ -287,6 +287,9 @@ Resources:
                   - ecr:GetAuthorizationToken
                   - ecs:RegisterTaskDefinition
                 Resource: "*"
+              - Effect: Allow
+                Action: iam:PassRole
+                Resource: !Sub arn:aws:iam::${AWS::AccountId}:role/fleetTaskExecutionRole
   UserCredentials:
     Type: "AWS::IAM::AccessKey"
     Properties:
