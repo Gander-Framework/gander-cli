@@ -25,7 +25,7 @@ const createStack = ({ StackName, TemplateBody }) => executeProcess({
   successMsg: 'CloudFormation Stack initialized',
   client: clients.cloudFormation,
   command: new CreateStackCommand({
-    Capabilities: ['CAPABILITY_NAMED_IAM'],
+    Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_IAM'],
     StackName,
     TemplateBody,
     Parameters: [{
