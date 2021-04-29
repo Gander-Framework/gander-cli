@@ -265,7 +265,6 @@ Resources:
                   - ecr:UploadLayerPart
                   - ecr:PutImage
                   - ecr:BatchDeleteImage
-                  - elasticfilesystem:DescribeFileSystems
                   - elasticfilesystem:DeleteAccessPoint
                   - elasticfilesystem:CreateAccessPoint
                   - elasticloadbalancing:DeleteRule
@@ -273,19 +272,20 @@ Resources:
                   - elasticloadbalancing:CreateTargetGroup
                   - elasticloadbalancing:DeleteTargetGroup
                   - ecs:DeregisterTaskDefinition
-                  - ecs:RegisterTaskDefinition
                 Resource: "*"
                 Condition:
                   StringEquals:
                     aws:ResourceTag/GanderApps: "four_eyes"
               - Effect: Allow
                 Action:
+                  - elasticfilesystem:DescribeFileSystems
                   - elasticloadbalancing:Describe*
                   - ecs:Describe*
                   - ecs:List*
                   - ec2:Describe*
                   - sts:GetCallerIdentity
                   - ecr:GetAuthorizationToken
+                  - ecs:RegisterTaskDefinition
                 Resource: "*"
   UserCredentials:
     Type: "AWS::IAM::AccessKey"
