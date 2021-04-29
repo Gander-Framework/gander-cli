@@ -8,17 +8,17 @@ const welcome = async () => {
 
   let response = await inquirer.prompt(
     [
-      // {
-      //   name: 'generateIam',
-      //   message: 'In addition to the resources above, would you like us to generate IAM credentials for Fleet to use?',
-      //   type: 'list',
-      //   choices: [{ name: 'yes' }, { name: 'no' }],
-      // },
+      {
+        name: 'generateIam',
+        message: 'In addition to the resources above, would you like us to generate IAM credentials for Fleet to use?',
+        type: 'list',
+        choices: [{ name: 'yes' }, { name: 'no' }],
+      },
       {
         name: 'awsRegion',
         message: 'What AWS region would you want Fleet to operate in?',
         type: 'input',
-        default: 'us-east-2',
+        default: 'us-east-1',
       }
     ]
   );
