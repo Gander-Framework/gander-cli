@@ -10,7 +10,8 @@ const DEFAULT_NAME = 'fleet-apps';
 
 class SetupCFCommand extends Command {
   async run() {
-    const initialConfig = await prompts.welcome();
+    // const initialConfig = await prompts.welcome();
+    const initialConfig.awsRegion = 'us-east-2';
     config.set('AWS_REGION', initialConfig.awsRegion);
 
     console.log('\nGenerating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n');
