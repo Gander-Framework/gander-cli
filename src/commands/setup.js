@@ -15,6 +15,10 @@ class SetupCFCommand extends Command {
     const initialConfig = await prompts.welcome();
     config.set('AWS_REGION', initialConfig.awsRegion);
 
+    log.text('')
+    process.stdout.write('Your Gander configuration file lives at ');
+    log.info(config.path);
+
     api.clients.cloudFormation = await api.initializeCfClient(config.get('AWS_REGION'));
 
     log.header('\nGenerating your Gander infrastructure.');
