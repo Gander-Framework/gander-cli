@@ -30,6 +30,10 @@ module.exports = {
     console.log(emphasis(msg))
   },
 
+  warn(msg) {
+    console.log(emphasis(msg))
+  },
+
   primary: (msg) => primary(msg),
   secondary: (msg) => secondary(msg),
   neutral: (msg) => neutral(msg),

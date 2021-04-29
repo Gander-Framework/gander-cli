@@ -1,5 +1,4 @@
 const fs = require('fs');
-const chalk = require('chalk');
 const log = require('./log.js');
 const Conf = require('conf');
 const config = new Conf();
@@ -32,7 +31,6 @@ const createWorkflowDir = () => {
 
 const populateBuildWorkflow = appInfo => {
   let buildWorkflowFile = fs.readFileSync(userBuildWorkflowPath, 'utf8');
-  // TODO ???
   buildWorkflowFile = buildWorkflowFile.replace('FOUR_EYES_SUPREMACY', appInfo.FOUR_EYES_SUPREMACY);
   buildWorkflowFile = buildWorkflowFile.replace('APP_NAME', appInfo.APP_NAME);
   buildWorkflowFile = buildWorkflowFile.replace('APP_SERVER_PATH', appInfo.APP_SERVER_PATH);
