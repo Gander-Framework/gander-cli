@@ -35,7 +35,7 @@ const populateBuildWorkflow = appInfo => {
   buildWorkflowFile = buildWorkflowFile.replace('APP_NAME', appInfo.APP_NAME);
   buildWorkflowFile = buildWorkflowFile.replace('APP_SERVER_PATH', appInfo.APP_SERVER_PATH);
   buildWorkflowFile = buildWorkflowFile.replace('DB_SETUP_PATH', appInfo.DB_SETUP_PATH);
-  buildWorkflowFile = buildWorkflowFile.replace('CNBP_BUILDER', 'paketobuildpacks/builder:base');
+  buildWorkflowFile = buildWorkflowFile.replace('CNBP_BUILDER', appInfo.APP_LANGUAGE);
   buildWorkflowFile = buildWorkflowFile.replace('DATABASE_NAME', appInfo.DATABASE_NAME);
   buildWorkflowFile = buildWorkflowFile.replace('GANDER_DOMAIN', appInfo.GANDER_DOMAIN);
   buildWorkflowFile = buildWorkflowFile.replace('DEFAULT_SUBNET_NAME', config.get('DEFAULT_SUBNET_NAME'));

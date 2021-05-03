@@ -1,6 +1,10 @@
 const inquirer = require('inquirer');
 const log = require('../util/log');
 
+const PaketoBase = 'paketobuildpacks/builder:base'
+const PaketoFull = 'paketobuildpacks/builder:full'
+const Google = 'gcr.io/buildpacks/builder:v1'
+
 const appNameValidator = async input => {
   if (input.match(/^[A-Za-z0-9-]+$/)) {
     return true;
@@ -22,6 +26,21 @@ const appInfoPrompt = async () => {
     message: 'What is the name of your app?',
     type: 'input',
     validate: appNameValidator,
+  },
+  {
+    name: 'APP_LANGUAGE',
+    message: 'What is your project written in?',
+    type: 'list',
+    choices: [
+      { name: 'Java', value: PaketoBase},
+      { name: 'NodeJS', value: PaketoBase},
+      { name: 'Ruby', value: PaketoFull},
+      { name: 'python', value: Google},
+      { name: 'golang', value: PaketoBase},
+      { name: '.NET Core', value: PaketoBase},
+      { name: 'PHP', value: PaketoFull},
+      { name: 'Procfile', value: PaketoBase},
+    ],
   },
   {
     name: 'APP_SERVER_PATH',
