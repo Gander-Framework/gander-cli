@@ -230,5 +230,5 @@ runs:
           --cluster $PROJECT \
           --services $PROJECT-$PR_NUMBER-$GITHUB_SHA
 
-        echo "PUBLIC_URL=$PROJECT-$PR_NUMBER.staging.$USER_DOMAIN" >> $GITHUB_ENV
+        echo "PUBLIC_URL=$PROJECT-$PR_NUMBER.gander.$USER_DOMAIN" >> $GITHUB_ENV
       shell: bash
