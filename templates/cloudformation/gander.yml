@@ -280,7 +280,7 @@ Resources:
                 Resource: "*"
               - Effect: Allow
                 Action: iam:PassRole
-                Resource: !Sub arn:aws:iam::${AWS::AccountId}:role/fleetTaskExecutionRole
+                Resource: !Sub arn:aws:iam::${AWS::AccountId}:role/ganderTaskExecutionRole
   UserCredentials:
     Type: "AWS::IAM::AccessKey"
     Properties:
