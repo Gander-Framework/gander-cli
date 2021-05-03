@@ -1,27 +1,35 @@
-const {Command} =  require('@oclif/command')
-const prompts = require('../prompts')
-const api = require('../aws/api')
-const utils = require('../util')
-const log = require('../util/log')
-const Conf = require('conf')
-const config = new Conf()
+const { Command } =  require('@oclif/command');
+const api = require('../aws');
+const log = require('../util/log');
+const prompts = require('../prompts');
+const Conf = require('conf');
+const config = new Conf();
 
+const DEFAULT_NAME = 'gander-apps';
 
 const destroyAllClusters = () => {
-  const appNames = JSON.parse(config.get('APP_NAMES'))
+  const appNames = JSON.parse(config.get('APP_NAMES'));
   appNames.forEach(name => {
-    // TODO: call api.deleteCluster
-    api.deleteCluster(name)
-  })
-}
+    api.deleteCluster({ cluster: name });
+  });
+};
 
 class DestroyCommandCF extends Command {
   async run() {
-    await api.destroyStack('fleet-apps')
-    destroyAllClusters()
+    const destroyInput = await prompts.confirmDestroy();
+    if (destroyInput.closedAllPrs === 'No' || destroyInput.iAmSure === 'No') {
+      log.error('Destroy operation cancelled.');
+      this.exit(0);
+    }
+
+    api.clients.cloudFormation = await api.initializeCfClient(config.get('AWS_REGION'));
+    api.clients.ecs = await api.initializeEcsClient(config.get('AWS_REGION'));
+
+    await api.deleteStack({ StackName: DEFAULT_NAME });
+    destroyAllClusters();
   }
 }
 
-DestroyCommandCF.description = 'Teardown all of the Fleet infrastructure that was created during initial setup using CloudFormation'
+DestroyCommandCF.description = 'Destroy all AWS resources created for Gander review apps';
 
-module.exports = DestroyCommandCF
+module.exports = DestroyCommandCF;

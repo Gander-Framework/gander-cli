@@ -17,7 +17,7 @@ runs:
             --output text)" >> $GITHUB_ENV
         echo "TASK_EXECUTION_ROLE_ARN=$( \
           aws iam get-role \
-            --role-name fleetTaskExecutionRole \
+            --role-name ganderTaskExecutionRole \
             --query 'Role.Arn' \
             --output text)" >> $GITHUB_ENV
         echo "FS_ID=$( \
@@ -85,7 +85,7 @@ runs:
                 "options": {
                   "awslogs-create-group": "true",
                   "awslogs-region": "$REGION",
-                  "awslogs-group": "fleet-logs-$PROJECT-setup",
+                  "awslogs-group": "gander-logs-$PROJECT-setup",
                   "awslogs-stream-prefix": "$PROJECT"
                 }
               },
