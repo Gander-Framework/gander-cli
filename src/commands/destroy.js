@@ -27,6 +27,7 @@ class DestroyCommandCF extends Command {
 
     await api.deleteStack({ StackName: DEFAULT_NAME });
     destroyAllClusters();
+    config.clear();
   }
 }
 
