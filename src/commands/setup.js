@@ -1,25 +1,53 @@
 const { Command } = require('@oclif/command');
 const Conf = require('conf');
-const api = require('../aws/api');
+const api = require('../aws');
 const prompts = require('../prompts');
-const paths = require('../util/paths.js');
+const paths = require('../util/paths');
+const waitForState = require('../util/wait');
+const fs = require('fs');
+const log = require('../util/log.js');
 
+const DEFAULT_NAME = 'gander-apps';
 const config = new Conf();
-
-const DEFAULT_NAME = 'fleet-apps';
 
 class SetupCFCommand extends Command {
   async run() {
     const initialConfig = await prompts.welcome();
     config.set('AWS_REGION', initialConfig.awsRegion);
 
-    console.log('\nGenerating your Fleet infrastructure. This may take a few minutes, so grab some coffee~ \n');
-    await api.createStack('fleet-apps',paths.cloudFormationTemplatePath,initialConfig.awsRegion)
-    const rawOutputs = JSON.parse(await api.getStackOutputs('fleet-apps'))
+    log.text('')
+    process.stdout.write('Your Gander configuration file lives at ');
+    log.info(config.path);
+
+    api.clients.cloudFormation = await api.initializeCfClient(config.get('AWS_REGION'));
+
+    log.header('\nGenerating your Gander infrastructure.');
+    log.text('In the mean time, feel free to take a stretch and grab some coffee ☕\n');
+
+    await api.createStack({
+      StackName: DEFAULT_NAME,
+      TemplateBody: fs.readFileSync(paths.cloudFormationTemplatePath),
+    });
+
+    await waitForState({
+      startMsg: 'Provisioning AWS resources',
+      successMsg: 'AWS infrastructure provisioned successfully',
+      desiredState: 'CREATE_COMPLETE',
+      describeFn: api.getStackOutputs,
+      describeArgs: { StackName: DEFAULT_NAME },
+      resCallback: response => {
+        return response.Stacks[0].StackStatus;
+      },
+    });
+
+    const rawOutputs = await api.getStackOutputs({
+      StackName: DEFAULT_NAME,
+    });
     let outputs = {};
-    rawOutputs.forEach(output => outputs[output.OutputKey] = output.OutputValue)
-    
-    console.log('It may take around 10 minutes for AWS to fully spin up all infrastructure pieces. \nBut for now, we\'re all done! :D')
+    rawOutputs.Stacks[0].Outputs.forEach(output => {
+      outputs[output.OutputKey] = output.OutputValue;
+    });
+
     config.set('VPC_ID', outputs.VPCID);
     config.set('CLUSTER_SECURITY_GROUP_ID', outputs.ClusterSecurityGroupID);
     config.set('CLUSTER_SUBNET_ID', outputs.ClusterSubnetID);
@@ -36,16 +64,19 @@ class SetupCFCommand extends Command {
     config.set('DEFAULT_SUBNET_NAME', DEFAULT_NAME);
     config.set('CLUSTER_SECURITY_GROUP', `${DEFAULT_NAME}-cluster`);
     config.set('EFS_NAME', DEFAULT_NAME);
-    config.set('APP_NAMES', "[]");
-    console.log('   ')
-    console.log('Create a CNAME record at your custom domain')
-    console.log(`Map '*.staging' to this DNS Name:  ${outputs.ALBDomain}`)
-    console.log('   ')
+    config.set('APP_NAMES', '[]');
+
+    log.text('   ');
+    log.header('Create a CNAME record at your custom domain');
+    process.stdout.write("Map '*.gander' to this DNS Name:  ");
+    log.info(outputs.ALBDomain);
+    log.text('   ');
     console.log(`Key ID:    ${outputs.AccessKeyId}`)
     console.log(`Secret ID: ${outputs.AccessKeySecret}`)
 
+    log.text('\nIt may take around 10 minutes for AWS to fully spin up all infrastructure pieces. \nBut for now, we\'re all done! 🤓');
   }
 }
 
-SetupCFCommand.description = 'Create an AWS VPC using CloudFormation'
+SetupCFCommand.description = 'Create all the AWS resources required to deploy Gander review apps';
 module.exports = SetupCFCommand;

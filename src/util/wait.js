@@ -1,20 +1,37 @@
-const utils = require(".")
-const api = require("../aws/api")
+const log = require('./log.js');
 
-const waitForState = (desiredState, describeFn, resourceId, resCallback ) => {
-  let resourceState = ''
+/* eslint-disable no-await-in-loop */
+const sleep = milliseconds => {
+  const date = Date.now();
+  let currentDate = null;
+  do {
+    currentDate = Date.now();
+  } while (currentDate - date < milliseconds);
+};
 
-  while(resourceState != desiredState) {
-    utils.sleep(500)
+const waitForState = async ({
+  startMsg,
+  successMsg,
+  desiredState,
+  describeFn,
+  describeArgs,
+  resCallback,
+}) => {
+  const spinner = log.spin(startMsg);
+  let resourceState = '';
 
-    const response = await describeFn(resourceId)
-    resourceState = resCallback(response)
+  while (resourceState !== desiredState) {
+    sleep(500);
+
+    const response = await describeFn(describeArgs);
+    resourceState = resCallback(response);
   }
 
-}
+  spinner.succeed(log.success(successMsg));
+};
 
-const waitForDeletion = (describeFn, resourceId) => {
-  
-}
+// const waitForDeletion = (describeFn, resourceId) => {
 
-module.exports = waitForState
+// };
+
+module.exports = waitForState;

@@ -55,7 +55,7 @@ runs:
                 "options": {
                   "awslogs-create-group": "true",
                   "awslogs-region": "$REGION",
-                  "awslogs-group": "fleet-logs-$PROJECT-api",
+                  "awslogs-group": "gander-logs-$PROJECT-api",
                   "awslogs-stream-prefix": "$PROJECT"
                 }
               },
@@ -107,7 +107,7 @@ runs:
                 "options": {
                   "awslogs-create-group": "true",
                   "awslogs-region": "$REGION",
-                  "awslogs-group": "fleet-logs-$PROJECT-db",
+                  "awslogs-group": "gander-logs-$PROJECT-db",
                   "awslogs-stream-prefix": "$PROJECT"
                 }
               },
@@ -160,12 +160,12 @@ runs:
         echo "Creating Target Group"
 
         VPC_ID=$(aws ec2 describe-vpcs \
-        --filters Name=tag:Name,Values=fleet-apps \
+        --filters Name=tag:Name,Values=gander-apps \
         --query 'Vpcs[0].VpcId' \
         --output text)
 
         TARGET_GROUP_ARN=$(aws elbv2 create-target-group \
-        --name Fleet-$PROJECT-$PR_NUMBER \
+        --name Gander-$PROJECT-$PR_NUMBER \
         --vpc-id $VPC_ID \
         --protocol HTTP \
         --tags Key=GanderApps,Value=four_eyes \
@@ -177,7 +177,7 @@ runs:
         echo "Creating Rule"
 
         ALB_ARN=$(aws elbv2 describe-load-balancers \
-        --query 'LoadBalancers[?LoadBalancerName==`fleet-apps`] | [0].LoadBalancerArn' \
+        --query 'LoadBalancers[?LoadBalancerName==`gander-apps`] | [0].LoadBalancerArn' \
         --output text)
 
         LISTENER_ARN=$(aws elbv2 describe-listeners \
@@ -189,7 +189,7 @@ runs:
         [
           {
             "Field": "host-header",
-            "Values": ["$PROJECT-$PR_NUMBER.staging.$USER_DOMAIN"]
+            "Values": ["$PROJECT-$PR_NUMBER.gander.$USER_DOMAIN"]
           }
         ]
         RULES

@@ -1,20 +1,23 @@
 {
-  "name": "fleet-cli",
+  "name": "gander-cli",
   "description": "framework to create full-stack review apps on AWS",
   "version": "0.0.0",
   "author": "Melinda @melinda-hl-lim",
   "bin": {
-    "fleet": "./bin/run"
+    "gander": "./bin/run"
   },
-  "bugs": "https://github.com/Mush-Framework/fleet-cli/issues",
+  "bugs": "https://github.com/Gander-Framework/gander-cli/issues",
   "dependencies": {
+    "@aws-sdk/client-cloudformation": "^3.13.1",
     "@aws-sdk/client-ec2": "^3.13.1",
     "@aws-sdk/client-ecr": "^3.13.1",
+    "@aws-sdk/client-ecs": "^3.13.1",
     "@aws-sdk/client-efs": "^3.13.1",
     "@aws-sdk/client-iam": "^3.13.1",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "@oclif/plugin-help": "^3.2.2",
+    "chalk": "^4.1.1",
     "conf": "^10.0.1",
     "inquirer": "^8.0.0",
     "install": "^0.13.0",
@@ -37,7 +40,7 @@
     "/oclif.manifest.json",
     "/src"
   ],
-  "homepage": "https://github.com/Mush-Framework/fleet-cli",
+  "homepage": "https://github.com/Gander-Framework/gander-cli",
   "keywords": [
     "oclif"
   ],
@@ -45,12 +48,12 @@
   "main": "src/index.js",
   "oclif": {
     "commands": "./src/commands",
-    "bin": "fleet",
+    "bin": "gander",
     "plugins": [
       "@oclif/plugin-help"
     ]
   },
-  "repository": "Mush-Framework/fleet-cli",
+  "repository": "Gander-Framework/gander-cli",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint .",

@@ -4,11 +4,11 @@ on:
     types: [closed]
 
 env:
-  ECR_REPO: fleet-ecr
+  ECR_REPO: gander-ecr
   PROJECT: APP_NAME # request-bin
-  SUBNET_NAME: DEFAULT_SUBNET_NAME # Fleet-Subnet
-  SG_NAME: CLUSTER_SECURITY_GROUP # Fleet-Security-3
-  FS_NAME: EFS_NAME # FleetFS
+  SUBNET_NAME: DEFAULT_SUBNET_NAME # Gander-Subnet
+  SG_NAME: CLUSTER_SECURITY_GROUP # Gander-Security-3
+  FS_NAME: EFS_NAME # GanderFS
   REGION: USER_AWS_REGION # us-east-2
   PR_NUMBER: ${{ github.event.pull_request.number }}
 
