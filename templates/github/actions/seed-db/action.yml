@@ -56,6 +56,7 @@ runs:
           aws efs create-access-point \
             --client-token $PROJECT-$PR_NUMBER-seed \
             --file-system-id $FS_ID \
+            --tags Key=GanderApps,Value=four_eyes \
             --root-directory "Path=/$PROJECT-$PR_NUMBER/seed,CreationInfo={OwnerUid=0,OwnerGid=0,Permissions=777}" \
             --query 'AccessPointId' \
             --output text \
@@ -116,6 +117,7 @@ runs:
 
         echo "SEED_TASK_DEF=$(aws ecs register-task-definition \
         --family $PROJECT-setup-$PR_NUMBER \
+        --tags key=GanderApps,value=four_eyes \
         --cli-input-json file://seed-task.json \
         --query 'join(`:`,taskDefinition.[family,to_string(revision)])' \
         --output text)" >> $GITHUB_ENV
@@ -128,6 +130,7 @@ runs:
           --cluster $PROJECT \
           --task-definition $SEED_TASK_DEF \
           --count 1 \
+          --tags key=GanderApps,value=four_eyes \
           --launch-type "FARGATE" \
           --network-configuration "awsvpcConfiguration={ \
               subnets=[$SUBNET_ID], \
