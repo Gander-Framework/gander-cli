@@ -12,6 +12,11 @@ const config = new Conf();
 
 class SetupCFCommand extends Command {
   async run() {
+    if (config.size > 0) {
+      log.warn('There is already existing Gander infrastructure.');
+      log.error('Please destroy first using `gander destroy`.');
+      process.exit(0);
+    }
     const initialConfig = await prompts.welcome();
     config.set('AWS_REGION', initialConfig.awsRegion);
 
