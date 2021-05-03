@@ -70,9 +70,8 @@ class SetupCFCommand extends Command {
     log.header('Create a CNAME record at your custom domain');
     process.stdout.write("Map '*.gander' to this DNS Name:  ");
     log.info(outputs.ALBDomain);
-    log.text('   ');
-    console.log(``)
-    log.info('Create these two GitHub Secrets in your repositories:');
+
+    log.header('\nCreate these two GitHub Secrets in your repositories:');
     process.stdout.write("AWS_ACCESS_KEY_ID      ");
     log.info(outputs.AccessKeyId)
     process.stdout.write("AWS_SECRET_ACCESS_KEY  ");
