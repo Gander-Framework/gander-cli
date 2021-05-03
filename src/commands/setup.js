@@ -71,6 +71,8 @@ class SetupCFCommand extends Command {
     process.stdout.write("Map '*.gander' to this DNS Name:  ");
     log.info(outputs.ALBDomain);
     log.text('   ');
+    console.log(`Key ID:    ${outputs.AccessKeyId}`)
+    console.log(`Secret ID: ${outputs.AccessKeySecret}`)
 
     log.text('\nIt may take around 10 minutes for AWS to fully spin up all infrastructure pieces. \nBut for now, we\'re all done! 🤓');
   }
