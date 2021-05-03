@@ -28,6 +28,10 @@ const createStack = ({ StackName, TemplateBody }) => executeProcess({
     Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_IAM'],
     StackName,
     TemplateBody,
+    Parameters: [{
+      ParameterKey: 'UserAWSRegion',
+      ParameterValue: 'us-east-2',
+    }],
   }),
 });
 
