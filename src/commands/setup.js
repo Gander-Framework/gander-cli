@@ -68,7 +68,7 @@ class SetupCFCommand extends Command {
 
     log.text('   ');
     log.header('Create a CNAME record at your custom domain');
-    process.stdout.write("Map '*.staging' to this DNS Name:  ");
+    process.stdout.write("Map '*.gander' to this DNS Name:  ");
     log.info(outputs.ALBDomain);
     log.text('   ');
 
