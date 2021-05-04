@@ -39,9 +39,6 @@ module.exports = {
           candidate = char;
           break;
       }
-      if(candidate === 'undefined') {
-        console.log(i, LOGO[i], COLOR_MAP[i])
-      }
       logo += candidate;
     }
     console.log(logo);
