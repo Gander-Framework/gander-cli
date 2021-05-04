@@ -1,0 +1,74 @@
+name: "Update Review App"
+on:
+  pull_request:
+    types: [synchronize]
+
+env:
+  ECR_REPO: gander-ecr
+  PROJECT: APP_NAME # request-bin
+  SERVER_PATH: APP_SERVER_PATH # server/
+  SQL_FILE: DB_SETUP_PATH # server/db/migration.sql
+  BUILDER: CNBP_BUILDER # paketobuildpacks/builder:base
+  DB_NAME: DATABASE_NAME # request_bin
+  SUBNET_NAME: DEFAULT_SUBNET_NAME # Gander-Subnet
+  SG_NAME: CLUSTER_SECURITY_GROUP # Gander-Security-3
+  FS_NAME: EFS_NAME # GanderFS
+  USER_DOMAIN: GANDER_DOMAIN
+  REGION: USER_AWS_REGION # us-east-2
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+
+jobs:
+  teardown:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v1
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: set ECR Registry Environment Variable
+        run: |
+          echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
+
+      - name: Cleanup ECS
+        id: cleanup-ecs
+        uses: ./.github/actions/cleanup-ecs
+
+      - name: Clear EFS
+        id: clear-efs
+        uses: ./.github/actions/clear-efs
+
+      - name: Build the Application Server
+        id: build-server
+        uses: ./.github/actions/build-server
+
+      - name: Place the SQL file in EFS
+        id: place-sql
+        uses: ./.github/actions/seed-db
+
+      - name: Launch the App Service
+        id: launch-app
+        uses: ./.github/actions/launch-review-app
+
+      - name: "Comment On PR"
+        uses: actions/github-script@v3
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { issue: { number: issue_number }, repo: { owner, repo }} = context;
+            github.issues.createComment({
+              issue_number,
+              owner,
+              repo,
+              body: 'The review app has been updated!\nCheck out the preview here: http://${{ env.PUBLIC_URL }}' 
+            });
