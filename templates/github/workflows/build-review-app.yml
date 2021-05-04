@@ -2,7 +2,7 @@ name: Create Review App
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, reopened]
 
 env:
   ECR_REPO: gander-ecr
