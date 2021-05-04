@@ -46,6 +46,10 @@ runs:
                   "value": "password2"
                 },
                 {
+                  "name": "PG_HOST",
+                  "value": "localhost"
+                },
+                {
                   "name": "PORT",
                   "value": "8080"
                 }
