@@ -9,6 +9,9 @@ const userBuildWorkflowPath = path.join(process.cwd(), '/.github/workflows/build
 const ganderTeardownWorkflowPath = path.join(ganderRootPath, '/templates/github/workflows/teardown-review-app.yml');
 const userTeardownWorkflowPath = path.join(process.cwd(), '/.github/workflows/teardown-review-app.yml');
 
+const ganderUpdateWorkflowPath = path.join(ganderRootPath, '/templates/github/workflows/update-review-app.yml');
+const userUpdateWorkflowPath = path.join(process.cwd(), '/.github/workflows/update-review-app.yml');
+
 const githubFolderPath = path.join(process.cwd(), '/.github');
 const workflowFolderPath = path.join(process.cwd(), '/.github/workflows');
 
@@ -39,6 +42,8 @@ module.exports = {
   userBuildWorkflowPath,
   ganderTeardownWorkflowPath,
   userTeardownWorkflowPath,
+  ganderUpdateWorkflowPath,
+  userUpdateWorkflowPath,
   githubFolderPath,
   workflowFolderPath,
   actionFolderPaths,
