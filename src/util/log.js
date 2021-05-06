@@ -27,13 +27,13 @@ module.exports = {
       let candidate;
       switch (COLOR_MAP[i]) {
         case 'o':
-          candidate = chalk.hex("#ef6f56")(char);
+          candidate = chalk.hex("#ee6f57")(char);
           break;
         case 'g':
-          candidate = chalk.hex("#89d8c5")(char);
+          candidate = chalk.hex("#88d7c6")(char);
           break;
         case 'w':
-          candidate = chalk.hex("#ffffff")(char);
+          candidate = chalk.hex("#f6f5f5")(char);
           break;
         default:
           candidate = char;

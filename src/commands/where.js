@@ -10,6 +10,6 @@ class WhereCommand extends Command {
   }
 }
 
-WhereCommand.description = 'List all active Gander repos';
+WhereCommand.description = 'Print out the location of your Gander global configuration file';
 
 module.exports = WhereCommand;
