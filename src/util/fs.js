@@ -6,6 +6,8 @@ const {
   ganderBuildWorkflowTemplatePath,
   ganderTeardownWorkflowPath,
   userTeardownWorkflowPath,
+  ganderUpdateWorkflowPath,
+  userUpdateWorkflowPath,
   githubFolderPath,
   workflowFolderPath,
   userBuildWorkflowPath,
@@ -45,6 +47,22 @@ const populateBuildWorkflow = appInfo => {
   fs.writeFileSync(userBuildWorkflowPath, buildWorkflowFile);
 };
 
+const populateUpdateWorkflow = appInfo => {
+  let updateWorkflowFile = fs.readFileSync(userUpdateWorkflowPath, 'utf8');
+  updateWorkflowFile = updateWorkflowFile.replace('FOUR_EYES_SUPREMACY', appInfo.FOUR_EYES_SUPREMACY);
+  updateWorkflowFile = updateWorkflowFile.replace('APP_NAME', appInfo.APP_NAME);
+  updateWorkflowFile = updateWorkflowFile.replace('APP_SERVER_PATH', appInfo.APP_SERVER_PATH);
+  updateWorkflowFile = updateWorkflowFile.replace('DB_SETUP_PATH', appInfo.DB_SETUP_PATH);
+  updateWorkflowFile = updateWorkflowFile.replace('CNBP_BUILDER', appInfo.APP_LANGUAGE);
+  updateWorkflowFile = updateWorkflowFile.replace('DATABASE_NAME', appInfo.DATABASE_NAME);
+  updateWorkflowFile = updateWorkflowFile.replace('GANDER_DOMAIN', appInfo.GANDER_DOMAIN);
+  updateWorkflowFile = updateWorkflowFile.replace('DEFAULT_SUBNET_NAME', config.get('DEFAULT_SUBNET_NAME'));
+  updateWorkflowFile = updateWorkflowFile.replace('CLUSTER_SECURITY_GROUP', config.get('CLUSTER_SECURITY_GROUP'));
+  updateWorkflowFile = updateWorkflowFile.replace('EFS_NAME', config.get('EFS_NAME'));
+  updateWorkflowFile = updateWorkflowFile.replace('USER_AWS_REGION', config.get('AWS_REGION'));
+  fs.writeFileSync(userUpdateWorkflowPath, updateWorkflowFile);
+};
+
 const populateTeardownWorkflow = appInfo => {
   let teardownWorkflowFile = fs.readFileSync(userTeardownWorkflowPath, 'utf8');
   teardownWorkflowFile = teardownWorkflowFile.replace('APP_NAME', appInfo.APP_NAME);
@@ -58,12 +76,14 @@ const populateTeardownWorkflow = appInfo => {
 const populateWorkflows = appInfo => {
   populateBuildWorkflow(appInfo);
   populateTeardownWorkflow(appInfo);
+  populateUpdateWorkflow(appInfo);
 };
 
 const copyWorkflowFilesToRepo = () => {
   // copy the template file into the project workflows directory
   fs.copyFileSync(ganderBuildWorkflowTemplatePath, userBuildWorkflowPath);
   fs.copyFileSync(ganderTeardownWorkflowPath, userTeardownWorkflowPath);
+  fs.copyFileSync(ganderUpdateWorkflowPath, userUpdateWorkflowPath);
 
   ganderActionTemplatePaths.forEach((ganderFile, index) => {
     const userFile = userActionPaths[index];
