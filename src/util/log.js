@@ -8,9 +8,9 @@ const emphasis = chalk.bold.red
 const success = chalk.green
 
 const logoColorMap = {
-  o: char => chalk.hex("#ef6f56")(char),
-  w: char => chalk.hex("#ffffff")(char),
-  g: char => chalk.hex("#89d8c5")(char),
+  o: char => chalk.hex("#ee6f57")(char),
+  w: char => chalk.hex("#f6f5f5")(char),
+  g: char => chalk.hex("#88d7c6")(char),
   [' ']: char => char
 }
 
