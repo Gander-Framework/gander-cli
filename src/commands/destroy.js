@@ -8,7 +8,7 @@ const config = new Conf();
 const DEFAULT_NAME = 'gander-apps';
 
 const destroyAllClusters = () => {
-  const appNames = JSON.parse(config.get('APP_NAMES'));
+  const appNames = JSON.parse(config.get('APP_NAMES') || '[]');
   appNames.forEach(name => {
     api.deleteCluster({ cluster: name });
   });

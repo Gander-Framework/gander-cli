@@ -16,6 +16,11 @@ const getAppInfo = async () => {
 };
 
 const addAppToConfigFile = APP_NAME => {
+  if(config.get('APP_NAMES') === undefined) {
+    log.warn('Oops! Something went wrong T^T \nPlease run gander destroy and try again.')
+    process.exit(1)
+  }
+
   let apps = JSON.parse(config.get('APP_NAMES'));
   apps.push(APP_NAME);
   config.set('APP_NAMES', JSON.stringify(apps));
