@@ -9,8 +9,10 @@ runs:
         sudo apt-get update && \
         sudo apt-get install pack-cli
       shell: bash
+
     # If your application needs environment variables to run,
-    # Create github secrets for them and put them after line 18.
+    # Create github secrets for them and put them in the file
+    # on line 18.
     # - run: |
     #     cat << ENV > ./.env
     #       VAR1=${{ secrets.ENV_VAR1 }}
