@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo_color.png" width="500" height="327" />
+  <img src="logo_color.png" width="500" height="200" />
 </p>
 
 <h1 align="center">Gander: Open source solution for deploying isolated, ephemeral apps based on your pull requests</h1>
