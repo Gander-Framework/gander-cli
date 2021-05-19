@@ -22,7 +22,7 @@ To learn more, please read our extensive [case study](http://gander-framework.gi
 
 - [Table of Contents](#table-of-contents)
 - [Prerequisites](#prerequisites)
-- [Usage](#usage)
+- [Installation and Setup](#installsetup)
 - [Commands](#commands)
 <!-- tocstop -->
 
@@ -43,25 +43,18 @@ To learn more, please read our extensive [case study](http://gander-framework.gi
 - Run the command `npm install -g gander-cli` to globally install Gander on your machine
 
 - Before initializing Gander with any applications, you must run `gander setup`, which will provision and configure all of the necessary infrastructure you need to begin deploying review apps. See [Commands](#commands) for more information about this command.
-<!--installsetupstop-->
-
-# Usage
-
-<!-- usage -->
 
 ```sh-session
 $ npm install -g gander-cli
-$ gander COMMAND
-running command...
+$ gander setup
+running setup...
 $ gander (-v|--version|version)
 gander-cli/0.0.1 darwin-x64 node-v14.15.1
 $ gander --help [COMMAND]
-USAGE
-  $ gander COMMAND
 ...
 ```
 
-<!-- usagestop -->
+<!--installsetupstop-->
 
 # Commands
 
