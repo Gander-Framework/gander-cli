@@ -34,6 +34,13 @@ To learn more, please read our extensive [case study](http://gander-framework.gi
 - AWS CLI Configured with your AWS Account
 - Node + NPM
 - Application Repository
+
+### Can my application use Gander?
+
+Your application is supported by Gander if it:
+
+- Uses Postgres for storage
+- Can be built into an image using [Cloud Native Buildpacks](https://buildpacks.io/)
 <!--prerequisitesstop-->
 
 # Installation and Setup
@@ -83,7 +90,23 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2
 
 ## `gander init`
 
-Initialize a Gander App in your project repository
+Initialize Gander in your project repository. This command must be run from the root directory of your repository.
+It will ask for the following information:
+
+- Your application's name
+  - This will become the name of the ECs cluster we create for your app. It must consist of alphanumeric characters and dashes (`-`)
+- The language your app is written in
+  - This will determine the [builder](https://buildpacks.io/docs/concepts/components/builder/) that Gander will specify to carry out your application image builds.
+- The directory containing your application entrypoint
+  - This will be utilized by the specified CNBP builder to detect the language of your project
+  - For example, if your app is built with Node.js, this is the directory containing your `package.json` file. For a Ruby project, this will be the directory containing your `Gemfile`
+- The path to your database setup file
+  - This file will be used by Gander to prepare your Postgres database for interaction with your application. It must be a raw `.sql` file containing your database schema and any data you wish to seed your review apps with.
+- Your domain
+  - This should be the domain you created a wildcard CNAME record for during the setup process. This domain's wildcard CNAME record should point at the application load balancer that was provisioned for you during `gander setup`.
+  - You will access your review apps through this domain with URLs of this shape: `$APPNAME-$PR.gander.$YOUR-DOMAIN.com`
+
+`gander init` will populate your repository with customized workflow files for building, updating, and tearing down review apps.
 
 ```
 USAGE
@@ -94,7 +117,21 @@ _See code: [src/commands/init.js](https://github.com/gander-framework/gander-cli
 
 ## `gander setup`
 
-Create an AWS VPC for your review apps to live
+This command provisions underlying support infrastructure to house future Gander review applications.
+This includes the following:
+
+- Non-default VPC
+- Internet Gateway
+- Route Table
+- Application Load Balancer
+- Public Subnets
+- Elastic File System + Mount Target
+- Security Groups
+- `ganderTaskExecution` IAM Role
+- `ganderTaskExecution` IAM Policy
+- Restricted Gander IAM User
+
+See `/templates/cloudformation/gander.yml` for a complete list of resources provisioned.
 
 ```
 USAGE
