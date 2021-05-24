@@ -50,6 +50,11 @@ const appInfoPrompt = async () => {
     validate: serverPathValidator,
   },
   {
+    name: 'STARTUP_SCRIPT',
+    message: 'What is the startup script for your application?',
+    type: 'input',
+  },
+  {
     name: 'DB_SETUP_PATH',
     message: 'What is the path to your database setup file? [ Must be .sql ]',
     type: 'input',
