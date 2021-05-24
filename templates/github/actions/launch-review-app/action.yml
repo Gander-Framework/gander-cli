@@ -120,7 +120,7 @@ runs:
                 "interval": 15,
                 "timeout": 6,
                 "retries": 10,
-                "startPeriod": 30,
+                "startPeriod": 30
               },
               "cpu": 128,
               "memory": 256,
