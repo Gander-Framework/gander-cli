@@ -104,8 +104,8 @@ runs:
                   "awslogs-stream-prefix": "$PROJECT-$PR_NUMBER"
                 }
               },
-              "memory": 500,
-              "cpu": 10
+              "memory": 512,
+              "cpu": 256
             }
           ],
           "volumes": [
