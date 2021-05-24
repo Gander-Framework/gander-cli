@@ -69,7 +69,7 @@ runs:
                   "condition": "HEALTHY"
                 }
               ],
-              "command": ["CMD-SHELL", "$ENTRYPOINT_SCRIPT"],
+              "command": ["CMD-SHELL", "$STARTUP_SCRIPT"],
               "memory": 256,
               "cpu": 128,
               "essential": true
