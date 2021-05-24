@@ -115,6 +115,13 @@ runs:
                   "awslogs-stream-prefix": "$PROJECT"
                 }
               },
+              "healthCheck": {
+                "command": ["CMD-SHELL", "pg_isready -U chris"],
+                "interval": 15,
+                "timeout": 6,
+                "retries": 10,
+                "startPeriod": 30,
+              },
               "cpu": 128,
               "memory": 256,
               "essential": true
