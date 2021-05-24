@@ -69,8 +69,8 @@ runs:
                   "condition": "START"
                 }
               ],
-              "memory": 500,
-              "cpu": 10,
+              "memory": 256,
+              "cpu": 128,
               "essential": true
             },
             {
@@ -115,8 +115,8 @@ runs:
                   "awslogs-stream-prefix": "$PROJECT"
                 }
               },
-              "cpu": 10,
-              "memory": 500,
+              "cpu": 128,
+              "memory": 256,
               "essential": true
             }
           ],
