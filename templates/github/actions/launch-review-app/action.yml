@@ -69,7 +69,8 @@ runs:
                   "condition": "HEALTHY"
                 }
               ],
-              "entryPoint": $STARTUP_SCRIPT,
+              "entryPoint": $ENTRYPOINT,
+              "command": $COMMAND,
               "memory": 256,
               "cpu": 128,
               "essential": true
