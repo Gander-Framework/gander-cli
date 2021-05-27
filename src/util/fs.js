@@ -39,7 +39,8 @@ const populateBuildWorkflow = appInfo => {
   buildWorkflowFile = buildWorkflowFile.replace('DB_SETUP_PATH', appInfo.DB_SETUP_PATH);
   buildWorkflowFile = buildWorkflowFile.replace('CNBP_BUILDER', appInfo.APP_LANGUAGE);
   buildWorkflowFile = buildWorkflowFile.replace('DATABASE_NAME', appInfo.DATABASE_NAME);
-  buildWorkflowFile = buildWorkflowFile.replace('USER_STARTUP_SCRIPT', appInfo.STARTUP_SCRIPT);
+  buildWorkflowFile = buildWorkflowFile.replace('GANDER_COMMAND', appInfo.COMMAND);
+  buildWorkflowFile = buildWorkflowFile.replace('GANDER_ENTRYPOINT', appInfo.ENTRYPOINT);
   buildWorkflowFile = buildWorkflowFile.replace('GANDER_DOMAIN', appInfo.GANDER_DOMAIN);
   buildWorkflowFile = buildWorkflowFile.replace('DEFAULT_SUBNET_NAME', config.get('DEFAULT_SUBNET_NAME'));
   buildWorkflowFile = buildWorkflowFile.replace('CLUSTER_SECURITY_GROUP', config.get('CLUSTER_SECURITY_GROUP'));
@@ -56,7 +57,8 @@ const populateUpdateWorkflow = appInfo => {
   updateWorkflowFile = updateWorkflowFile.replace('DB_SETUP_PATH', appInfo.DB_SETUP_PATH);
   updateWorkflowFile = updateWorkflowFile.replace('CNBP_BUILDER', appInfo.APP_LANGUAGE);
   updateWorkflowFile = updateWorkflowFile.replace('DATABASE_NAME', appInfo.DATABASE_NAME);
-  updateWorkflowFile = updateWorkflowFile.replace('USER_STARTUP_SCRIPT', appInfo.STARTUP_SCRIPT);
+  updateWorkflowFile = updateWorkflowFile.replace('GANDER_COMMAND', appInfo.COMMAND);
+  updateWorkflowFile = updateWorkflowFile.replace('GANDER_ENTRYPOINT', appInfo.ENTRYPOINT);
   updateWorkflowFile = updateWorkflowFile.replace('GANDER_DOMAIN', appInfo.GANDER_DOMAIN);
   updateWorkflowFile = updateWorkflowFile.replace('DEFAULT_SUBNET_NAME', config.get('DEFAULT_SUBNET_NAME'));
   updateWorkflowFile = updateWorkflowFile.replace('CLUSTER_SECURITY_GROUP', config.get('CLUSTER_SECURITY_GROUP'));
