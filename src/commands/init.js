@@ -26,6 +26,12 @@ const addAppToConfigFile = APP_NAME => {
   config.set('APP_NAMES', JSON.stringify(apps));
 };
 
+const getEntryPointAndCommand = appInfo => {
+  const [entrypoint, ...command] = appInfo.STARTUP_SCRIPT.split(' ');
+  appInfo.ENTRYPOINT = `["${entrypoint}"]`;
+  appInfo.COMMAND = JSON.stringify(command);
+}
+
 class InitCommand extends Command {
   async run() {
     log.header('🐥 Initializing your project repository with Gander\n');
@@ -33,7 +39,7 @@ class InitCommand extends Command {
     copyWorkflowFilesToRepo();
     const appInfo = await getAppInfo();
     addAppToConfigFile(appInfo.APP_NAME);
-    
+    getEntryPointAndCommand(appInfo);
     api.clients.ecs = await api.initializeEcsClient(config.get('AWS_REGION'));
     await api.createCluster({ clusterName: appInfo.APP_NAME });
 
