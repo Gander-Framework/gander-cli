@@ -66,11 +66,11 @@ runs:
               "dependsOn": [
                 {
                   "containerName": "db",
-                  "condition": "START"
+                  "condition": "HEALTHY"
                 }
               ],
-              "memory": 500,
-              "cpu": 10,
+              "memory": 256,
+              "cpu": 128,
               "essential": true
             },
             {
@@ -115,8 +115,15 @@ runs:
                   "awslogs-stream-prefix": "$PROJECT"
                 }
               },
-              "cpu": 10,
-              "memory": 500,
+              "healthCheck": {
+                "command": ["CMD-SHELL", "pg_isready -U chris"],
+                "interval": 15,
+                "timeout": 6,
+                "retries": 10,
+                "startPeriod": 30
+              },
+              "cpu": 128,
+              "memory": 256,
               "essential": true
             }
           ],
