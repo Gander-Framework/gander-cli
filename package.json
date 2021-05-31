@@ -2,7 +2,7 @@
   "name": "gander-cli",
   "description": "framework to create full-stack review apps on AWS",
   "version": "0.0.0",
-  "author": "Melinda @melinda-hl-lim",
+  "author": "Sheila Babadi @sheilababadi",
   "bin": {
     "gander": "./bin/run"
   },
@@ -27,9 +27,12 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",
+    "@oclif/test": "^1.2.8",
     "eslint": "^5.16.0",
     "eslint-config-oclif": "^3.1.0",
-    "globby": "^10.0.2"
+    "fancy-test": "^1.4.10",
+    "globby": "^10.0.2",
+    "mocha": "^8.4.0"
   },
   "engines": {
     "node": ">=8.0.0"
