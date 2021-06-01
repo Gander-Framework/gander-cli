@@ -41,7 +41,8 @@
     "/bin",
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json",
-    "/src"
+    "/src",
+    "/templates"
   ],
   "homepage": "https://github.com/Gander-Framework/gander-cli",
   "keywords": [
