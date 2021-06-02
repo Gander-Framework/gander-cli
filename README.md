@@ -69,6 +69,8 @@ $ gander --help [COMMAND]
 - Ensure you are on your application's `main` branch - Gander requires that the generated Github workflow files be present on this branch for the review app process.
 - Run `gander init` - See [Commands](#commands) for details about each piece of information `init` requires.
 - Add the AWS Access Keys that were generated during `gander setup` as [secrets](#https://docs.github.com/en/actions/reference/encrypted-secrets) to your project's Github repository.
+-For Python applications, provide the entrypoint command in a `Procfile` in the root directory using the format `web: $ENTRYPOINT`. The app needs to run on port `8080` with `0.0.0.0` as the host. See the `Procfile` in our sample Django app for an example.
+- Django applications can include `'*'` as one of their `ALLOWED_HOSTS` because Gander's load balancer handles host header validation.
 
 ### Environment Variables
 To add environment variables to your application server's runtime, follow these steps:
