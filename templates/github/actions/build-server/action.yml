@@ -19,8 +19,8 @@ runs:
         pack build $IMAGE_ARN \
         --builder $BUILDER \
         --path $SERVER_PATH \
-      # --env VAR1=${{ secrets.VAR1 }} \
-      # --env VAR2=${{ secrets.VAR2 }} \
+        # --env VAR1=${{ secrets.VAR1 }} \
+        # --env VAR2=${{ secrets.VAR2 }} \
         --publish
         echo "IMAGE_ARN=$IMAGE_ARN" >> $GITHUB_ENV
       shell: bash
