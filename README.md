@@ -73,7 +73,15 @@ $ gander --help [COMMAND]
 - Django applications can include `'*'` as one of their `ALLOWED_HOSTS` because Gander's load balancer handles host header validation.
 
 ### Environment Variables
-To add environment variables to your application server's runtime, follow these steps:
+Gander uses environment variables to manage the connection to the database. 
+Your application needs to use these three environment variables:
+- `PG_HOST` -- This is the host name for your database connection.
+- `PG_USER` -- This is the username for postgres database.
+- `PG_PW` -- This is the password for the postgres database.
+
+Gander also needs to be able to set the port your application server listens on using the environment variable `PORT`.
+
+To add additional environment variables to your application server's runtime, follow these steps:
 1. Add your environment variables to your repository's [secrets](#https://docs.github.com/en/actions/reference/encrypted-secrets). 
 2. Open `.github/actions/build-server/action.yml` 
 3. Add your environment variables to the `pack build` command, on lines 22-23.
