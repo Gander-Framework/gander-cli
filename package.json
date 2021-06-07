@@ -1,7 +1,7 @@
 {
   "name": "gander-cli",
   "description": "framework to create full-stack review apps on AWS",
-  "version": "0.0.0",
+  "version": "1.0.1",
   "author": "Sheila Babadi @sheilababadi",
   "bin": {
     "gander": "./bin/run"
