@@ -134,7 +134,7 @@ USAGE
   $ gander destroy
 ```
 
-_See code: [src/commands/destroy.js](https://github.com/Gander-Framework/gander-cli/blob/v1.0.1/src/commands/destroy.js)_
+_See code: [src/commands/destroy.js](https://github.com/Gander-Framework/gander-cli/blob/main/src/commands/destroy.js)_
 
 ## `gander help [COMMAND]`
 
