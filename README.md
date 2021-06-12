@@ -125,7 +125,7 @@ USAGE
   $ gander destroy
 ```
 
-_See code: [src/commands/destroy.js](https://github.com/Gander-Framework/gander-cli/blob/v0.0.0/src/commands/destroy.js)_
+_See code: [src/commands/destroy.js](https://github.com/Gander-Framework/gander-cli/blob/v1.0.1/src/commands/destroy.js)_
 
 ## `gander help [COMMAND]`
 
@@ -153,7 +153,7 @@ USAGE
   $ gander init
 ```
 
-_See code: [src/commands/init.js](https://github.com/Gander-Framework/gander-cli/blob/v0.0.0/src/commands/init.js)_
+_See code: [src/commands/init.js](https://github.com/Gander-Framework/gander-cli/blob/v1.0.1/src/commands/init.js)_
 
 ## `gander list`
 
@@ -164,7 +164,7 @@ USAGE
   $ gander list
 ```
 
-_See code: [src/commands/list.js](https://github.com/Gander-Framework/gander-cli/blob/v0.0.0/src/commands/list.js)_
+_See code: [src/commands/list.js](https://github.com/Gander-Framework/gander-cli/blob/v1.0.1/src/commands/list.js)_
 
 ## `gander setup`
 
@@ -175,7 +175,7 @@ USAGE
   $ gander setup
 ```
 
-_See code: [src/commands/setup.js](https://github.com/Gander-Framework/gander-cli/blob/v0.0.0/src/commands/setup.js)_
+_See code: [src/commands/setup.js](https://github.com/Gander-Framework/gander-cli/blob/v1.0.1/src/commands/setup.js)_
 
 ## `gander where`
 
@@ -186,5 +186,5 @@ USAGE
   $ gander where
 ```
 
-_See code: [src/commands/where.js](https://github.com/Gander-Framework/gander-cli/blob/v0.0.0/src/commands/where.js)_
+_See code: [src/commands/where.js](https://github.com/Gander-Framework/gander-cli/blob/v1.0.1/src/commands/where.js)_
 <!-- commandsstop -->
