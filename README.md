@@ -19,10 +19,11 @@ To learn more, please read our extensive [case study](http://gander-framework.gi
 # Table of Contents
 
 <!-- toc -->
-* [Table of Contents](#table-of-contents)
-* [Prerequisites](#prerequisites)
-* [Installation and Setup](#installation-and-setup)
-* [Commands](#commands)
+
+- [Table of Contents](#table-of-contents)
+- [Prerequisites](#prerequisites)
+- [Installation and Setup](#installation-and-setup)
+- [Commands](#commands)
 <!-- tocstop -->
 
 # Prerequisites
@@ -53,6 +54,7 @@ Your application is supported by Gander if it:
 
 - Before initializing Gander with any applications, you must run [`gander setup`](#gander-setup), which will provision and configure all of the necessary infrastructure you need to begin deploying review apps. See [Commands](#commands) for more information about this command. Keep track of the AWS access keys that are generated during this process - this is the only place they will ever appear.
 - Add a wildcard CNAME DNS Record to the domain you provided
+
 ```sh-session
 $ npm install -g gander-cli
 $ gander setup
@@ -73,8 +75,10 @@ $ gander --help [COMMAND]
 - Django applications can include `'*'` as one of their `ALLOWED_HOSTS` because Gander's load balancer handles host header validation.
 
 ### Environment Variables
-Gander uses environment variables to manage the connection to the database. 
+
+Gander uses environment variables to manage the connection to the database.
 Your application needs to use these three environment variables:
+
 - `PG_HOST` -- This is the host name for your database connection.
 - `PG_USER` -- This is the username for postgres database.
 - `PG_PW` -- This is the password for the postgres database.
@@ -82,11 +86,13 @@ Your application needs to use these three environment variables:
 Gander also needs to be able to set the port your application server listens on using the environment variable `PORT`.
 
 To add additional environment variables to your application server's runtime, follow these steps:
-1. Add your environment variables to your repository's [secrets](#https://docs.github.com/en/actions/reference/encrypted-secrets). 
-2. Open `.github/actions/build-server/action.yml` 
+
+1. Add your environment variables to your repository's [secrets](#https://docs.github.com/en/actions/reference/encrypted-secrets).
+2. Open `.github/actions/build-server/action.yml`
 3. Add your environment variables to the `pack build` command, on lines 22-23.
 
 For example, if you have an API_TOKEN environment variable, it would be added like this after you create your secrets:
+
 ```sh
   pack build $IMAGE_ARN \
   --builder $BUILDER \
@@ -94,7 +100,9 @@ For example, if you have an API_TOKEN environment variable, it would be added li
   --env API_TOKEN=${{ secrets.API_TOKEN }} \
   --publish
 ```
+
 If you have both an API_TOKEN and an API_URL, you can add two environment variables like this:
+
 ```sh
   pack build $IMAGE_ARN \
   --builder $BUILDER \
@@ -109,12 +117,13 @@ If you have both an API_TOKEN and an API_URL, you can add two environment variab
 # Commands
 
 <!-- commands -->
-* [`gander destroy`](#gander-destroy)
-* [`gander help [COMMAND]`](#gander-help-command)
-* [`gander init`](#gander-init)
-* [`gander list`](#gander-list)
-* [`gander setup`](#gander-setup)
-* [`gander where`](#gander-where)
+
+- [`gander destroy`](#gander-destroy)
+- [`gander help [COMMAND]`](#gander-help-command)
+- [`gander init`](#gander-init)
+- [`gander list`](#gander-list)
+- [`gander setup`](#gander-setup)
+- [`gander where`](#gander-where)
 
 ## `gander destroy`
 
@@ -153,7 +162,7 @@ USAGE
   $ gander init
 ```
 
-_See code: [src/commands/init.js](https://github.com/Gander-Framework/gander-cli/blob/v1.0.1/src/commands/init.js)_
+_See code: [src/commands/init.js](https://github.com/Gander-Framework/gander-cli/blob/main/src/commands/init.js)_
 
 ## `gander list`
 
@@ -164,7 +173,7 @@ USAGE
   $ gander list
 ```
 
-_See code: [src/commands/list.js](https://github.com/Gander-Framework/gander-cli/blob/v1.0.1/src/commands/list.js)_
+_See code: [src/commands/list.js](https://github.com/Gander-Framework/gander-cli/blob/main/src/commands/list.js)_
 
 ## `gander setup`
 
@@ -175,7 +184,7 @@ USAGE
   $ gander setup
 ```
 
-_See code: [src/commands/setup.js](https://github.com/Gander-Framework/gander-cli/blob/v1.0.1/src/commands/setup.js)_
+_See code: [src/commands/setup.js](https://github.com/Gander-Framework/gander-cli/blob/main/src/commands/setup.js)_
 
 ## `gander where`
 
@@ -186,5 +195,6 @@ USAGE
   $ gander where
 ```
 
-_See code: [src/commands/where.js](https://github.com/Gander-Framework/gander-cli/blob/v1.0.1/src/commands/where.js)_
+_See code: [src/commands/where.js](https://github.com/Gander-Framework/gander-cli/blob/main/src/commands/where.js)_
+
 <!-- commandsstop -->
