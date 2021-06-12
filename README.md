@@ -22,7 +22,7 @@ To learn more, please read our extensive [case study](http://gander-framework.gi
 
 - [Table of Contents](#table-of-contents)
 - [Prerequisites](#prerequisites)
-- [Installation and Setup](#installation-and-setup)
+- [Installation and Setup](#installsetup)
 - [Commands](#commands)
 <!-- tocstop -->
 
@@ -118,23 +118,12 @@ If you have both an API_TOKEN and an API_URL, you can add two environment variab
 
 <!-- commands -->
 
-- [`gander destroy`](#gander-destroy)
 - [`gander help [COMMAND]`](#gander-help-command)
 - [`gander init`](#gander-init)
-- [`gander list`](#gander-list)
 - [`gander setup`](#gander-setup)
+- [`gander destroy`](#gander-destroy)
 - [`gander where`](#gander-where)
-
-## `gander destroy`
-
-Destroy all AWS resources created for Gander review apps
-
-```
-USAGE
-  $ gander destroy
-```
-
-_See code: [src/commands/destroy.js](https://github.com/Gander-Framework/gander-cli/blob/main/src/commands/destroy.js)_
+- [`gander list`](#gander-list)
 
 ## `gander help [COMMAND]`
 
@@ -155,46 +144,88 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2
 
 ## `gander init`
 
-Initialize your project repository as a Gander review app
+Initialize Gander in your project repository. This command must be run from the root directory of your repository.
+It will ask for the following information:
+
+- **Your application's name**
+  - This will become the name of the ECs cluster we create for your app. It must consist of alphanumeric characters and dashes (`-`)
+- **The language your app is written in**
+  - This will determine the [builder](https://buildpacks.io/docs/concepts/components/builder/) that Gander will specify to carry out your application image builds.
+- **The directory containing your application entrypoint**
+  - This will be utilized by the specified CNBP builder to detect the language of your project
+  - For example, if your app is built with Node.js, this is the directory containing your `package.json` file. For a Ruby project, this will be the directory containing your `Gemfile`
+- **The path to your database setup file**
+  - This file will be used by Gander to prepare your Postgres database for interaction with your application. It must be a raw `.sql` file containing your database schema and any data you wish to seed your review apps with.
+- **Your domain**
+  - This should be the domain you created a wildcard CNAME record for during the setup process. This domain's wildcard CNAME record should point at the application load balancer that was provisioned for you during `gander setup`.
+  - You will access your review apps through this domain with URLs of this shape: `$APPNAME-$PR.gander.$YOUR-DOMAIN.com`
+
+`gander init` will populate your repository with customized workflow files for building, updating, and tearing down review apps. You should see a new `.github` directory containing two subdirectories: `actions` and `workflows`.
 
 ```
 USAGE
   $ gander init
 ```
 
-_See code: [src/commands/init.js](https://github.com/Gander-Framework/gander-cli/blob/main/src/commands/init.js)_
-
-## `gander list`
-
-List all active Gander repos
-
-```
-USAGE
-  $ gander list
-```
-
-_See code: [src/commands/list.js](https://github.com/Gander-Framework/gander-cli/blob/main/src/commands/list.js)_
+_See code: [src/commands/init.js](https://github.com/gander-framework/gander-cli/blob/main/src/commands/init.js)_
 
 ## `gander setup`
 
-Create all the AWS resources required to deploy Gander review apps
+This command provisions underlying support infrastructure to house future Gander review applications.
+This includes the following:
+
+- Non-default VPC
+- Internet Gateway
+- Route Table
+- Application Load Balancer
+- Public Subnets
+- Elastic File System + Mount Target
+- Security Groups
+- `ganderTaskExecution` IAM Role
+- `ganderTaskExecution` IAM Policy
+- Restricted Gander IAM User
+
+See `/templates/cloudformation/gander.yml` for a complete list of resources provisioned.
 
 ```
 USAGE
   $ gander setup
 ```
 
-_See code: [src/commands/setup.js](https://github.com/Gander-Framework/gander-cli/blob/main/src/commands/setup.js)_
+_See code: [src/commands/setup.js](https://github.com/gander-framework/gander-cli/blob/main/src/commands/setup.js)_
+
+## `gander destroy`
+
+This command cleans up all of the infrastructure provisioned for you in during [`gander setup`](#gander-setup).
+It will also clear your local configuration file, which you can find the location of using [`gander where`](#gander-where).
+
+```
+USAGE
+  $ gander destroy
+```
+
+_See code: [src/commands/destroy.js](https://github.com/Gander-Framework/gander-cli/blob/main/src/commands/destroy.js)_
 
 ## `gander where`
 
-Print out the location of your Gander global configuration file
+This command will output the location of your local Gander configuration file. This configuration file contains IDs for your Gander-specific AWS infrastructure as well as the AWS Region you set for your Gander apps on setup. This file gets cleared on [`gander destroy`](#gander-destroy).
 
 ```
 USAGE
   $ gander where
 ```
 
-_See code: [src/commands/where.js](https://github.com/Gander-Framework/gander-cli/blob/main/src/commands/where.js)_
+See code: [src/commands/where.js](https://github.com/gander-framework/gander-cli/blob/main/src/commands/where.js)\_
+
+## `gander list`
+
+This command will output the names of all of the applications you have integrated with Gander.
+
+```
+USAGE
+  $ gander list
+```
+
+_See code: [src/commands/list.js](https://github.com/gander-framework/gander-cli/blob/main/src/commands/list.js)_
 
 <!-- commandsstop -->
